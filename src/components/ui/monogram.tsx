@@ -21,20 +21,13 @@ const Monogram: React.FC<MonogramProps> = ({ size = 'medium', className = '' }) 
       >
         <defs>
           <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#FFC107" />
-            <stop offset="25%" stopColor="#FFD700" />
-            <stop offset="50%" stopColor="#B8860B" />
-            <stop offset="75%" stopColor="#FFE55C" />
-            <stop offset="100%" stopColor="#DAA520" />
-          </linearGradient>
-          <linearGradient id="goldGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#DAA520" />
-            <stop offset="30%" stopColor="#FFE55C" />
+            <stop offset="0%" stopColor="#C9A961" />
+            <stop offset="30%" stopColor="#D4AF37" />
             <stop offset="70%" stopColor="#B8860B" />
-            <stop offset="100%" stopColor="#FFD700" />
+            <stop offset="100%" stopColor="#F4E4BC" />
           </linearGradient>
           <filter id="goldShine">
-            <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+            <feGaussianBlur stdDeviation="0.5" result="coloredBlur"/>
             <feMerge> 
               <feMergeNode in="coloredBlur"/>
               <feMergeNode in="SourceGraphic"/>
@@ -42,74 +35,114 @@ const Monogram: React.FC<MonogramProps> = ({ size = 'medium', className = '' }) 
           </filter>
         </defs>
         
-        {/* Ornamental border circle */}
-        <circle
-          cx="60"
-          cy="60"
-          r="58"
-          fill="none"
-          stroke="url(#goldGradient)"
-          strokeWidth="2"
-          opacity="0.3"
-        />
-        
-        {/* Inner decorative circle */}
-        <circle
-          cx="60"
-          cy="60"
-          r="50"
-          fill="none"
-          stroke="url(#goldGradient2)"
-          strokeWidth="1"
-          opacity="0.2"
-        />
-        
-        {/* Letter H (Н) */}
+        {/* Heart shape with decorative rope-like border */}
         <g filter="url(#goldShine)">
           <path
-            d="M25 30 L25 90 M25 60 L45 60 M45 30 L45 90"
+            d="M60 25 
+               C60 15, 45 10, 35 20
+               C25 30, 25 45, 40 55
+               L60 75
+               L80 55
+               C95 45, 95 30, 85 20
+               C75 10, 60 15, 60 25 Z"
+            fill="none"
             stroke="url(#goldGradient)"
-            strokeWidth="6"
+            strokeWidth="3"
             strokeLinecap="round"
             strokeLinejoin="round"
-            fill="none"
           />
+          
+          {/* Decorative rope pattern on heart border */}
+          <path
+            d="M60 25 
+               C60 15, 45 10, 35 20
+               C25 30, 25 45, 40 55
+               L60 75
+               L80 55
+               C95 45, 95 30, 85 20
+               C75 10, 60 15, 60 25 Z"
+            fill="none"
+            stroke="url(#goldGradient)"
+            strokeWidth="1.5"
+            strokeDasharray="3,2"
+            opacity="0.8"
+            strokeLinecap="round"
+          />
+          
+          {/* Bow/knot at the top */}
+          <g transform="translate(60, 20)">
+            <ellipse cx="0" cy="0" rx="8" ry="4" 
+                     fill="none" 
+                     stroke="url(#goldGradient)" 
+                     strokeWidth="2"/>
+            <ellipse cx="-6" cy="-2" rx="4" ry="6" 
+                     fill="none" 
+                     stroke="url(#goldGradient)" 
+                     strokeWidth="1.5"/>
+            <ellipse cx="6" cy="-2" rx="4" ry="6" 
+                     fill="none" 
+                     stroke="url(#goldGradient)" 
+                     strokeWidth="1.5"/>
+          </g>
         </g>
         
-        {/* Letter B (В) - decorative version */}
+        {/* Calligraphic НВ letters */}
         <g filter="url(#goldShine)">
+          {/* Letter Н */}
           <path
-            d="M65 30 L65 90 M65 30 L85 30 Q95 30 95 40 Q95 50 85 50 L65 50 M65 50 L88 50 Q98 50 98 65 Q98 80 88 80 L85 80 M65 80 L85 80"
-            stroke="url(#goldGradient2)"
-            strokeWidth="5"
+            d="M35 40 
+               Q33 38, 35 36
+               L35 60
+               Q35 62, 37 60
+               L47 60
+               Q49 60, 47 62
+               L47 40
+               Q47 38, 49 40"
+            stroke="url(#goldGradient)"
+            strokeWidth="2.5"
+            fill="none"
+            strokeLinecap="round"
+          />
+          <path
+            d="M35 50 Q41 48, 47 50"
+            stroke="url(#goldGradient)"
+            strokeWidth="2"
+            fill="none"
+            strokeLinecap="round"
+          />
+          
+          {/* Letter В (calligraphic style) */}
+          <path
+            d="M65 40
+               Q63 38, 65 36
+               L65 60
+               Q65 62, 67 60
+               L78 60
+               Q85 60, 85 53
+               Q85 46, 78 46
+               L65 46
+               M65 46
+               L75 46
+               Q80 46, 80 42
+               Q80 38, 75 38
+               L65 38"
+            stroke="url(#goldGradient)"
+            strokeWidth="2.5"
+            fill="none"
             strokeLinecap="round"
             strokeLinejoin="round"
-            fill="none"
-          />
-        </g>
-        
-        {/* Decorative flourishes */}
-        <g opacity="0.6">
-          {/* Top flourish */}
-          <path
-            d="M60 15 Q50 20 55 25 Q60 20 65 25 Q70 20 60 15"
-            fill="url(#goldGradient)"
           />
           
-          {/* Bottom flourish */}
+          {/* Decorative flourishes */}
           <path
-            d="M60 105 Q50 100 55 95 Q60 100 65 95 Q70 100 60 105"
-            fill="url(#goldGradient2)"
-          />
-          
-          {/* Side flourishes */}
-          <path
-            d="M15 60 Q20 50 25 55 Q20 60 25 65 Q20 70 15 60"
+            d="M30 38 Q25 35, 28 32 Q32 35, 30 38"
             fill="url(#goldGradient)"
+            opacity="0.7"
           />
           <path
-            d="M105 60 Q100 50 95 55 Q100 60 95 65 Q100 70 105 60"
-            fill="url(#goldGradient2)"
+            d="M90 42 Q95 39, 92 36 Q88 39, 90 42"
+            fill="url(#goldGradient)"
+            opacity="0.7"
           />
         </g>
       </svg>
