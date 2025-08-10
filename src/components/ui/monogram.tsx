@@ -88,54 +88,84 @@ const Monogram: React.FC<MonogramProps> = ({ size = 'medium', className = '' }) 
                 strokeWidth="1.5"/>
         </g>
         
-        {/* Буквы VN */}
-        <g>
-          {/* Буква V */}
-          <path
-            d="M32 24
-               Q31.5 23, 32 22.5
-               Q33 23.5, 34 26
-               Q35.5 29, 37 31.5
-               Q37.5 32.5, 38 32
-               
-               M44 24
-               Q44.5 23, 44 22.5
-               Q43 23.5, 42 26
-               Q40.5 29, 39 31.5
-               Q38.5 32.5, 38 32"
-            stroke="url(#goldGradient)"
-            strokeWidth="3"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
+        {/* Буквы VN в готическом стиле - расположены ниже */}
+        <g transform="translate(0, 12)">
+          {/* Буква V - готический стиль */}
+          <g>
+            <path
+              d="M35 30
+                 L35 28
+                 Q35 27, 36 27
+                 L38 37
+                 Q39 39, 40 39
+                 Q41 39, 42 37
+                 L44 27
+                 Q45 27, 45 28
+                 L45 30
+                 Q45 31, 44 31
+                 L42 41
+                 Q41 43, 40 43
+                 Q39 43, 38 41
+                 L36 31
+                 Q35 31, 35 30 Z"
+              fill="url(#goldGradient)"
+              stroke="url(#goldGradient)"
+              strokeWidth="0.3"
+            />
+            
+            {/* Готические засечки для V */}
+            <rect x="34" y="27" width="3" height="1" fill="url(#goldGradient)"/>
+            <rect x="43" y="27" width="3" height="1" fill="url(#goldGradient)"/>
+            <rect x="38.5" y="43" width="3" height="1" fill="url(#goldGradient)"/>
+          </g>
           
-          {/* Буква N */}
-          <path
-            d="M55 24
-               Q54.5 23, 55 22.5
-               Q55.5 23.5, 55.5 26
-               Q55.5 29, 55.5 31.5
-               Q55.5 32.5, 56 32
-               
-               M55.5 22.8
-               Q57 22.2, 58.5 23
-               Q60.5 24.5, 62 26.5
-               Q64 29, 65.5 31
-               Q67 32.5, 68.5 33.5
-               Q69.5 34, 70 33.5
-               
-               M68.5 24
-               Q69 23, 68.5 22.5
-               Q68 23.5, 68 26
-               Q68 29, 68 31.5
-               Q68 32.5, 68.5 32"
-            stroke="url(#goldGradient)"
-            strokeWidth="3"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
+          {/* Буква N - готический стиль */}
+          <g>
+            <path
+              d="M54 30
+                 L54 28
+                 Q54 27, 55 27
+                 L55 41
+                 Q55 42, 56 42
+                 L58 30
+                 Q59 28, 60 28
+                 Q61 28, 62 30
+                 L62 41
+                 Q62 42, 63 42
+                 L63 28
+                 Q63 27, 64 27
+                 L64 30
+                 Q64 31, 63 31
+                 L63 43
+                 Q63 44, 62 44
+                 L55 44
+                 Q54 44, 54 43
+                 L54 31
+                 Q54 31, 54 30 Z"
+              fill="url(#goldGradient)"
+              stroke="url(#goldGradient)"
+              strokeWidth="0.3"
+            />
+            
+            {/* Готические засечки для N */}
+            <rect x="53" y="27" width="3" height="1" fill="url(#goldGradient)"/>
+            <rect x="62" y="27" width="3" height="1" fill="url(#goldGradient)"/>
+            <rect x="53" y="44" width="3" height="1" fill="url(#goldGradient)"/>
+            <rect x="62" y="44" width="3" height="1" fill="url(#goldGradient)"/>
+          </g>
+          
+          {/* Готические декоративные элементы */}
+          <g opacity="0.9">
+            {/* Декоративные ромбы */}
+            <path d="M32 33 L33 32 L34 33 L33 34 Z" fill="url(#goldGradient)"/>
+            <path d="M46 33 L47 32 L48 33 L47 34 Z" fill="url(#goldGradient)"/>
+            <path d="M51 36 L52 35 L53 36 L52 37 Z" fill="url(#goldGradient)"/>
+            <path d="M65 36 L66 35 L67 36 L66 37 Z" fill="url(#goldGradient)"/>
+            
+            {/* Готические завитки */}
+            <path d="M31 31 Q29 29, 30 27 Q32 29, 31 31" fill="url(#goldGradient)"/>
+            <path d="M68 39 Q70 37, 69 35 Q67 37, 68 39" fill="url(#goldGradient)"/>
+          </g>
         </g>
       </svg>
     </div>
