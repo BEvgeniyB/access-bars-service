@@ -1,14 +1,254 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import Icon from "@/components/ui/icon";
 
-const Index = () => {
+const MassageWebsite = () => {
+  const services = [
+    {
+      name: "Классический массаж",
+      duration: "60 мин",
+      price: "3 500 ₽",
+      description: "Расслабляющий массаж всего тела с использованием натуральных масел"
+    },
+    {
+      name: "Ароматерапия",
+      duration: "90 мин", 
+      price: "4 500 ₽",
+      description: "Глубокое расслабление с эфирными маслами лаванды и эвкалипта"
+    },
+    {
+      name: "Лимфодренажный массаж",
+      duration: "75 мин",
+      price: "4 000 ₽", 
+      description: "Детокс-массаж для выведения лишней жидкости и улучшения обмена веществ"
+    },
+    {
+      name: "Массаж горячими камнями",
+      duration: "90 мин",
+      price: "5 500 ₽",
+      description: "Уникальная техника с разогретыми базальтовыми камнями"
+    },
+    {
+      name: "Антицеллюлитный массаж",
+      duration: "60 мин", 
+      price: "3 800 ₽",
+      description: "Интенсивный массаж для коррекции фигуры и улучшения тонуса кожи"
+    },
+    {
+      name: "Массаж лица",
+      duration: "45 мин",
+      price: "2 800 ₽",
+      description: "Омолаживающий массаж для повышения тонуса и эластичности кожи лица"
+    }
+  ];
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4 color-black text-black">Добро пожаловать!</h1>
-        <p className="text-xl text-gray-600">тут будет отображаться ваш проект</p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-accent/20 to-white font-openSans">
+      {/* Header */}
+      <header className="bg-white/95 backdrop-blur-sm shadow-sm sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4">
+          <nav className="flex justify-between items-center">
+            <h1 className="font-montserrat font-bold text-2xl text-primary">SPA Гармония</h1>
+            <div className="flex gap-6 items-center">
+              <a href="#services" className="text-gray-700 hover:text-primary transition-colors">Услуги</a>
+              <a href="#about" className="text-gray-700 hover:text-primary transition-colors">О нас</a>
+              <a href="#contact" className="text-gray-700 hover:text-primary transition-colors">Контакты</a>
+              <Button className="bg-primary hover:bg-primary/90 text-white font-medium">
+                Записаться
+              </Button>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="py-20 px-4 text-center relative overflow-hidden">
+        <div className="container mx-auto relative z-10">
+          <div className="animate-fade-in">
+            <h2 className="font-montserrat font-bold text-5xl md:text-6xl text-gray-800 mb-6 leading-tight">
+              Найдите свой
+              <span className="text-primary block">внутренний покой</span>
+            </h2>
+            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
+              Профессиональные массажные услуги с использованием натуральных компонентов 
+              в атмосфере полного расслабления и гармонии
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-medium px-8 py-3 text-lg">
+                <Icon name="Calendar" className="mr-2" size={20} />
+                Записаться на сеанс
+              </Button>
+              <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary/10 px-8 py-3 text-lg">
+                <Icon name="Phone" className="mr-2" size={20} />
+                +7 (495) 123-45-67
+              </Button>
+            </div>
+          </div>
+        </div>
+        
+        {/* Hero Image */}
+        <div className="mt-16 relative">
+          <div className="max-w-4xl mx-auto">
+            <img 
+              src="/img/a58463d0-dcdb-4e5c-9e75-59fff97e775a.jpg"
+              alt="Spa massage stones"
+              className="w-full h-96 object-cover rounded-3xl shadow-2xl animate-slide-up"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section id="services" className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16 animate-fade-in">
+            <h2 className="font-montserrat font-bold text-4xl text-gray-800 mb-4">Наши услуги</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Широкий спектр массажных техник для вашего здоровья и красоты
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {services.map((service, index) => (
+              <Card key={index} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg hover:-translate-y-2">
+                <CardHeader className="pb-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <CardTitle className="font-montserrat text-xl text-gray-800 group-hover:text-primary transition-colors">
+                      {service.name}
+                    </CardTitle>
+                    <div className="text-right">
+                      <div className="text-2xl font-bold text-primary">{service.price}</div>
+                      <div className="text-sm text-gray-500">{service.duration}</div>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-gray-600 leading-relaxed">
+                    {service.description}
+                  </CardDescription>
+                  <Button className="w-full mt-4 bg-primary hover:bg-primary/90 text-white">
+                    <Icon name="Clock" className="mr-2" size={16} />
+                    Записаться
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section id="about" className="py-20 bg-gradient-to-r from-accent/10 to-secondary/10">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="animate-fade-in">
+              <h2 className="font-montserrat font-bold text-4xl text-gray-800 mb-6">О нас</h2>
+              <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+                SPA Гармония — это оазис спокойствия в центре города. Мы создали пространство, 
+                где каждый может найти баланс между телом и душой.
+              </p>
+              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                Наши мастера имеют международные сертификаты и многолетний опыт работы. 
+                Мы используем только натуральные масла и экологически чистые материалы.
+              </p>
+              
+              <div className="grid grid-cols-2 gap-6">
+                <div className="text-center p-6 bg-white rounded-2xl shadow-lg">
+                  <div className="text-3xl font-bold text-primary mb-2">500+</div>
+                  <div className="text-gray-600">Довольных клиентов</div>
+                </div>
+                <div className="text-center p-6 bg-white rounded-2xl shadow-lg">
+                  <div className="text-3xl font-bold text-primary mb-2">5</div>
+                  <div className="text-gray-600">Лет опыта</div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-6">
+              <div className="bg-white p-6 rounded-2xl shadow-lg flex items-center gap-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                  <Icon name="Leaf" className="text-primary" size={24} />
+                </div>
+                <div>
+                  <h3 className="font-montserrat font-semibold text-lg text-gray-800">100% натуральные компоненты</h3>
+                  <p className="text-gray-600">Только органические масла и экстракты</p>
+                </div>
+              </div>
+              
+              <div className="bg-white p-6 rounded-2xl shadow-lg flex items-center gap-4">
+                <div className="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center">
+                  <Icon name="Award" className="text-secondary" size={24} />
+                </div>
+                <div>
+                  <h3 className="font-montserrat font-semibold text-lg text-gray-800">Сертифицированные мастера</h3>
+                  <p className="text-gray-600">Международные дипломы и постоянное обучение</p>
+                </div>
+              </div>
+              
+              <div className="bg-white p-6 rounded-2xl shadow-lg flex items-center gap-4">
+                <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center">
+                  <Icon name="Heart" className="text-green-600" size={24} />
+                </div>
+                <div>
+                  <h3 className="font-montserrat font-semibold text-lg text-gray-800">Индивидуальный подход</h3>
+                  <p className="text-gray-600">Персональные программы для каждого клиента</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="py-20 bg-white">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="font-montserrat font-bold text-4xl text-gray-800 mb-8">Записаться на сеанс</h2>
+          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            Подарите себе момент полного расслабления и восстановления сил
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+            <div className="flex items-center gap-3 text-lg">
+              <Icon name="MapPin" className="text-primary" size={24} />
+              <span className="text-gray-700">ул. Спокойная, 15, Москва</span>
+            </div>
+            <div className="flex items-center gap-3 text-lg">
+              <Icon name="Clock" className="text-primary" size={24} />
+              <span className="text-gray-700">Ежедневно 9:00-21:00</span>
+            </div>
+          </div>
+          
+          <Button size="lg" className="mt-8 bg-primary hover:bg-primary/90 text-white font-medium px-12 py-4 text-lg">
+            <Icon name="Phone" className="mr-2" size={20} />
+            Позвонить: +7 (495) 123-45-67
+          </Button>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-800 text-white py-12">
+        <div className="container mx-auto px-4 text-center">
+          <h3 className="font-montserrat font-bold text-2xl mb-4">SPA Гармония</h3>
+          <p className="text-gray-300 mb-6">Ваш путь к внутренней гармонии и красоте</p>
+          
+          <div className="flex justify-center gap-6">
+            <div className="flex items-center gap-2">
+              <Icon name="Instagram" size={20} />
+              <span>@spa_harmony</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Icon name="Mail" size={20} />
+              <span>info@spaharmony.ru</span>
+            </div>
+          </div>
+          
+          <div className="mt-8 pt-8 border-t border-gray-700">
+            <p className="text-gray-400">© 2024 SPA Гармония. Все права защищены.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
 
-export default Index;
+export default MassageWebsite;
