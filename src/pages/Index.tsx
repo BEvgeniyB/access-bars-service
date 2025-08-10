@@ -48,7 +48,7 @@ const MassageWebsite = () => {
       <header className="bg-white/95 backdrop-blur-sm shadow-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <nav className="flex justify-between items-center">
-            <h1 className="font-montserrat font-bold text-2xl text-primary">SPA Гармония</h1>
+            <h1 className="font-montserrat font-bold text-2xl text-primary">Гармония энергий</h1>
             <div className="flex gap-6 items-center">
               <a href="#services" className="text-gray-700 hover:text-primary transition-colors">Услуги</a>
               <a href="/access-bars" className="text-gray-700 hover:text-primary transition-colors">Access Bars</a>
@@ -145,7 +145,7 @@ const MassageWebsite = () => {
             <div className="animate-fade-in">
               <h2 className="font-montserrat font-bold text-4xl text-gray-800 mb-6">О нас</h2>
               <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-                SPA Гармония — это оазис спокойствия в центре города. Мы создали пространство, 
+                Гармония энергий — это оазис спокойствия в центре города. Мы создали пространство, 
                 где каждый может найти баланс между телом и душой.
               </p>
               <p className="text-lg text-gray-600 mb-8 leading-relaxed">
@@ -229,7 +229,7 @@ const MassageWebsite = () => {
       {/* Footer */}
       <footer className="bg-gray-800 text-white py-12">
         <div className="container mx-auto px-4 text-center">
-          <h3 className="font-montserrat font-bold text-2xl mb-4">SPA Гармония</h3>
+          <h3 className="font-montserrat font-bold text-2xl mb-4">Гармония энергий</h3>
           <p className="text-gray-300 mb-6">Ваш путь к внутренней гармонии и красоте</p>
           
           <div className="flex justify-center gap-6">
@@ -244,7 +244,7 @@ const MassageWebsite = () => {
           </div>
           
           <div className="mt-8 pt-8 border-t border-gray-700">
-            <p className="text-gray-400">© 2024 SPA Гармония. Все права защищены.</p>
+            <p className="text-gray-400">© 2024 Гармония энергий. Все права защищены.</p>
           </div>
         </div>
       </footer>

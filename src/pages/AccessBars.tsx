@@ -63,7 +63,7 @@ const AccessBars = () => {
       <header className="bg-white/95 backdrop-blur-sm shadow-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <nav className="flex justify-between items-center">
-            <h1 className="font-montserrat font-bold text-2xl text-primary">SPA Гармония</h1>
+            <h1 className="font-montserrat font-bold text-2xl text-primary">Гармония энергий</h1>
             <div className="flex gap-6 items-center">
               <a href="/" className="text-gray-700 hover:text-primary transition-colors">Главная</a>
               <a href="#about" className="text-gray-700 hover:text-primary transition-colors">О методике</a>
@@ -334,7 +334,7 @@ const AccessBars = () => {
       {/* Footer */}
       <footer className="bg-gray-800 text-white py-12">
         <div className="container mx-auto px-4 text-center">
-          <h3 className="font-montserrat font-bold text-2xl mb-4">SPA Гармония</h3>
+          <h3 className="font-montserrat font-bold text-2xl mb-4">Гармония энергий</h3>
           <p className="text-gray-300 mb-6">Access Bars и классический массаж для вашего благополучия</p>
           
           <div className="flex justify-center gap-6">
@@ -349,7 +349,7 @@ const AccessBars = () => {
           </div>
           
           <div className="mt-8 pt-8 border-t border-gray-700">
-            <p className="text-gray-400">© 2024 SPA Гармония. Все права защищены.</p>
+            <p className="text-gray-400">© 2024 Гармония энергий. Все права защищены.</p>
           </div>
         </div>
       </footer>
