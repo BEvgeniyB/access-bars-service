@@ -97,6 +97,7 @@ const Training = () => {
               <a href="/" className="text-gray-700 hover:text-primary transition-colors">Главная</a>
               <a href="/access-bars" className="text-gray-700 hover:text-primary transition-colors">Сессии</a>
               <a href="/training" className="text-gray-700 hover:text-primary transition-colors font-semibold">Обучение</a>
+              <a href="/healing" className="text-gray-700 hover:text-primary transition-colors">Целительство</a>
               <Button variant="default">Записаться</Button>
             </div>
           </nav>

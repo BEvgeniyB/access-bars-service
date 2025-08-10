@@ -70,6 +70,7 @@ const AccessBars = () => {
               <a href="#benefits" className="text-gray-700 hover:text-primary transition-colors">Польза</a>
               <a href="#sessions" className="text-gray-700 hover:text-primary transition-colors">Сессии</a>
               <a href="/training" className="text-gray-700 hover:text-primary transition-colors">Обучение</a>
+              <a href="/healing" className="text-gray-700 hover:text-primary transition-colors">Целительство</a>
               <Button className="bg-primary hover:bg-primary/90 text-white font-medium">
                 Записаться
               </Button>
