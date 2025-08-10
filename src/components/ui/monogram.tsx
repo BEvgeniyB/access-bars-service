@@ -77,7 +77,8 @@ const Monogram: React.FC<MonogramProps> = ({ size = 'medium', className = '' }) 
             strokeWidth="1"
             strokeDasharray="2,1"
             opacity="0.6"
-          /></g>
+          />
+        </g>
           
           {/* Бант сверху сердца (точно как на картинке) */}
           <g transform="translate(50, 12)">
