@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
-import Monogram from '@/components/ui/monogram';
 
 const MassageWebsite = () => {
   const services = [
@@ -72,7 +71,6 @@ const MassageWebsite = () => {
 
       {/* Hero Section */}
       <section className="py-32 px-4 text-center relative overflow-hidden">
-        <Monogram size="medium" className="absolute top-4 left-4 z-10" />
         <div className="container mx-auto relative z-10">
           <div className="animate-fade-in">
             <h2 className="font-montserrat font-bold text-6xl md:text-7xl text-gold-100 mb-8 leading-tight drop-shadow-2xl">
@@ -109,7 +107,6 @@ const MassageWebsite = () => {
 
       {/* Services Section */}
       <section id="services" className="py-20 bg-emerald-800/30 backdrop-blur-sm relative">
-        <Monogram size="medium" className="absolute top-4 left-4 z-10" />
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 animate-fade-in">
             <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-4">Наши услуги</h2>
@@ -149,7 +146,6 @@ const MassageWebsite = () => {
 
       {/* About Section */}
       <section id="about" className="py-20 bg-gradient-to-r from-emerald-700/20 to-emerald-600/20 backdrop-blur-sm relative">
-        <Monogram size="medium" className="absolute top-4 left-4 z-10" />
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="animate-fade-in">
@@ -212,7 +208,6 @@ const MassageWebsite = () => {
 
       {/* Contact Section */}
       <section id="contact" className="py-20 bg-emerald-800/30 backdrop-blur-sm relative">
-        <Monogram size="medium" className="absolute top-4 left-4 z-10" />
         <div className="container mx-auto px-4 text-center">
           <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-8">Записаться на сеанс</h2>
           <p className="text-xl text-emerald-100 mb-8 max-w-2xl mx-auto">
