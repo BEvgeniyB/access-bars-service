@@ -148,33 +148,33 @@ const AccessBars = () => {
             </div>
             
             <div className="space-y-6">
-              <div className="bg-gradient-to-br from-primary/5 to-primary/10 p-8 rounded-3xl">
+              <div className="bg-gradient-to-br from-gold-500/20 to-emerald-600/20 p-8 rounded-3xl border border-gold-400/30 backdrop-blur-sm">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center">
-                    <Icon name="Timer" className="text-primary" size={28} />
+                  <div className="w-16 h-16 bg-gold-400/20 rounded-full flex items-center justify-center">
+                    <Icon name="Timer" className="text-gold-400" size={28} />
                   </div>
                   <div>
-                    <h3 className="font-montserrat font-semibold text-xl text-gray-800">32 точки</h3>
-                    <p className="text-gray-600">Энергетические центры на голове</p>
+                    <h3 className="font-montserrat font-semibold text-xl text-gold-200">32 точки</h3>
+                    <p className="text-emerald-200">Энергетические центры на голове</p>
                   </div>
                 </div>
-                <p className="text-gray-600">
+                <p className="text-emerald-200">
                   Каждая точка отвечает за определенную сферу жизни: отношения, деньги, 
                   творчество, здоровье и многое другое.
                 </p>
               </div>
               
-              <div className="bg-gradient-to-br from-secondary/5 to-secondary/10 p-8 rounded-3xl">
+              <div className="bg-gradient-to-br from-gold-500/20 to-emerald-600/20 p-8 rounded-3xl border border-gold-400/30 backdrop-blur-sm">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center">
-                    <Icon name="Waves" className="text-secondary" size={28} />
+                  <div className="w-16 h-16 bg-gold-400/20 rounded-full flex items-center justify-center">
+                    <Icon name="Waves" className="text-gold-400" size={28} />
                   </div>
                   <div>
-                    <h3 className="font-montserrat font-semibold text-xl text-gray-800">Мягкое воздействие</h3>
-                    <p className="text-gray-600">Деликатная энергетическая работа</p>
+                    <h3 className="font-montserrat font-semibold text-xl text-gold-200">Мягкое воздействие</h3>
+                    <p className="text-emerald-200">Деликатная энергетическая работа</p>
                   </div>
                 </div>
-                <p className="text-gray-600">
+                <p className="text-emerald-200">
                   Процедура проходит в комфортной обстановке, вы просто расслабляетесь 
                   и позволяете энергии течь свободно.
                 </p>
@@ -185,28 +185,28 @@ const AccessBars = () => {
       </section>
 
       {/* Benefits Section */}
-      <section id="benefits" className="py-20 bg-gradient-to-r from-accent/10 to-secondary/10">
+      <section id="benefits" className="py-20 bg-gradient-to-r from-emerald-700/20 to-emerald-600/20 backdrop-blur-sm relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 animate-fade-in">
-            <h2 className="font-montserrat font-bold text-4xl text-gray-800 mb-4">Польза Access Bars</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-4">Польза Access Bars</h2>
+            <p className="text-xl text-emerald-100 max-w-2xl mx-auto">
               Многогранное положительное влияние на физическое и эмоциональное состояние
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {benefits.map((benefit, index) => (
-              <Card key={index} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg hover:-translate-y-2 bg-white">
+              <Card key={index} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg hover:-translate-y-2 bg-emerald-800/30 backdrop-blur-sm">
                 <CardHeader className="text-center pb-4">
-                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
-                    <Icon name={benefit.icon as any} className="text-primary" size={28} />
+                  <div className="w-16 h-16 bg-gold-400/20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-gold-400/30 transition-colors">
+                    <Icon name={benefit.icon as any} className="text-gold-400" size={28} />
                   </div>
-                  <CardTitle className="font-montserrat text-xl text-gray-800 group-hover:text-primary transition-colors">
+                  <CardTitle className="font-montserrat text-xl text-gold-200 group-hover:text-gold-400 transition-colors">
                     {benefit.title}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <CardDescription className="text-gray-600 leading-relaxed">
+                  <CardDescription className="text-emerald-200 leading-relaxed">
                     {benefit.description}
                   </CardDescription>
                 </CardContent>
@@ -217,37 +217,37 @@ const AccessBars = () => {
       </section>
 
       {/* Sessions Section */}
-      <section id="sessions" className="py-20 bg-white">
+      <section id="sessions" className="py-20 bg-emerald-800/30 backdrop-blur-sm relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 animate-fade-in">
-            <h2 className="font-montserrat font-bold text-4xl text-gray-800 mb-4">Варианты сессий</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-4">Варианты сессий</h2>
+            <p className="text-xl text-emerald-100 max-w-2xl mx-auto">
               Выберите подходящий формат для знакомства с Access Bars
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {sessions.map((session, index) => (
-              <Card key={index} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg hover:-translate-y-2 relative overflow-hidden">
+              <Card key={index} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg hover:-translate-y-2 relative overflow-hidden bg-emerald-800/30 backdrop-blur-sm">
                 {session.name.includes('Интенсивная') && (
-                  <div className="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-full text-sm font-medium">
+                  <div className="absolute top-4 right-4 bg-gold-400 text-emerald-900 px-3 py-1 rounded-full text-sm font-medium">
                     Популярно
                   </div>
                 )}
                 <CardHeader className="pb-4">
-                  <CardTitle className="font-montserrat text-xl text-gray-800 group-hover:text-primary transition-colors mb-2">
+                  <CardTitle className="font-montserrat text-xl text-gold-200 group-hover:text-gold-400 transition-colors mb-2">
                     {session.name}
                   </CardTitle>
                   <div className="flex justify-between items-center">
-                    <div className="text-3xl font-bold text-primary">{session.price}</div>
-                    <div className="text-sm text-gray-500">{session.duration}</div>
+                    <div className="text-3xl font-bold text-gold-400">{session.price}</div>
+                    <div className="text-sm text-emerald-200">{session.duration}</div>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="text-gray-600 leading-relaxed mb-6">
+                  <CardDescription className="text-emerald-200 leading-relaxed mb-6">
                     {session.description}
                   </CardDescription>
-                  <Button className="w-full bg-primary hover:bg-primary/90 text-white">
+                  <Button className="w-full bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold">
                     <Icon name="Calendar" className="mr-2" size={16} />
                     Записаться
                   </Button>
@@ -259,49 +259,49 @@ const AccessBars = () => {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 bg-gradient-to-r from-accent/10 to-secondary/10">
+      <section className="py-20 bg-gradient-to-r from-emerald-700/20 to-emerald-600/20 backdrop-blur-sm relative">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="text-center mb-16">
-            <h2 className="font-montserrat font-bold text-4xl text-gray-800 mb-4">Частые вопросы</h2>
+            <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-4">Частые вопросы</h2>
           </div>
 
           <div className="space-y-6">
-            <Card className="shadow-lg border-0">
+            <Card className="shadow-lg border-0 bg-emerald-800/30 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="font-montserrat text-lg text-gray-800">
+                <CardTitle className="font-montserrat text-lg text-gold-200">
                   Безопасна ли процедура Access Bars?
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
+                <p className="text-emerald-200">
                   Да, Access Bars абсолютно безопасна. Это неинвазивная методика, которая включает 
                   только легкие прикосновения к точкам на голове. Никаких побочных эффектов не наблюдается.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="shadow-lg border-0">
+            <Card className="shadow-lg border-0 bg-emerald-800/30 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="font-montserrat text-lg text-gray-800">
+                <CardTitle className="font-montserrat text-lg text-gold-200">
                   Что я буду чувствовать во время сессии?
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
+                <p className="text-emerald-200">
                   Большинство людей испытывают глубокое расслабление, некоторые засыпают. 
                   Вы можете почувствовать тепло, покалывание или просто приятное спокойствие.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="shadow-lg border-0">
+            <Card className="shadow-lg border-0 bg-emerald-800/30 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="font-montserrat text-lg text-gray-800">
+                <CardTitle className="font-montserrat text-lg text-gold-200">
                   Сколько сессий нужно для результата?
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
+                <p className="text-emerald-200">
                   Многие клиенты замечают положительные изменения уже после первой сессии. 
                   Для устойчивого эффекта рекомендуется курс из 3-5 сессий.
                 </p>
@@ -312,25 +312,25 @@ const AccessBars = () => {
       </section>
 
       {/* Contact Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-emerald-800/30 backdrop-blur-sm relative">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="font-montserrat font-bold text-4xl text-gray-800 mb-8">Записаться на Access Bars</h2>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-8">Записаться на Access Bars</h2>
+          <p className="text-xl text-emerald-100 mb-8 max-w-2xl mx-auto">
             Откройте для себя новый уровень расслабления и внутренней гармонии
           </p>
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-8">
             <div className="flex items-center gap-3 text-lg">
-              <Icon name="User" className="text-primary" size={24} />
-              <span className="text-gray-700">Сертифицированный специалист</span>
+              <Icon name="User" className="text-gold-400" size={24} />
+              <span className="text-emerald-200">Сертифицированный специалист</span>
             </div>
             <div className="flex items-center gap-3 text-lg">
-              <Icon name="Shield" className="text-primary" size={24} />
-              <span className="text-gray-700">100% безопасность</span>
+              <Icon name="Shield" className="text-gold-400" size={24} />
+              <span className="text-emerald-200">100% безопасность</span>
             </div>
           </div>
           
-          <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-medium px-12 py-4 text-lg">
+          <Button size="lg" className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-medium px-12 py-4 text-lg">
             <Icon name="Phone" className="mr-2" size={20} />
             Позвонить: +7 (495) 123-45-67
           </Button>
@@ -338,10 +338,10 @@ const AccessBars = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-white py-12">
+      <footer className="bg-emerald-950/90 backdrop-blur-sm text-white py-12">
         <div className="container mx-auto px-4 text-center">
-          <h3 className="font-montserrat font-bold text-2xl mb-4">Гармония энергий</h3>
-          <p className="text-gray-300 mb-6">Access Bars и классический массаж для вашего благополучия</p>
+          <h3 className="font-montserrat font-bold text-2xl mb-4 text-gold-200">Гармония энергий</h3>
+          <p className="text-emerald-200 mb-6">Access Bars и классический массаж для вашего благополучия</p>
           
           <div className="flex justify-center gap-6">
             <div className="flex items-center gap-2">
@@ -354,8 +354,8 @@ const AccessBars = () => {
             </div>
           </div>
           
-          <div className="mt-8 pt-8 border-t border-gray-700">
-            <p className="text-gray-400">© 2024 Гармония энергий. Все права защищены.</p>
+          <div className="mt-8 pt-8 border-t border-emerald-700">
+            <p className="text-emerald-300">© 2024 Гармония энергий. Все права защищены.</p>
           </div>
         </div>
       </footer>

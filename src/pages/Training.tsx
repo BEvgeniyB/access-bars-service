@@ -98,33 +98,33 @@ const Training = () => {
           <nav className="flex justify-between items-center">
             <h1 className="font-montserrat font-bold text-2xl text-gold-400">Гармония энергий</h1>
             <div className="flex gap-6 items-center">
-              <a href="/" className="text-gray-700 hover:text-primary transition-colors">Главная</a>
-              <a href="/access-bars" className="text-gray-700 hover:text-primary transition-colors">Сессии</a>
-              <a href="/training" className="text-gray-700 hover:text-primary transition-colors font-semibold">Обучение</a>
-              <a href="/healing" className="text-gray-700 hover:text-primary transition-colors">Целительство</a>
-              <Button variant="default">Записаться</Button>
+              <a href="/" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Главная</a>
+              <a href="/access-bars" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Сессии</a>
+              <a href="/training" className="text-gold-200 hover:text-gold-400 transition-colors font-semibold">Обучение</a>
+              <a href="/healing" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Целительство</a>
+              <Button className="bg-gold-500 hover:bg-gold-600 text-emerald-900 font-bold border-2 border-gold-400 shadow-lg">Записаться</Button>
             </div>
           </nav>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="py-20 text-center">
+      <section className="py-20 text-center relative z-10">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <h2 className="font-montserrat font-bold text-4xl md:text-5xl text-gray-800 mb-6">
-              Обучение технике <span className="text-primary">Access Bars</span>
+            <h2 className="font-montserrat font-bold text-4xl md:text-5xl text-gold-100 mb-6">
+              Обучение технике <span className="text-gold-400">Access Bars</span>
             </h2>
-            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+            <p className="text-xl text-emerald-100 mb-8 leading-relaxed">
               Освойте уникальную методику энергетического исцеления и откройте новые возможности 
               для себя и помощи другим
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Button size="lg" className="bg-primary hover:bg-primary/90">
+              <Button size="lg" className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold">
                 <Icon name="Calendar" className="mr-2" size={20} />
                 Выбрать курс
               </Button>
-              <Button variant="outline" size="lg">
+              <Button variant="outline" size="lg" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold backdrop-blur-sm">
                 <Icon name="Download" className="mr-2" size={20} />
                 Скачать программу
               </Button>
@@ -134,52 +134,52 @@ const Training = () => {
       </section>
 
       {/* Courses */}
-      <section className="py-16">
+      <section className="py-16 bg-emerald-800/30 backdrop-blur-sm relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h3 className="font-montserrat font-bold text-3xl text-gray-800 mb-4">Программы обучения</h3>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Программы обучения</h3>
+            <p className="text-lg text-emerald-100 max-w-2xl mx-auto">
               Выберите программу, соответствующую вашему уровню и целям
             </p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {courses.map((course, index) => (
-              <Card key={index} className="relative overflow-hidden hover:shadow-xl transition-all duration-300 group">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-indigo-500"></div>
+              <Card key={index} className="relative overflow-hidden hover:shadow-xl transition-all duration-300 group bg-emerald-800/30 backdrop-blur-sm">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold-400 to-gold-500"></div>
                 <CardHeader>
                   <div className="flex justify-between items-start mb-4">
-                    <CardTitle className="text-xl font-montserrat">{course.title}</CardTitle>
-                    <span className="text-sm bg-primary/10 text-primary px-3 py-1 rounded-full">
+                    <CardTitle className="text-xl font-montserrat text-gold-200">{course.title}</CardTitle>
+                    <span className="text-sm bg-gold-400/20 text-gold-400 px-3 py-1 rounded-full">
                       {course.level}
                     </span>
                   </div>
-                  <CardDescription className="text-base">{course.description}</CardDescription>
+                  <CardDescription className="text-base text-emerald-200">{course.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                      <span className="font-semibold text-gray-700">Длительность:</span>
-                      <span>{course.duration}</span>
+                      <span className="font-semibold text-emerald-200">Длительность:</span>
+                      <span className="text-emerald-200">{course.duration}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="font-semibold text-gray-700">Стоимость:</span>
-                      <span className="text-2xl font-bold text-primary">{course.price}</span>
+                      <span className="font-semibold text-emerald-200">Стоимость:</span>
+                      <span className="text-2xl font-bold text-gold-400">{course.price}</span>
                     </div>
                     
                     <div className="space-y-3">
-                      <h4 className="font-semibold text-gray-800">Включено в курс:</h4>
+                      <h4 className="font-semibold text-gold-200">Включено в курс:</h4>
                       <ul className="space-y-2">
                         {course.includes.map((item, idx) => (
                           <li key={idx} className="flex items-start gap-2">
-                            <Icon name="Check" className="text-green-500 mt-0.5 flex-shrink-0" size={16} />
-                            <span className="text-sm text-gray-600">{item}</span>
+                            <Icon name="Check" className="text-gold-400 mt-0.5 flex-shrink-0" size={16} />
+                            <span className="text-sm text-emerald-200">{item}</span>
                           </li>
                         ))}
                       </ul>
                     </div>
                     
-                    <Button className="w-full mt-6 group-hover:bg-primary/90 transition-colors">
+                    <Button className="w-full mt-6 bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold transition-colors">
                       Записаться на курс
                     </Button>
                   </div>
@@ -191,48 +191,48 @@ const Training = () => {
       </section>
 
       {/* Master Instructor */}
-      <section className="py-16 bg-white/50">
+      <section className="py-16 bg-emerald-800/20 backdrop-blur-sm relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h3 className="font-montserrat font-bold text-3xl text-gray-800 mb-4">Ваш преподаватель</h3>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Ваш преподаватель</h3>
+            <p className="text-lg text-emerald-100 max-w-2xl mx-auto">
               Сертифицированный мастер с международной аккредитацией
             </p>
           </div>
           
           <div className="max-w-4xl mx-auto">
-            <Card className="overflow-hidden hover:shadow-xl transition-shadow">
+            <Card className="overflow-hidden hover:shadow-xl transition-shadow bg-emerald-800/30 backdrop-blur-sm">
               <CardContent className="p-8">
                 <div className="grid md:grid-cols-3 gap-8 items-center">
                   <div className="text-center">
-                    <div className="w-32 h-32 bg-gradient-to-r from-purple-100 to-indigo-100 rounded-full flex items-center justify-center text-6xl mx-auto mb-4">
+                    <div className="w-32 h-32 bg-gradient-to-r from-gold-400/20 to-gold-500/20 rounded-full flex items-center justify-center text-6xl mx-auto mb-4">
                       {instructor.image}
                     </div>
-                    <h4 className="font-montserrat font-bold text-2xl text-gray-800 mb-2">{instructor.name}</h4>
-                    <p className="text-primary font-semibold text-lg mb-2">{instructor.level}</p>
-                    <p className="text-gray-600 font-medium">Опыт: {instructor.experience}</p>
+                    <h4 className="font-montserrat font-bold text-2xl text-gold-200 mb-2">{instructor.name}</h4>
+                    <p className="text-gold-400 font-semibold text-lg mb-2">{instructor.level}</p>
+                    <p className="text-emerald-200 font-medium">Опыт: {instructor.experience}</p>
                   </div>
                   
                   <div className="md:col-span-2 space-y-6">
                     <div>
-                      <h5 className="font-semibold text-lg text-gray-800 mb-3">О преподавателе</h5>
-                      <p className="text-gray-600 leading-relaxed">{instructor.about}</p>
+                      <h5 className="font-semibold text-lg text-gold-200 mb-3">О преподавателе</h5>
+                      <p className="text-emerald-200 leading-relaxed">{instructor.about}</p>
                     </div>
                     
                     <div>
-                      <h5 className="font-semibold text-lg text-gray-800 mb-3">Достижения и квалификация</h5>
+                      <h5 className="font-semibold text-lg text-gold-200 mb-3">Достижения и квалификация</h5>
                       <ul className="space-y-2">
                         {instructor.achievements.map((achievement, idx) => (
                           <li key={idx} className="flex items-start gap-3">
-                            <Icon name="Award" className="text-primary mt-0.5 flex-shrink-0" size={18} />
-                            <span className="text-gray-600">{achievement}</span>
+                            <Icon name="Award" className="text-gold-400 mt-0.5 flex-shrink-0" size={18} />
+                            <span className="text-emerald-200">{achievement}</span>
                           </li>
                         ))}
                       </ul>
                     </div>
                     
                     <div className="pt-4">
-                      <Button className="bg-primary hover:bg-primary/90">
+                      <Button className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold">
                         <Icon name="MessageCircle" className="mr-2" size={18} />
                         Задать вопрос мастеру
                       </Button>
@@ -246,21 +246,21 @@ const Training = () => {
       </section>
 
       {/* Benefits */}
-      <section className="py-16">
+      <section className="py-16 bg-emerald-800/30 backdrop-blur-sm relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h3 className="font-montserrat font-bold text-3xl text-gray-800 mb-4">Преимущества обучения у нас</h3>
+            <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Преимущества обучения у нас</h3>
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
             {benefits.map((benefit, index) => (
-              <Card key={index} className="text-center p-6 hover:shadow-lg transition-shadow">
+              <Card key={index} className="text-center p-6 hover:shadow-lg transition-shadow bg-emerald-800/30 backdrop-blur-sm">
                 <CardContent className="space-y-4">
-                  <div className="w-16 h-16 bg-gradient-to-r from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto">
-                    <Icon name={benefit.icon} className="text-primary" size={32} />
+                  <div className="w-16 h-16 bg-gradient-to-r from-gold-400/20 to-gold-500/20 rounded-full flex items-center justify-center mx-auto">
+                    <Icon name={benefit.icon} className="text-gold-400" size={32} />
                   </div>
-                  <h4 className="font-montserrat font-bold text-lg text-gray-800">{benefit.title}</h4>
-                  <p className="text-gray-600 text-sm">{benefit.description}</p>
+                  <h4 className="font-montserrat font-bold text-lg text-gold-200">{benefit.title}</h4>
+                  <p className="text-emerald-200 text-sm">{benefit.description}</p>
                 </CardContent>
               </Card>
             ))}
@@ -269,18 +269,18 @@ const Training = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
+      <section className="py-20 bg-gradient-to-r from-emerald-600/20 to-emerald-700/20 backdrop-blur-sm relative">
         <div className="container mx-auto px-4 text-center">
-          <h3 className="font-montserrat font-bold text-3xl mb-6">Готовы начать обучение?</h3>
-          <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
+          <h3 className="font-montserrat font-bold text-3xl mb-6 text-gold-100">Готовы начать обучение?</h3>
+          <p className="text-xl mb-8 max-w-2xl mx-auto text-emerald-100">
             Свяжитесь с нами для консультации и выбора подходящей программы
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Button size="lg" variant="outline" className="bg-white text-primary hover:bg-gray-50">
+            <Button size="lg" className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold">
               <Icon name="Phone" className="mr-2" size={20} />
               Позвонить
             </Button>
-            <Button size="lg" variant="outline" className="bg-white text-primary hover:bg-gray-50">
+            <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold backdrop-blur-sm">
               <Icon name="MessageCircle" className="mr-2" size={20} />
               Написать в WhatsApp
             </Button>
@@ -289,36 +289,36 @@ const Training = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-white py-12">
+      <footer className="bg-emerald-950/90 backdrop-blur-sm text-white py-12">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8">
             <div>
-              <h4 className="font-montserrat font-bold text-xl mb-4">Гармония энергий</h4>
-              <p className="text-gray-300 mb-4">
+              <h4 className="font-montserrat font-bold text-xl mb-4 text-gold-200">Гармония энергий</h4>
+              <p className="text-emerald-200 mb-4">
                 Центр обучения и практики Access Bars в Москве
               </p>
             </div>
             <div>
-              <h4 className="font-semibold text-lg mb-4">Контакты</h4>
-              <div className="space-y-2 text-gray-300">
+              <h4 className="font-semibold text-lg mb-4 text-gold-200">Контакты</h4>
+              <div className="space-y-2 text-emerald-200">
                 <p>+7 (495) 123-45-67</p>
                 <p>info@harmony-energy.ru</p>
                 <p>Москва, ул. Примерная, 123</p>
               </div>
             </div>
             <div>
-              <h4 className="font-semibold text-lg mb-4">Следите за нами</h4>
+              <h4 className="font-semibold text-lg mb-4 text-gold-200">Следите за нами</h4>
               <div className="flex gap-4">
-                <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white p-2">
+                <Button variant="ghost" size="sm" className="text-emerald-200 hover:text-gold-400 p-2">
                   <Icon name="Instagram" size={20} />
                 </Button>
-                <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white p-2">
+                <Button variant="ghost" size="sm" className="text-emerald-200 hover:text-gold-400 p-2">
                   <Icon name="MessageCircle" size={20} />
                 </Button>
               </div>
             </div>
           </div>
-          <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+          <div className="border-t border-emerald-700 mt-8 pt-8 text-center text-emerald-300">
             <p>&copy; 2024 Гармония энергий. Все права защищены.</p>
           </div>
         </div>

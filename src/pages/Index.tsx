@@ -106,34 +106,34 @@ const MassageWebsite = () => {
       </section>
 
       {/* Services Section */}
-      <section id="services" className="py-20 bg-white">
+      <section id="services" className="py-20 bg-emerald-800/30 backdrop-blur-sm relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 animate-fade-in">
-            <h2 className="font-montserrat font-bold text-4xl text-gray-800 mb-4">Наши услуги</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-4">Наши услуги</h2>
+            <p className="text-xl text-emerald-100 max-w-2xl mx-auto">
               Широкий спектр массажных техник для вашего здоровья и красоты
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {services.map((service, index) => (
-              <Card key={index} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg hover:-translate-y-2">
+              <Card key={index} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg hover:-translate-y-2 bg-emerald-800/30 backdrop-blur-sm">
                 <CardHeader className="pb-4">
                   <div className="flex justify-between items-start mb-2">
-                    <CardTitle className="font-montserrat text-xl text-gray-800 group-hover:text-primary transition-colors">
+                    <CardTitle className="font-montserrat text-xl text-gold-200 group-hover:text-gold-400 transition-colors">
                       {service.name}
                     </CardTitle>
                     <div className="text-right">
-                      <div className="text-2xl font-bold text-primary">{service.price}</div>
-                      <div className="text-sm text-gray-500">{service.duration}</div>
+                      <div className="text-2xl font-bold text-gold-400">{service.price}</div>
+                      <div className="text-sm text-emerald-200">{service.duration}</div>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="text-gray-600 leading-relaxed">
+                  <CardDescription className="text-emerald-200 leading-relaxed">
                     {service.description}
                   </CardDescription>
-                  <Button className="w-full mt-4 bg-primary hover:bg-primary/90 text-white">
+                  <Button className="w-full mt-4 bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold">
                     <Icon name="Clock" className="mr-2" size={16} />
                     Записаться
                   </Button>
@@ -145,60 +145,60 @@ const MassageWebsite = () => {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-20 bg-gradient-to-r from-accent/10 to-secondary/10">
+      <section id="about" className="py-20 bg-gradient-to-r from-emerald-700/20 to-emerald-600/20 backdrop-blur-sm relative">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="animate-fade-in">
-              <h2 className="font-montserrat font-bold text-4xl text-gray-800 mb-6">О нас</h2>
-              <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+              <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-6">О нас</h2>
+              <p className="text-lg text-emerald-100 mb-6 leading-relaxed">
                 Гармония энергий — это оазис спокойствия в центре города. Мы создали пространство, 
                 где каждый может найти баланс между телом и душой.
               </p>
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+              <p className="text-lg text-emerald-100 mb-8 leading-relaxed">
                 Наши мастера имеют международные сертификаты и многолетний опыт работы. 
                 Мы используем только натуральные масла и экологически чистые материалы.
               </p>
               
               <div className="grid grid-cols-2 gap-6">
-                <div className="text-center p-6 bg-white rounded-2xl shadow-lg">
-                  <div className="text-3xl font-bold text-primary mb-2">500+</div>
-                  <div className="text-gray-600">Довольных клиентов</div>
+                <div className="text-center p-6 bg-emerald-800/30 backdrop-blur-sm rounded-2xl shadow-lg">
+                  <div className="text-3xl font-bold text-gold-400 mb-2">500+</div>
+                  <div className="text-emerald-200">Довольных клиентов</div>
                 </div>
-                <div className="text-center p-6 bg-white rounded-2xl shadow-lg">
-                  <div className="text-3xl font-bold text-primary mb-2">5</div>
-                  <div className="text-gray-600">Лет опыта</div>
+                <div className="text-center p-6 bg-emerald-800/30 backdrop-blur-sm rounded-2xl shadow-lg">
+                  <div className="text-3xl font-bold text-gold-400 mb-2">5</div>
+                  <div className="text-emerald-200">Лет опыта</div>
                 </div>
               </div>
             </div>
             
             <div className="space-y-6">
-              <div className="bg-white p-6 rounded-2xl shadow-lg flex items-center gap-4">
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                  <Icon name="Leaf" className="text-primary" size={24} />
+              <div className="bg-emerald-800/30 backdrop-blur-sm p-6 rounded-2xl shadow-lg flex items-center gap-4">
+                <div className="w-12 h-12 bg-gold-400/20 rounded-full flex items-center justify-center">
+                  <Icon name="Leaf" className="text-gold-400" size={24} />
                 </div>
                 <div>
-                  <h3 className="font-montserrat font-semibold text-lg text-gray-800">100% натуральные компоненты</h3>
-                  <p className="text-gray-600">Только органические масла и экстракты</p>
+                  <h3 className="font-montserrat font-semibold text-lg text-gold-200">100% натуральные компоненты</h3>
+                  <p className="text-emerald-200">Только органические масла и экстракты</p>
                 </div>
               </div>
               
-              <div className="bg-white p-6 rounded-2xl shadow-lg flex items-center gap-4">
-                <div className="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center">
-                  <Icon name="Award" className="text-secondary" size={24} />
+              <div className="bg-emerald-800/30 backdrop-blur-sm p-6 rounded-2xl shadow-lg flex items-center gap-4">
+                <div className="w-12 h-12 bg-gold-400/20 rounded-full flex items-center justify-center">
+                  <Icon name="Award" className="text-gold-400" size={24} />
                 </div>
                 <div>
-                  <h3 className="font-montserrat font-semibold text-lg text-gray-800">Сертифицированные мастера</h3>
-                  <p className="text-gray-600">Международные дипломы и постоянное обучение</p>
+                  <h3 className="font-montserrat font-semibold text-lg text-gold-200">Сертифицированные мастера</h3>
+                  <p className="text-emerald-200">Международные дипломы и постоянное обучение</p>
                 </div>
               </div>
               
-              <div className="bg-white p-6 rounded-2xl shadow-lg flex items-center gap-4">
-                <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center">
-                  <Icon name="Heart" className="text-green-600" size={24} />
+              <div className="bg-emerald-800/30 backdrop-blur-sm p-6 rounded-2xl shadow-lg flex items-center gap-4">
+                <div className="w-12 h-12 bg-gold-400/20 rounded-full flex items-center justify-center">
+                  <Icon name="Heart" className="text-gold-400" size={24} />
                 </div>
                 <div>
-                  <h3 className="font-montserrat font-semibold text-lg text-gray-800">Индивидуальный подход</h3>
-                  <p className="text-gray-600">Персональные программы для каждого клиента</p>
+                  <h3 className="font-montserrat font-semibold text-lg text-gold-200">Индивидуальный подход</h3>
+                  <p className="text-emerald-200">Персональные программы для каждого клиента</p>
                 </div>
               </div>
             </div>
@@ -207,25 +207,25 @@ const MassageWebsite = () => {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20 bg-white">
+      <section id="contact" className="py-20 bg-emerald-800/30 backdrop-blur-sm relative">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="font-montserrat font-bold text-4xl text-gray-800 mb-8">Записаться на сеанс</h2>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-8">Записаться на сеанс</h2>
+          <p className="text-xl text-emerald-100 mb-8 max-w-2xl mx-auto">
             Подарите себе момент полного расслабления и восстановления сил
           </p>
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <div className="flex items-center gap-3 text-lg">
-              <Icon name="MapPin" className="text-primary" size={24} />
-              <span className="text-gray-700">ул. Спокойная, 15, Москва</span>
+              <Icon name="MapPin" className="text-gold-400" size={24} />
+              <span className="text-emerald-200">ул. Спокойная, 15, Москва</span>
             </div>
             <div className="flex items-center gap-3 text-lg">
-              <Icon name="Clock" className="text-primary" size={24} />
-              <span className="text-gray-700">Ежедневно 9:00-21:00</span>
+              <Icon name="Clock" className="text-gold-400" size={24} />
+              <span className="text-emerald-200">Ежедневно 9:00-21:00</span>
             </div>
           </div>
           
-          <Button size="lg" className="mt-8 bg-primary hover:bg-primary/90 text-white font-medium px-12 py-4 text-lg">
+          <Button size="lg" className="mt-8 bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-medium px-12 py-4 text-lg">
             <Icon name="Phone" className="mr-2" size={20} />
             Позвонить: +7 (495) 123-45-67
           </Button>
@@ -233,10 +233,10 @@ const MassageWebsite = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-white py-12">
+      <footer className="bg-emerald-950/90 backdrop-blur-sm text-white py-12">
         <div className="container mx-auto px-4 text-center">
-          <h3 className="font-montserrat font-bold text-2xl mb-4">Гармония энергий</h3>
-          <p className="text-gray-300 mb-6">Ваш путь к внутренней гармонии и красоте</p>
+          <h3 className="font-montserrat font-bold text-2xl mb-4 text-gold-200">Гармония энергий</h3>
+          <p className="text-emerald-200 mb-6">Ваш путь к внутренней гармонии и красоте</p>
           
           <div className="flex justify-center gap-6">
             <div className="flex items-center gap-2">
@@ -249,8 +249,8 @@ const MassageWebsite = () => {
             </div>
           </div>
           
-          <div className="mt-8 pt-8 border-t border-gray-700">
-            <p className="text-gray-400">© 2024 Гармония энергий. Все права защищены.</p>
+          <div className="mt-8 pt-8 border-t border-emerald-700">
+            <p className="text-emerald-300">© 2024 Гармония энергий. Все права защищены.</p>
           </div>
         </div>
       </footer>
