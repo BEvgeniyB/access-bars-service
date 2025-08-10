@@ -86,7 +86,7 @@ const AccessBars = () => {
 
       {/* Hero Section */}
       <section className="py-20 px-4 text-center relative overflow-hidden">
-        <Monogram size="medium" className="absolute top-4 right-4 z-10" />
+        <Monogram size="medium" className="absolute top-4 left-4 z-10" />
         <div className="container mx-auto relative z-10">
           <div className="animate-fade-in">
             <h2 className="font-montserrat font-bold text-5xl md:text-6xl text-gold-100 mb-6 leading-tight drop-shadow-2xl">
@@ -124,7 +124,7 @@ const AccessBars = () => {
 
       {/* About Section */}
       <section id="about" className="py-20 bg-emerald-800/30 backdrop-blur-sm relative">
-        <Monogram size="medium" className="absolute top-4 right-4 z-10" />
+        <Monogram size="medium" className="absolute top-4 left-4 z-10" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="animate-fade-in">
@@ -189,7 +189,7 @@ const AccessBars = () => {
 
       {/* Benefits Section */}
       <section id="benefits" className="py-20 bg-gradient-to-r from-emerald-700/20 to-emerald-600/20 backdrop-blur-sm relative">
-        <Monogram size="medium" className="absolute top-4 right-4 z-10" />
+        <Monogram size="medium" className="absolute top-4 left-4 z-10" />
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 animate-fade-in">
             <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-4">Польза Access Bars</h2>
@@ -222,7 +222,7 @@ const AccessBars = () => {
 
       {/* Sessions Section */}
       <section id="sessions" className="py-20 bg-emerald-800/30 backdrop-blur-sm relative">
-        <Monogram size="medium" className="absolute top-4 right-4 z-10" />
+        <Monogram size="medium" className="absolute top-4 left-4 z-10" />
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 animate-fade-in">
             <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-4">Варианты сессий</h2>
@@ -265,7 +265,7 @@ const AccessBars = () => {
 
       {/* FAQ Section */}
       <section className="py-20 bg-gradient-to-r from-emerald-700/20 to-emerald-600/20 backdrop-blur-sm relative">
-        <Monogram size="medium" className="absolute top-4 right-4 z-10" />
+        <Monogram size="medium" className="absolute top-4 left-4 z-10" />
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="text-center mb-16">
             <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-4">Частые вопросы</h2>
@@ -319,7 +319,7 @@ const AccessBars = () => {
 
       {/* Contact Section */}
       <section className="py-20 bg-emerald-800/30 backdrop-blur-sm relative">
-        <Monogram size="medium" className="absolute top-4 right-4 z-10" />
+        <Monogram size="medium" className="absolute top-4 left-4 z-10" />
         <div className="container mx-auto px-4 text-center">
           <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-8">Записаться на Access Bars</h2>
           <p className="text-xl text-emerald-100 mb-8 max-w-2xl mx-auto">

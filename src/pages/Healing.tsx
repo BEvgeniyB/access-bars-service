@@ -169,7 +169,7 @@ const Healing = () => {
 
       {/* Hero Section */}
       <section className="py-20 text-center relative z-10">
-        <Monogram size="medium" className="absolute top-4 right-4 z-10" />
+        <Monogram size="medium" className="absolute top-4 left-4 z-10" />
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <h2 className="font-montserrat font-bold text-4xl md:text-5xl text-gold-100 mb-6">
@@ -195,7 +195,7 @@ const Healing = () => {
 
       {/* Services */}
       <section className="py-16 bg-emerald-800/30 backdrop-blur-sm relative">
-        <Monogram size="medium" className="absolute top-4 right-4 z-10" />
+        <Monogram size="medium" className="absolute top-4 left-4 z-10" />
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Услуги целительства</h3>
@@ -250,7 +250,7 @@ const Healing = () => {
 
       {/* Techniques */}
       <section className="py-16 bg-emerald-800/20 backdrop-blur-sm relative">
-        <Monogram size="medium" className="absolute top-4 right-4 z-10" />
+        <Monogram size="medium" className="absolute top-4 left-4 z-10" />
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Используемые техники</h3>
@@ -277,7 +277,7 @@ const Healing = () => {
 
       {/* Results */}
       <section className="py-16 bg-emerald-800/30 backdrop-blur-sm relative">
-        <Monogram size="medium" className="absolute top-4 right-4 z-10" />
+        <Monogram size="medium" className="absolute top-4 left-4 z-10" />
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Результаты работы</h3>
@@ -304,7 +304,7 @@ const Healing = () => {
 
       {/* Process */}
       <section className="py-16 bg-emerald-800/20 backdrop-blur-sm relative">
-        <Monogram size="medium" className="absolute top-4 right-4 z-10" />
+        <Monogram size="medium" className="absolute top-4 left-4 z-10" />
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Как проходит сеанс</h3>
@@ -333,7 +333,7 @@ const Healing = () => {
 
       {/* CTA */}
       <section className="py-20 bg-gradient-to-r from-emerald-600/20 to-emerald-700/20 backdrop-blur-sm relative">
-        <Monogram size="medium" className="absolute top-4 right-4 z-10" />
+        <Monogram size="medium" className="absolute top-4 left-4 z-10" />
         <div className="container mx-auto px-4 text-center">
           <h3 className="font-montserrat font-bold text-3xl mb-6 text-gold-100">Готовы к исцелению?</h3>
           <p className="text-xl mb-8 max-w-2xl mx-auto text-emerald-100">
