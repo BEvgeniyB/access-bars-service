@@ -27,9 +27,9 @@ const Monogram: React.FC<MonogramProps> = ({ size = 'medium', className = '' }) 
           </linearGradient>
         </defs>
         
-        {/* Сердце из шнурка (как на картинке) */}
+        {/* Сердце из шнурка */}
         <g>
-          {/* Основной контур сердца - шнурок */}
+          {/* Основной контур сердца */}
           <path
             d="M50 15
                C50 10, 40 5, 30 12
@@ -45,25 +45,17 @@ const Monogram: React.FC<MonogramProps> = ({ size = 'medium', className = '' }) 
             strokeLinejoin="round"
           />
           
-          {/* Рельеф шнурка - диагональные полосы */}
+          {/* Рельеф шнурка */}
           <g opacity="0.8" strokeWidth="0.8" stroke="url(#goldGradient)">
-            {/* Левая часть сердца - диагональные линии шнурка */}
             <path d="M32 14 L30 16 M34 16 L32 18 M36 18 L34 20 M30 20 L28 22"/>
             <path d="M26 22 L24 24 M28 24 L26 26 M30 26 L28 28 M32 28 L30 30"/>
             <path d="M34 30 L32 32 M36 32 L34 34 M38 34 L36 36 M40 36 L38 38"/>
-            <path d="M42 38 L40 40 M44 40 L42 42 M46 42 L44 44 M48 44 L46 46"/>
-            
-            {/* Правая часть сердца - диагональные линии шнурка */}
             <path d="M68 14 L70 16 M66 16 L68 18 M64 18 L66 20 M70 20 L72 22"/>
             <path d="M74 22 L76 24 M72 24 L74 26 M70 26 L72 28 M68 28 L70 30"/>
             <path d="M66 30 L68 32 M64 32 L66 34 M62 34 L64 36 M60 36 L62 38"/>
-            <path d="M58 38 L60 40 M56 40 L58 42 M54 42 L56 44 M52 44 L54 46"/>
-            
-            {/* Нижняя часть сердца */}
-            <path d="M48 48 L46 50 M50 50 L48 52 M52 52 L50 54"/>
           </g>
           
-          {/* Дополнительный рельеф шнурка */}
+          {/* Дополнительный рельеф */}
           <path
             d="M50 15
                C50 10, 40 5, 30 12
@@ -79,48 +71,26 @@ const Monogram: React.FC<MonogramProps> = ({ size = 'medium', className = '' }) 
             opacity="0.6"
           />
         </g>
-          
-          {/* Бант сверху сердца (точно как на картинке) */}
-          <g transform="translate(50, 12)">
-            {/* Центральный узел банта */}
-            <ellipse cx="0" cy="0" rx="4" ry="2.5" 
-                     fill="none" 
-                     stroke="url(#goldGradient)" 
-                     strokeWidth="1.5"/>
-            
-            {/* Левая петля банта */}
-            <path d="M-4 -1 Q-8 -5, -10 -2 Q-8 1, -4 -1" 
-                  fill="none" 
-                  stroke="url(#goldGradient)" 
-                  strokeWidth="1.5"/>
-            <path d="M-8 -4 L-6 -6 M-9 -2 L-7 -4" 
-                  stroke="url(#goldGradient)" 
-                  strokeWidth="0.8" 
-                  opacity="0.6"/>
-                  
-            {/* Правая петля банта */}
-            <path d="M4 -1 Q8 -5, 10 -2 Q8 1, 4 -1" 
-                  fill="none" 
-                  stroke="url(#goldGradient)" 
-                  strokeWidth="1.5"/>
-            <path d="M8 -4 L6 -6 M9 -2 L7 -4" 
-                  stroke="url(#goldGradient)" 
-                  strokeWidth="0.8" 
-                  opacity="0.6"/>
-                  
-            {/* Концы банта */}
-            <path d="M-6 1 Q-7 4, -5 5" 
-                  stroke="url(#goldGradient)" 
-                  strokeWidth="1"/>
-            <path d="M6 1 Q7 4, 5 5" 
-                  stroke="url(#goldGradient)" 
-                  strokeWidth="1"/>
-          </g>
+        
+        {/* Бант сверху */}
+        <g transform="translate(50, 12)">
+          <ellipse cx="0" cy="0" rx="4" ry="2.5" 
+                   fill="none" 
+                   stroke="url(#goldGradient)" 
+                   strokeWidth="1.5"/>
+          <path d="M-4 -1 Q-8 -5, -10 -2 Q-8 1, -4 -1" 
+                fill="none" 
+                stroke="url(#goldGradient)" 
+                strokeWidth="1.5"/>
+          <path d="M4 -1 Q8 -5, 10 -2 Q8 1, 4 -1" 
+                fill="none" 
+                stroke="url(#goldGradient)" 
+                strokeWidth="1.5"/>
         </g>
         
-        {/* Буквы VN каллиграфическим почерком (точно как на картинке) */}
+        {/* Буквы VN */}
         <g>
-          {/* Буква V - точно как на картинке */}
+          {/* Буква V */}
           <path
             d="M32 24
                Q31.5 23, 32 22.5
@@ -140,7 +110,7 @@ const Monogram: React.FC<MonogramProps> = ({ size = 'medium', className = '' }) 
             strokeLinejoin="round"
           />
           
-          {/* Буква N - каллиграфический стиль с картинки */}
+          {/* Буква N */}
           <path
             d="M55 24
                Q54.5 23, 55 22.5
@@ -166,12 +136,6 @@ const Monogram: React.FC<MonogramProps> = ({ size = 'medium', className = '' }) 
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-          
-          {/* Декоративные завитки вокруг букв */}
-          <path d="M32 23 Q30 21, 31 20 Q33 22, 32 23" 
-                fill="url(#goldGradient)" opacity="0.8"/>
-          <path d="M67 27 Q69 25, 68 24 Q66 26, 67 27" 
-                fill="url(#goldGradient)" opacity="0.8"/>
         </g>
       </svg>
     </div>
