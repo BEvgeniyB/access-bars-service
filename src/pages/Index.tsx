@@ -43,20 +43,25 @@ const MassageWebsite = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-accent/20 to-white font-openSans">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900 font-openSans relative overflow-hidden">
+      {/* Luxury Background Elements */}
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/90 to-emerald-950/90"></div>
+      <div className="absolute top-0 left-0 w-96 h-96 bg-gold-400/20 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gold-500/20 rounded-full blur-3xl"></div>
+      <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-gold-300/10 rounded-full blur-2xl"></div>
       {/* Header */}
-      <header className="bg-white/95 backdrop-blur-sm shadow-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
+      <header className="bg-emerald-900/95 backdrop-blur-sm shadow-lg sticky top-0 z-50 border-b border-gold-400/30 relative">
+        <div className="container mx-auto px-4 py-4 relative">
           <nav className="flex justify-between items-center">
-            <h1 className="font-montserrat font-bold text-2xl text-primary">Гармония энергий</h1>
+            <h1 className="font-montserrat font-bold text-2xl text-gold-400">Гармония энергий</h1>
             <div className="flex gap-6 items-center">
-              <a href="#services" className="text-gray-700 hover:text-primary transition-colors">Услуги</a>
-              <a href="/access-bars" className="text-gray-700 hover:text-primary transition-colors">Access Bars</a>
-              <a href="/training" className="text-gray-700 hover:text-primary transition-colors">Обучение</a>
-              <a href="/healing" className="text-gray-700 hover:text-primary transition-colors">Целительство</a>
-              <a href="#about" className="text-gray-700 hover:text-primary transition-colors">О нас</a>
-              <a href="#contact" className="text-gray-700 hover:text-primary transition-colors">Контакты</a>
-              <Button className="bg-primary hover:bg-primary/90 text-white font-medium">
+              <a href="#services" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Услуги</a>
+              <a href="/access-bars" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Access Bars</a>
+              <a href="/training" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Обучение</a>
+              <a href="/healing" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Целительство</a>
+              <a href="#about" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">О нас</a>
+              <a href="#contact" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Контакты</a>
+              <Button className="bg-gold-500 hover:bg-gold-600 text-emerald-900 font-bold border-2 border-gold-400 shadow-lg">
                 Записаться
               </Button>
             </div>
@@ -65,23 +70,22 @@ const MassageWebsite = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="py-20 px-4 text-center relative overflow-hidden">
+      <section className="py-32 px-4 text-center relative overflow-hidden">
         <div className="container mx-auto relative z-10">
           <div className="animate-fade-in">
-            <h2 className="font-montserrat font-bold text-5xl md:text-6xl text-gray-800 mb-6 leading-tight">
+            <h2 className="font-montserrat font-bold text-6xl md:text-7xl text-gold-100 mb-8 leading-tight drop-shadow-2xl">
               Найдите свой
-              <span className="text-primary block">внутренний покой</span>
+              <span className="text-gold-400 block bg-gradient-to-r from-gold-300 to-gold-500 bg-clip-text text-transparent">внутренний покой</span>
             </h2>
-            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Профессиональные массажные услуги с использованием натуральных компонентов 
-              в атмосфере полного расслабления и гармонии
+            <p className="text-xl text-emerald-100 mb-12 max-w-3xl mx-auto leading-relaxed">
+              Роскошные энергетические практики и исцеление в атмосфере абсолютного спокойствия и гармонии
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-medium px-8 py-3 text-lg">
-                <Icon name="Calendar" className="mr-2" size={20} />
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+              <Button size="lg" className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold px-10 py-4 text-lg shadow-2xl border-2 border-gold-400">
+                <Icon name="Calendar" className="mr-3" size={24} />
                 Записаться на сеанс
               </Button>
-              <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary/10 px-8 py-3 text-lg">
+              <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold px-10 py-4 text-lg backdrop-blur-sm">
                 <Icon name="Phone" className="mr-2" size={20} />
                 +7 (495) 123-45-67
               </Button>

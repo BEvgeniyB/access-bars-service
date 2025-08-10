@@ -87,12 +87,16 @@ const Training = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900 relative overflow-hidden">
+      {/* Luxury Background Elements */}
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/90 to-emerald-950/90"></div>
+      <div className="absolute top-0 left-0 w-96 h-96 bg-gold-400/20 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gold-500/20 rounded-full blur-3xl"></div>
       {/* Header */}
-      <header className="bg-white/95 backdrop-blur-sm shadow-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
+      <header className="bg-emerald-900/95 backdrop-blur-sm shadow-lg sticky top-0 z-50 border-b border-gold-400/30 relative">
+        <div className="container mx-auto px-4 py-4 relative">
           <nav className="flex justify-between items-center">
-            <h1 className="font-montserrat font-bold text-2xl text-primary">Гармония энергий</h1>
+            <h1 className="font-montserrat font-bold text-2xl text-gold-400">Гармония энергий</h1>
             <div className="flex gap-6 items-center">
               <a href="/" className="text-gray-700 hover:text-primary transition-colors">Главная</a>
               <a href="/access-bars" className="text-gray-700 hover:text-primary transition-colors">Сессии</a>

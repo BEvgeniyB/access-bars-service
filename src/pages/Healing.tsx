@@ -145,7 +145,11 @@ const Healing = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-100">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900 relative overflow-hidden">
+      {/* Luxury Background Elements */}
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/90 to-emerald-950/90"></div>
+      <div className="absolute top-0 right-0 w-96 h-96 bg-gold-400/20 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-gold-500/20 rounded-full blur-3xl"></div>
       {/* Header */}
       <header className="bg-white/95 backdrop-blur-sm shadow-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
