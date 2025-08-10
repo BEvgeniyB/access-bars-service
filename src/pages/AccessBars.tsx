@@ -69,13 +69,13 @@ const AccessBars = () => {
           <nav className="flex justify-between items-center">
             <h1 className="font-montserrat font-bold text-2xl text-gold-400">Гармония энергий</h1>
             <div className="flex gap-6 items-center">
-              <a href="/" className="text-gray-700 hover:text-primary transition-colors">Главная</a>
-              <a href="#about" className="text-gray-700 hover:text-primary transition-colors">О методике</a>
-              <a href="#benefits" className="text-gray-700 hover:text-primary transition-colors">Польза</a>
-              <a href="#sessions" className="text-gray-700 hover:text-primary transition-colors">Сессии</a>
-              <a href="/training" className="text-gray-700 hover:text-primary transition-colors">Обучение</a>
-              <a href="/healing" className="text-gray-700 hover:text-primary transition-colors">Целительство</a>
-              <Button className="bg-primary hover:bg-primary/90 text-white font-medium">
+              <a href="/" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Главная</a>
+              <a href="#about" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">О методике</a>
+              <a href="#benefits" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Польза</a>
+              <a href="#sessions" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Сессии</a>
+              <a href="/training" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Обучение</a>
+              <a href="/healing" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Целительство</a>
+              <Button className="bg-gold-500 hover:bg-gold-600 text-emerald-900 font-bold border-2 border-gold-400 shadow-lg">
                 Записаться
               </Button>
             </div>
@@ -87,20 +87,20 @@ const AccessBars = () => {
       <section className="py-20 px-4 text-center relative overflow-hidden">
         <div className="container mx-auto relative z-10">
           <div className="animate-fade-in">
-            <h2 className="font-montserrat font-bold text-5xl md:text-6xl text-gray-800 mb-6 leading-tight">
+            <h2 className="font-montserrat font-bold text-5xl md:text-6xl text-gold-100 mb-6 leading-tight drop-shadow-2xl">
               Access Bars
-              <span className="text-primary block">Энергетическая терапия</span>
+              <span className="text-gold-400 block bg-gradient-to-r from-gold-300 to-gold-500 bg-clip-text text-transparent">Энергетическая терапия</span>
             </h2>
-            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-emerald-100 mb-8 max-w-3xl mx-auto leading-relaxed">
               Уникальная методика работы с энергетическими точками головы для глубокого расслабления, 
               освобождения от стресса и активации внутренних ресурсов организма
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-medium px-8 py-3 text-lg">
+              <Button size="lg" className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold px-8 py-3 text-lg shadow-2xl border-2 border-gold-400">
                 <Icon name="Calendar" className="mr-2" size={20} />
                 Записаться на сессию
               </Button>
-              <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary/10 px-8 py-3 text-lg">
+              <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold px-8 py-3 text-lg backdrop-blur-sm">
                 <Icon name="Play" className="mr-2" size={20} />
                 Смотреть видео
               </Button>
@@ -121,26 +121,26 @@ const AccessBars = () => {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-20 bg-white">
-        <div className="container mx-auto px-4">
+      <section id="about" className="py-20 bg-emerald-800/30 backdrop-blur-sm relative">
+        <div className="container mx-auto px-4 relative z-10">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="animate-fade-in">
-              <h2 className="font-montserrat font-bold text-4xl text-gray-800 mb-6">Что такое Access Bars?</h2>
-              <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+              <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-6">Что такое Access Bars?</h2>
+              <p className="text-lg text-emerald-100 mb-6 leading-relaxed">
                 Access Bars — это энергетическая техника, которая включает в себя легкое прикосновение 
                 к 32 точкам на голове. Эти точки содержат все мысли, идеи, убеждения, эмоции и 
                 соображения, которые вы накопили в любой области жизни.
               </p>
-              <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+              <p className="text-lg text-emerald-100 mb-6 leading-relaxed">
                 Во время сессии происходит мягкое «стирание» энергетических блоков, что позволяет 
                 освободиться от ограничивающих убеждений и стрессовых состояний.
               </p>
               
-              <div className="bg-gradient-to-r from-primary/10 to-secondary/10 p-6 rounded-2xl">
-                <h3 className="font-montserrat font-semibold text-xl text-gray-800 mb-3">
+              <div className="bg-gradient-to-r from-gold-500/20 to-emerald-600/20 p-6 rounded-2xl border border-gold-400/30 backdrop-blur-sm">
+                <h3 className="font-montserrat font-semibold text-xl text-gold-200 mb-3">
                   Как это работает?
                 </h3>
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-emerald-200 leading-relaxed">
                   Специалист мягко касается определенных точек на вашей голове, активируя процесс 
                   энергетического очищения. Это безопасно, расслабляюще и не требует никаких усилий с вашей стороны.
                 </p>
