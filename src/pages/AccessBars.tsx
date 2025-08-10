@@ -1,0 +1,360 @@
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import Icon from "@/components/ui/icon";
+
+const AccessBars = () => {
+  const benefits = [
+    {
+      icon: "Brain",
+      title: "Снижение стресса",
+      description: "Глубокое расслабление и освобождение от накопленного напряжения"
+    },
+    {
+      icon: "Heart",
+      title: "Эмоциональное равновесие", 
+      description: "Гармонизация эмоционального состояния и внутреннего баланса"
+    },
+    {
+      icon: "Zap",
+      title: "Повышение энергии",
+      description: "Восстановление энергетических ресурсов и жизненных сил"
+    },
+    {
+      icon: "Moon",
+      title: "Улучшение сна",
+      description: "Нормализация сна и восстановление естественных биоритмов"
+    },
+    {
+      icon: "Sparkles",
+      title: "Ясность мышления",
+      description: "Освобождение от ментального напряжения и повышение концентрации"
+    },
+    {
+      icon: "Smile",
+      title: "Общее благополучие",
+      description: "Улучшение качества жизни и ощущение внутренней гармонии"
+    }
+  ];
+
+  const sessions = [
+    {
+      name: "Первая сессия Access Bars",
+      duration: "90 мин",
+      price: "8 000 ₽",
+      description: "Знакомство с методикой, полная диагностика и первый сеанс"
+    },
+    {
+      name: "Стандартная сессия", 
+      duration: "60 мин",
+      price: "6 000 ₽",
+      description: "Классический сеанс Access Bars для регулярной практики"
+    },
+    {
+      name: "Интенсивная программа",
+      duration: "3 сессии",
+      price: "15 000 ₽", 
+      description: "Курс из 3 сессий со скидкой для максимального эффекта"
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-accent/20 to-white font-openSans">
+      {/* Header */}
+      <header className="bg-white/95 backdrop-blur-sm shadow-sm sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4">
+          <nav className="flex justify-between items-center">
+            <h1 className="font-montserrat font-bold text-2xl text-primary">SPA Гармония</h1>
+            <div className="flex gap-6 items-center">
+              <a href="/" className="text-gray-700 hover:text-primary transition-colors">Главная</a>
+              <a href="#about" className="text-gray-700 hover:text-primary transition-colors">О методике</a>
+              <a href="#benefits" className="text-gray-700 hover:text-primary transition-colors">Польза</a>
+              <a href="#sessions" className="text-gray-700 hover:text-primary transition-colors">Сессии</a>
+              <Button className="bg-primary hover:bg-primary/90 text-white font-medium">
+                Записаться
+              </Button>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="py-20 px-4 text-center relative overflow-hidden">
+        <div className="container mx-auto relative z-10">
+          <div className="animate-fade-in">
+            <h2 className="font-montserrat font-bold text-5xl md:text-6xl text-gray-800 mb-6 leading-tight">
+              Access Bars
+              <span className="text-primary block">Энергетическая терапия</span>
+            </h2>
+            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+              Уникальная методика работы с энергетическими точками головы для глубокого расслабления, 
+              освобождения от стресса и активации внутренних ресурсов организма
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-medium px-8 py-3 text-lg">
+                <Icon name="Calendar" className="mr-2" size={20} />
+                Записаться на сессию
+              </Button>
+              <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary/10 px-8 py-3 text-lg">
+                <Icon name="Play" className="mr-2" size={20} />
+                Смотреть видео
+              </Button>
+            </div>
+          </div>
+        </div>
+        
+        {/* Hero Image */}
+        <div className="mt-16 relative">
+          <div className="max-w-4xl mx-auto">
+            <img 
+              src="/img/2fd25de9-f152-4a8b-9d14-71a287e4ec8c.jpg"
+              alt="Access Bars therapy session"
+              className="w-full h-96 object-cover rounded-3xl shadow-2xl animate-slide-up"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section id="about" className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="animate-fade-in">
+              <h2 className="font-montserrat font-bold text-4xl text-gray-800 mb-6">Что такое Access Bars?</h2>
+              <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+                Access Bars — это энергетическая техника, которая включает в себя легкое прикосновение 
+                к 32 точкам на голове. Эти точки содержат все мысли, идеи, убеждения, эмоции и 
+                соображения, которые вы накопили в любой области жизни.
+              </p>
+              <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+                Во время сессии происходит мягкое «стирание» энергетических блоков, что позволяет 
+                освободиться от ограничивающих убеждений и стрессовых состояний.
+              </p>
+              
+              <div className="bg-gradient-to-r from-primary/10 to-secondary/10 p-6 rounded-2xl">
+                <h3 className="font-montserrat font-semibold text-xl text-gray-800 mb-3">
+                  Как это работает?
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Специалист мягко касается определенных точек на вашей голове, активируя процесс 
+                  энергетического очищения. Это безопасно, расслабляюще и не требует никаких усилий с вашей стороны.
+                </p>
+              </div>
+            </div>
+            
+            <div className="space-y-6">
+              <div className="bg-gradient-to-br from-primary/5 to-primary/10 p-8 rounded-3xl">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center">
+                    <Icon name="Timer" className="text-primary" size={28} />
+                  </div>
+                  <div>
+                    <h3 className="font-montserrat font-semibold text-xl text-gray-800">32 точки</h3>
+                    <p className="text-gray-600">Энергетические центры на голове</p>
+                  </div>
+                </div>
+                <p className="text-gray-600">
+                  Каждая точка отвечает за определенную сферу жизни: отношения, деньги, 
+                  творчество, здоровье и многое другое.
+                </p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-secondary/5 to-secondary/10 p-8 rounded-3xl">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center">
+                    <Icon name="Waves" className="text-secondary" size={28} />
+                  </div>
+                  <div>
+                    <h3 className="font-montserrat font-semibold text-xl text-gray-800">Мягкое воздействие</h3>
+                    <p className="text-gray-600">Деликатная энергетическая работа</p>
+                  </div>
+                </div>
+                <p className="text-gray-600">
+                  Процедура проходит в комфортной обстановке, вы просто расслабляетесь 
+                  и позволяете энергии течь свободно.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Benefits Section */}
+      <section id="benefits" className="py-20 bg-gradient-to-r from-accent/10 to-secondary/10">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16 animate-fade-in">
+            <h2 className="font-montserrat font-bold text-4xl text-gray-800 mb-4">Польза Access Bars</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Многогранное положительное влияние на физическое и эмоциональное состояние
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {benefits.map((benefit, index) => (
+              <Card key={index} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg hover:-translate-y-2 bg-white">
+                <CardHeader className="text-center pb-4">
+                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
+                    <Icon name={benefit.icon as any} className="text-primary" size={28} />
+                  </div>
+                  <CardTitle className="font-montserrat text-xl text-gray-800 group-hover:text-primary transition-colors">
+                    {benefit.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <CardDescription className="text-gray-600 leading-relaxed">
+                    {benefit.description}
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Sessions Section */}
+      <section id="sessions" className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16 animate-fade-in">
+            <h2 className="font-montserrat font-bold text-4xl text-gray-800 mb-4">Варианты сессий</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Выберите подходящий формат для знакомства с Access Bars
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {sessions.map((session, index) => (
+              <Card key={index} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg hover:-translate-y-2 relative overflow-hidden">
+                {session.name.includes('Интенсивная') && (
+                  <div className="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-full text-sm font-medium">
+                    Популярно
+                  </div>
+                )}
+                <CardHeader className="pb-4">
+                  <CardTitle className="font-montserrat text-xl text-gray-800 group-hover:text-primary transition-colors mb-2">
+                    {session.name}
+                  </CardTitle>
+                  <div className="flex justify-between items-center">
+                    <div className="text-3xl font-bold text-primary">{session.price}</div>
+                    <div className="text-sm text-gray-500">{session.duration}</div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-gray-600 leading-relaxed mb-6">
+                    {session.description}
+                  </CardDescription>
+                  <Button className="w-full bg-primary hover:bg-primary/90 text-white">
+                    <Icon name="Calendar" className="mr-2" size={16} />
+                    Записаться
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-20 bg-gradient-to-r from-accent/10 to-secondary/10">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <div className="text-center mb-16">
+            <h2 className="font-montserrat font-bold text-4xl text-gray-800 mb-4">Частые вопросы</h2>
+          </div>
+
+          <div className="space-y-6">
+            <Card className="shadow-lg border-0">
+              <CardHeader>
+                <CardTitle className="font-montserrat text-lg text-gray-800">
+                  Безопасна ли процедура Access Bars?
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  Да, Access Bars абсолютно безопасна. Это неинвазивная методика, которая включает 
+                  только легкие прикосновения к точкам на голове. Никаких побочных эффектов не наблюдается.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-lg border-0">
+              <CardHeader>
+                <CardTitle className="font-montserrat text-lg text-gray-800">
+                  Что я буду чувствовать во время сессии?
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  Большинство людей испытывают глубокое расслабление, некоторые засыпают. 
+                  Вы можете почувствовать тепло, покалывание или просто приятное спокойствие.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-lg border-0">
+              <CardHeader>
+                <CardTitle className="font-montserrat text-lg text-gray-800">
+                  Сколько сессий нужно для результата?
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  Многие клиенты замечают положительные изменения уже после первой сессии. 
+                  Для устойчивого эффекта рекомендуется курс из 3-5 сессий.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="font-montserrat font-bold text-4xl text-gray-800 mb-8">Записаться на Access Bars</h2>
+          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            Откройте для себя новый уровень расслабления и внутренней гармонии
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-8">
+            <div className="flex items-center gap-3 text-lg">
+              <Icon name="User" className="text-primary" size={24} />
+              <span className="text-gray-700">Сертифицированный специалист</span>
+            </div>
+            <div className="flex items-center gap-3 text-lg">
+              <Icon name="Shield" className="text-primary" size={24} />
+              <span className="text-gray-700">100% безопасность</span>
+            </div>
+          </div>
+          
+          <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-medium px-12 py-4 text-lg">
+            <Icon name="Phone" className="mr-2" size={20} />
+            Позвонить: +7 (495) 123-45-67
+          </Button>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-800 text-white py-12">
+        <div className="container mx-auto px-4 text-center">
+          <h3 className="font-montserrat font-bold text-2xl mb-4">SPA Гармония</h3>
+          <p className="text-gray-300 mb-6">Access Bars и классический массаж для вашего благополучия</p>
+          
+          <div className="flex justify-center gap-6">
+            <div className="flex items-center gap-2">
+              <Icon name="Instagram" size={20} />
+              <span>@spa_harmony</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Icon name="Mail" size={20} />
+              <span>info@spaharmony.ru</span>
+            </div>
+          </div>
+          
+          <div className="mt-8 pt-8 border-t border-gray-700">
+            <p className="text-gray-400">© 2024 SPA Гармония. Все права защищены.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default AccessBars;

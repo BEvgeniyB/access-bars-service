@@ -51,6 +51,7 @@ const MassageWebsite = () => {
             <h1 className="font-montserrat font-bold text-2xl text-primary">SPA Гармония</h1>
             <div className="flex gap-6 items-center">
               <a href="#services" className="text-gray-700 hover:text-primary transition-colors">Услуги</a>
+              <a href="/access-bars" className="text-gray-700 hover:text-primary transition-colors">Access Bars</a>
               <a href="#about" className="text-gray-700 hover:text-primary transition-colors">О нас</a>
               <a href="#contact" className="text-gray-700 hover:text-primary transition-colors">Контакты</a>
               <Button className="bg-primary hover:bg-primary/90 text-white font-medium">
