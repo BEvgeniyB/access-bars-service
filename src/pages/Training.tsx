@@ -48,22 +48,20 @@ const Training = () => {
     }
   ];
 
-  const instructors = [
-    {
-      name: "Елена Волкова",
-      level: "Certified Facilitator",
-      experience: "8+ лет",
-      image: "👩‍🏫",
-      specialization: "Access Bars, Body Processes"
-    },
-    {
-      name: "Михаил Серов",
-      level: "Access Consciousness CF",
-      experience: "12+ лет",
-      image: "👨‍🎓",
-      specialization: "Полный спектр Access Consciousness"
-    }
-  ];
+  const instructor = {
+    name: "Елена Волкова",
+    level: "Access Consciousness Certified Facilitator",
+    experience: "10+ лет",
+    image: "👩‍🏫",
+    specialization: "Полный спектр Access Consciousness",
+    about: "Сертифицированный мастер Access Consciousness с международной аккредитацией. Проводит все уровни обучения от базового Practitioner до полной системы Access Consciousness.",
+    achievements: [
+      "Международная сертификация Access Consciousness",
+      "Более 500 обученных студентов",
+      "Преподавательский стаж 10+ лет",
+      "Право проведения всех курсов Access"
+    ]
+  };
 
   const benefits = [
     {
@@ -187,34 +185,57 @@ const Training = () => {
         </div>
       </section>
 
-      {/* Instructors */}
+      {/* Master Instructor */}
       <section className="py-16 bg-white/50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h3 className="font-montserrat font-bold text-3xl text-gray-800 mb-4">Наши преподаватели</h3>
+            <h3 className="font-montserrat font-bold text-3xl text-gray-800 mb-4">Ваш преподаватель</h3>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Сертифицированные мастера с многолетним опытом практики и преподавания
+              Сертифицированный мастер с международной аккредитацией
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {instructors.map((instructor, index) => (
-              <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-20 h-20 bg-gradient-to-r from-purple-100 to-indigo-100 rounded-full flex items-center justify-center text-4xl">
+          <div className="max-w-4xl mx-auto">
+            <Card className="overflow-hidden hover:shadow-xl transition-shadow">
+              <CardContent className="p-8">
+                <div className="grid md:grid-cols-3 gap-8 items-center">
+                  <div className="text-center">
+                    <div className="w-32 h-32 bg-gradient-to-r from-purple-100 to-indigo-100 rounded-full flex items-center justify-center text-6xl mx-auto mb-4">
                       {instructor.image}
                     </div>
-                    <div className="flex-1">
-                      <h4 className="font-montserrat font-bold text-xl text-gray-800">{instructor.name}</h4>
-                      <p className="text-primary font-semibold">{instructor.level}</p>
-                      <p className="text-gray-600">Опыт: {instructor.experience}</p>
-                      <p className="text-sm text-gray-500 mt-2">{instructor.specialization}</p>
+                    <h4 className="font-montserrat font-bold text-2xl text-gray-800 mb-2">{instructor.name}</h4>
+                    <p className="text-primary font-semibold text-lg mb-2">{instructor.level}</p>
+                    <p className="text-gray-600 font-medium">Опыт: {instructor.experience}</p>
+                  </div>
+                  
+                  <div className="md:col-span-2 space-y-6">
+                    <div>
+                      <h5 className="font-semibold text-lg text-gray-800 mb-3">О преподавателе</h5>
+                      <p className="text-gray-600 leading-relaxed">{instructor.about}</p>
+                    </div>
+                    
+                    <div>
+                      <h5 className="font-semibold text-lg text-gray-800 mb-3">Достижения и квалификация</h5>
+                      <ul className="space-y-2">
+                        {instructor.achievements.map((achievement, idx) => (
+                          <li key={idx} className="flex items-start gap-3">
+                            <Icon name="Award" className="text-primary mt-0.5 flex-shrink-0" size={18} />
+                            <span className="text-gray-600">{achievement}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    <div className="pt-4">
+                      <Button className="bg-primary hover:bg-primary/90">
+                        <Icon name="MessageCircle" className="mr-2" size={18} />
+                        Задать вопрос мастеру
+                      </Button>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
