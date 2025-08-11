@@ -43,26 +43,27 @@ const MassageWebsite = () => {
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-gold-500/20 rounded-full blur-3xl"></div>
       <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-gold-300/10 rounded-full blur-2xl"></div>
       
-      {/* Watermark Pattern */}
-      <div className="absolute inset-0 pointer-events-none z-10">
-        <div className="absolute top-20 left-10 text-gold-400 text-xl transform rotate-12 select-none" style={{fontFamily: 'Dancing Script, cursive', fontWeight: 600}}>
-          Natalia
-        </div>
-        <div className="absolute top-40 right-20 text-gold-400 text-xl transform -rotate-12 select-none" style={{fontFamily: 'Dancing Script, cursive', fontWeight: 600}}>
-          Natalia
-        </div>
-        <div className="absolute top-80 left-1/3 text-gold-400 text-xl transform rotate-6 select-none" style={{fontFamily: 'Dancing Script, cursive', fontWeight: 600}}>
-          Natalia
-        </div>
-        <div className="absolute bottom-40 right-10 text-gold-400 text-xl transform -rotate-6 select-none" style={{fontFamily: 'Dancing Script, cursive', fontWeight: 600}}>
-          Natalia
-        </div>
-        <div className="absolute bottom-20 left-20 text-gold-400 text-xl transform rotate-45 select-none" style={{fontFamily: 'Dancing Script, cursive', fontWeight: 600}}>
-          Natalia
-        </div>
-        <div className="absolute top-60 right-1/3 text-gold-400 text-xl transform -rotate-45 select-none" style={{fontFamily: 'Dancing Script, cursive', fontWeight: 600}}>
-          Natalia
-        </div>
+      {/* Watermark Pattern - Grid Layout */}
+      <div className="absolute inset-0 pointer-events-none z-10 opacity-20">
+        {Array.from({ length: 20 }).map((_, i) => {
+          const row = Math.floor(i / 4);
+          const col = i % 4;
+          return (
+            <div 
+              key={i}
+              className="absolute text-gold-400 text-lg select-none"
+              style={{
+                fontFamily: 'Dancing Script, cursive', 
+                fontWeight: 600,
+                top: `${20 + row * 20}%`,
+                left: `${15 + col * 20}%`,
+                transform: `rotate(${-15 + Math.random() * 30}deg)`
+              }}
+            >
+              Natalia
+            </div>
+          );
+        })}
       </div>
       {/* Header */}
       <header className="bg-emerald-900/95 backdrop-blur-sm shadow-lg sticky top-0 z-50 border-b border-gold-400/30 relative">
