@@ -44,7 +44,7 @@ const MassageWebsite = () => {
       <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-gold-300/10 rounded-full blur-2xl"></div>
       
       {/* Watermark Pattern - Diagonal Lines */}
-      <div className="absolute inset-0 pointer-events-none z-10 opacity-10">
+      <div className="absolute inset-0 pointer-events-none z-10">
         {/* Diagonal line 1 - top-left to bottom-right */}
         {Array.from({ length: 6 }).map((_, i) => (
           <div 
