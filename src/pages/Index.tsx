@@ -51,7 +51,8 @@ const MassageWebsite = () => {
             <img 
               src="/img/d400ba6e-3090-41d0-afab-e8e8c2a5655b.jpg" 
               alt="Natalia" 
-              className="absolute top-1/2 left-0 -translate-y-1/2 w-20 h-12 object-contain opacity-90 hover:opacity-100 transition-opacity"
+              className="absolute top-1/2 left-0 -translate-y-1/2 w-20 h-12 object-contain opacity-90 hover:opacity-100 transition-opacity mix-blend-multiply"
+              style={{filter: 'brightness(1.2) contrast(1.3)'}}
             />
             <h1 className="font-montserrat font-bold text-3xl text-gold-400">Гармония энергий</h1>
           </div>
