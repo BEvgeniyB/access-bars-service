@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
+import { Link } from "react-router-dom";
 
 const MassageWebsite = () => {
   const services = [
@@ -133,10 +134,19 @@ const MassageWebsite = () => {
                   <CardDescription className="text-emerald-200 leading-relaxed">
                     {service.description}
                   </CardDescription>
-                  <Button className="w-full mt-4 bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold">
-                    <Icon name="Clock" className="mr-2" size={16} />
-                    Записаться
-                  </Button>
+                  {(service.name === "Классический массаж" || service.name === "Ароматерапия") ? (
+                    <Link to="/massage">
+                      <Button className="w-full mt-4 bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold">
+                        <Icon name="ArrowRight" className="mr-2" size={16} />
+                        Подробнее
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Button className="w-full mt-4 bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold">
+                      <Icon name="Clock" className="mr-2" size={16} />
+                      Записаться
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             ))}
