@@ -140,9 +140,7 @@ const MassageWebsite = () => {
               Найдите свой
               <span className="text-gold-400 block bg-gradient-to-r from-gold-300 to-gold-500 bg-clip-text text-transparent">внутренний покой</span>
             </h2>
-            <p className="text-xl text-emerald-100 mb-12 max-w-3xl mx-auto leading-relaxed">
-              Роскошные энергетические практики и исцеление в атмосфере абсолютного спокойствия и гармонии
-            </p>
+            <p className="text-xl text-emerald-100 mb-12 max-w-3xl mx-auto leading-relaxed">Глубокие энергетические практики и исцеление в атмосфере абсолютного спокойствия и гармонии</p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
               <Button size="lg" className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold px-10 py-4 text-lg shadow-2xl border-2 border-gold-400">
                 <Icon name="Calendar" className="mr-3" size={24} />
