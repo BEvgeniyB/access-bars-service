@@ -42,6 +42,23 @@ const MassageWebsite = () => {
       <div className="absolute top-0 left-0 w-96 h-96 bg-gold-400/20 rounded-full blur-3xl"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-gold-500/20 rounded-full blur-3xl"></div>
       <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-gold-300/10 rounded-full blur-2xl"></div>
+      
+      {/* Watermark Pattern */}
+      <div className="absolute inset-0 pointer-events-none opacity-5">
+        {Array.from({ length: 12 }).map((_, i) => (
+          <div 
+            key={i}
+            className="absolute text-gold-300 font-serif text-6xl rotate-12 select-none"
+            style={{
+              top: `${20 + (i % 4) * 25}%`,
+              left: `${10 + Math.floor(i / 4) * 30}%`,
+              transform: `rotate(${-15 + Math.random() * 30}deg)`
+            }}
+          >
+            Natalia
+          </div>
+        ))}
+      </div>
       {/* Header */}
       <header className="bg-emerald-900/95 backdrop-blur-sm shadow-lg sticky top-0 z-50 border-b border-gold-400/30 relative">
         <div className="container mx-auto px-4 relative">
