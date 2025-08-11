@@ -45,22 +45,22 @@ const MassageWebsite = () => {
       
       {/* Watermark Pattern */}
       <div className="absolute inset-0 pointer-events-none z-10">
-        <div className="absolute top-20 left-10 text-gold-400 text-2xl transform rotate-12 select-none" style={{fontFamily: 'Dancing Script, cursive', fontWeight: 600}}>
+        <div className="absolute top-20 left-10 text-gold-400 text-xl transform rotate-12 select-none" style={{fontFamily: 'Dancing Script, cursive', fontWeight: 600}}>
           Natalia
         </div>
-        <div className="absolute top-40 right-20 text-gold-400 text-2xl transform -rotate-12 select-none" style={{fontFamily: 'Dancing Script, cursive', fontWeight: 600}}>
+        <div className="absolute top-40 right-20 text-gold-400 text-xl transform -rotate-12 select-none" style={{fontFamily: 'Dancing Script, cursive', fontWeight: 600}}>
           Natalia
         </div>
-        <div className="absolute top-80 left-1/3 text-gold-400 text-2xl transform rotate-6 select-none" style={{fontFamily: 'Dancing Script, cursive', fontWeight: 600}}>
+        <div className="absolute top-80 left-1/3 text-gold-400 text-xl transform rotate-6 select-none" style={{fontFamily: 'Dancing Script, cursive', fontWeight: 600}}>
           Natalia
         </div>
-        <div className="absolute bottom-40 right-10 text-gold-400 text-2xl transform -rotate-6 select-none" style={{fontFamily: 'Dancing Script, cursive', fontWeight: 600}}>
+        <div className="absolute bottom-40 right-10 text-gold-400 text-xl transform -rotate-6 select-none" style={{fontFamily: 'Dancing Script, cursive', fontWeight: 600}}>
           Natalia
         </div>
-        <div className="absolute bottom-20 left-20 text-gold-400 text-2xl transform rotate-45 select-none" style={{fontFamily: 'Dancing Script, cursive', fontWeight: 600}}>
+        <div className="absolute bottom-20 left-20 text-gold-400 text-xl transform rotate-45 select-none" style={{fontFamily: 'Dancing Script, cursive', fontWeight: 600}}>
           Natalia
         </div>
-        <div className="absolute top-60 right-1/3 text-gold-400 text-2xl transform -rotate-45 select-none" style={{fontFamily: 'Dancing Script, cursive', fontWeight: 600}}>
+        <div className="absolute top-60 right-1/3 text-gold-400 text-xl transform -rotate-45 select-none" style={{fontFamily: 'Dancing Script, cursive', fontWeight: 600}}>
           Natalia
         </div>
       </div>
