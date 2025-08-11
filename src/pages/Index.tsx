@@ -56,7 +56,6 @@ const MassageWebsite = () => {
           <nav className="flex justify-between items-center">
             <h1 className="font-montserrat font-bold text-2xl text-gold-400">Гармония энергий</h1>
             <div className="flex gap-6 items-center">
-              <a href="#services" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Услуги</a>
               <a href="/access-bars" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Access Bars</a>
               <a href="/training" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Обучение</a>
               <a href="/massage" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Массаж</a>
