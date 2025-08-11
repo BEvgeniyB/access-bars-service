@@ -47,15 +47,13 @@ const MassageWebsite = () => {
         <div className="container mx-auto px-4 relative">
           {/* Logo */}
           <div className="text-center py-3 border-b border-gold-400/20 relative">
+            {/* Natalia Logo in top left */}
+            <img 
+              src="/img/f977789e-9527-4c66-ac2f-0894e3023dee.jpg" 
+              alt="Natalia" 
+              className="absolute top-1/2 left-0 -translate-y-1/2 w-20 h-12 object-contain opacity-90 hover:opacity-100 transition-opacity"
+            />
             <h1 className="font-montserrat font-bold text-3xl text-gold-400">Гармония энергий</h1>
-            {/* Natalia Logo in top right */}
-            <div className="absolute top-1/2 right-0 -translate-y-1/2 w-24 h-16 bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900 rounded-lg p-2 shadow-lg">
-              <img 
-                src="https://cdn.poehali.dev/files/857f30c4-6f66-48cc-a98c-0092a96169db.jpeg" 
-                alt="Natalia" 
-                className="w-full h-full object-contain opacity-90 hover:opacity-100 transition-opacity"
-              />
-            </div>
           </div>
           {/* Navigation */}
           <nav className="flex justify-center items-center py-4">
