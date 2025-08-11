@@ -19,7 +19,8 @@ export default {
 		},
 		fonts: {
 			montserrat: ['Montserrat', 'sans-serif'],
-			openSans: ['Open Sans', 'sans-serif']
+			openSans: ['Open Sans', 'sans-serif'],
+			bakbak: ['Bakbak One', 'sans-serif']
 		},
 		extend: {
 			colors: {
