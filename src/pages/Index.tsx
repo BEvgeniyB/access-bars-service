@@ -58,7 +58,7 @@ const MassageWebsite = () => {
               transform: 'rotate(-45deg)'
             }}
           >
-            Natalia
+            N
           </div>
         ))}
         {/* Diagonal line 2 - offset */}
@@ -74,7 +74,7 @@ const MassageWebsite = () => {
               transform: 'rotate(-45deg)'
             }}
           >
-            Natalia
+            N
           </div>
         ))}
         {/* Diagonal line 3 - top-right to bottom-left */}
@@ -90,7 +90,7 @@ const MassageWebsite = () => {
               transform: 'rotate(45deg)'
             }}
           >
-            Natalia
+            N
           </div>
         ))}
       </div>
