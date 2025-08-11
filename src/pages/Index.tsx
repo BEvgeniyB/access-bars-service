@@ -6,40 +6,32 @@ import { Link } from "react-router-dom";
 const MassageWebsite = () => {
   const services = [
     {
-      name: "Классический массаж",
-      duration: "60 мин",
-      price: "3 500 ₽",
-      description: "Расслабляющий массаж всего тела с использованием натуральных масел"
-    },
-    {
-      name: "Ароматерапия",
-      duration: "90 мин", 
-      price: "4 500 ₽",
-      description: "Глубокое расслабление с эфирными маслами лаванды и эвкалипта"
-    },
-    {
-      name: "Лимфодренажный массаж",
-      duration: "75 мин",
-      price: "4 000 ₽", 
-      description: "Детокс-массаж для выведения лишней жидкости и улучшения обмена веществ"
-    },
-    {
-      name: "Массаж горячими камнями",
+      name: "Access Bars",
       duration: "90 мин",
-      price: "5 500 ₽",
-      description: "Уникальная техника с разогретыми базальтовыми камнями"
+      price: "от 5 000 ₽",
+      description: "Энергетическая техника для освобождения от ментальных блоков и глубокой трансформации сознания",
+      link: "/access-bars"
     },
     {
-      name: "Антицеллюлитный массаж",
-      duration: "60 мин", 
-      price: "3 800 ₽",
-      description: "Интенсивный массаж для коррекции фигуры и улучшения тонуса кожи"
+      name: "Обучение",
+      duration: "От 4 часов", 
+      price: "от 15 000 ₽",
+      description: "Курсы по энергетическим практикам, массажу и целительству для начинающих и практикующих",
+      link: "/training"
     },
     {
-      name: "Массаж лица",
-      duration: "45 мин",
-      price: "2 800 ₽",
-      description: "Омолаживающий массаж для повышения тонуса и эластичности кожи лица"
+      name: "Массаж",
+      duration: "60-90 мин",
+      price: "от 3 500 ₽", 
+      description: "Широкий спектр массажных техник: классический, ароматерапия, горячими камнями и другие виды",
+      link: "/massage"
+    },
+    {
+      name: "Целительство",
+      duration: "60-120 мин",
+      price: "от 4 000 ₽",
+      description: "Энергетическое исцеление, работа с чакрами, аурой и восстановление баланса жизненных сил",
+      link: "/healing"
     }
   ];
 
@@ -138,19 +130,12 @@ const MassageWebsite = () => {
                   <CardDescription className="text-emerald-200 leading-relaxed">
                     {service.description}
                   </CardDescription>
-                  {(service.name === "Классический массаж" || service.name === "Ароматерапия") ? (
-                    <Link to="/massage">
-                      <Button className="w-full mt-4 bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold">
-                        <Icon name="ArrowRight" className="mr-2" size={16} />
-                        Подробнее
-                      </Button>
-                    </Link>
-                  ) : (
+                  <Link to={service.link}>
                     <Button className="w-full mt-4 bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold">
-                      <Icon name="Clock" className="mr-2" size={16} />
-                      Записаться
+                      <Icon name="ArrowRight" className="mr-2" size={16} />
+                      Подробнее
                     </Button>
-                  )}
+                  </Link>
                 </CardContent>
               </Card>
             ))}
