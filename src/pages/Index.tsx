@@ -59,6 +59,7 @@ const MassageWebsite = () => {
               <a href="#services" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Услуги</a>
               <a href="/access-bars" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Access Bars</a>
               <a href="/training" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Обучение</a>
+              <a href="/massage" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Массаж</a>
               <a href="/healing" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Целительство</a>
               <a href="#about" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">О нас</a>
               <a href="#contact" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Контакты</a>
