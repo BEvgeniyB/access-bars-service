@@ -52,17 +52,21 @@ const MassageWebsite = () => {
       <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-gold-300/10 rounded-full blur-2xl"></div>
       {/* Header */}
       <header className="bg-emerald-900/95 backdrop-blur-sm shadow-lg sticky top-0 z-50 border-b border-gold-400/30 relative">
-        <div className="container mx-auto px-4 py-4 relative">
-          <nav className="flex justify-between items-center">
-            <h1 className="font-montserrat font-bold text-2xl text-gold-400">Гармония энергий</h1>
-            <div className="flex gap-6 items-center">
+        <div className="container mx-auto px-4 relative">
+          {/* Logo */}
+          <div className="text-center py-3 border-b border-gold-400/20">
+            <h1 className="font-montserrat font-bold text-3xl text-gold-400">Гармония энергий</h1>
+          </div>
+          {/* Navigation */}
+          <nav className="flex justify-center items-center py-4">
+            <div className="flex gap-8 items-center">
               <a href="/access-bars" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Access Bars</a>
               <a href="/training" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Обучение</a>
               <a href="/massage" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Массаж</a>
               <a href="/healing" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Целительство</a>
               <a href="#about" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">О нас</a>
               <a href="#contact" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Контакты</a>
-              <Button className="bg-gold-500 hover:bg-gold-600 text-emerald-900 font-bold border-2 border-gold-400 shadow-lg">
+              <Button className="bg-gold-500 hover:bg-gold-600 text-emerald-900 font-bold border-2 border-gold-400 shadow-lg ml-4">
                 Записаться
               </Button>
             </div>
