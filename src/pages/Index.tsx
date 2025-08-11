@@ -253,7 +253,7 @@ const MassageWebsite = () => {
                   <Icon name="Award" className="text-gold-400" size={24} />
                 </div>
                 <div>
-                  <h3 className="font-montserrat font-semibold text-lg text-gold-200">Сертифицированные мастера</h3>
+                  <h3 className="font-montserrat font-semibold text-lg text-gold-200">Сертифицированный мастер</h3>
                   <p className="text-emerald-200">Международные дипломы и постоянное обучение</p>
                 </div>
               </div>
