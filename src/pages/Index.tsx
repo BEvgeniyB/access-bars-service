@@ -49,7 +49,7 @@ const MassageWebsite = () => {
           <div className="text-center py-3 border-b border-gold-400/20 relative">
             {/* Natalia Logo in top left */}
             <img 
-              src="/img/f977789e-9527-4c66-ac2f-0894e3023dee.jpg" 
+              src="/img/d400ba6e-3090-41d0-afab-e8e8c2a5655b.jpg" 
               alt="Natalia" 
               className="absolute top-1/2 left-0 -translate-y-1/2 w-20 h-12 object-contain opacity-90 hover:opacity-100 transition-opacity"
             />
