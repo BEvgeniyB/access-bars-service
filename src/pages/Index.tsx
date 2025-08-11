@@ -44,20 +44,25 @@ const MassageWebsite = () => {
       <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-gold-300/10 rounded-full blur-2xl"></div>
       
       {/* Watermark Pattern */}
-      <div className="absolute inset-0 pointer-events-none opacity-50">
-        {Array.from({ length: 12 }).map((_, i) => (
-          <div 
-            key={i}
-            className="absolute text-gold-300 font-serif text-6xl rotate-12 select-none"
-            style={{
-              top: `${20 + (i % 4) * 25}%`,
-              left: `${10 + Math.floor(i / 4) * 30}%`,
-              transform: `rotate(${-15 + Math.random() * 30}deg)`
-            }}
-          >
-            Natalia
-          </div>
-        ))}
+      <div className="absolute inset-0 pointer-events-none z-10">
+        <div className="absolute top-20 left-10 text-gold-400/30 font-serif text-8xl transform rotate-12 select-none">
+          Natalia
+        </div>
+        <div className="absolute top-40 right-20 text-gold-400/30 font-serif text-8xl transform -rotate-12 select-none">
+          Natalia
+        </div>
+        <div className="absolute top-80 left-1/3 text-gold-400/30 font-serif text-8xl transform rotate-6 select-none">
+          Natalia
+        </div>
+        <div className="absolute bottom-40 right-10 text-gold-400/30 font-serif text-8xl transform -rotate-6 select-none">
+          Natalia
+        </div>
+        <div className="absolute bottom-20 left-20 text-gold-400/30 font-serif text-8xl transform rotate-45 select-none">
+          Natalia
+        </div>
+        <div className="absolute top-60 right-1/3 text-gold-400/30 font-serif text-8xl transform -rotate-45 select-none">
+          Natalia
+        </div>
       </div>
       {/* Header */}
       <header className="bg-emerald-900/95 backdrop-blur-sm shadow-lg sticky top-0 z-50 border-b border-gold-400/30 relative">
