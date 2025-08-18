@@ -178,7 +178,14 @@ const MassageWebsite = () => {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-20 bg-gradient-to-r from-emerald-700/20 to-emerald-600/20 backdrop-blur-sm relative">
+      <section 
+        id="about" 
+        className="py-20 relative"
+        style={{
+          background: `url('https://cdn.poehali.dev/files/cd6e0bc8-418e-4a70-aad0-acd89a5e74f0.jpg') center/cover`,
+          backgroundAttachment: 'fixed'
+        }}
+      >
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="animate-fade-in">
