@@ -17,20 +17,6 @@ const Training = () => {
         "Методические материалы",
         "Пожизненная поддержка"
       ]
-    },
-    {
-      title: "Access Consciousness",
-      level: "Мастерский уровень",
-      duration: "5 дней",
-      price: "75 000 ₽",
-      description: "Полная система Access Consciousness",
-      includes: [
-        "Все инструменты Access",
-        "Clearing Statements",
-        "Body Processes",
-        "Международная аккредитация",
-        "Право вести все курсы"
-      ]
     }
   ];
 
