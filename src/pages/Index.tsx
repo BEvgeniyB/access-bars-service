@@ -90,7 +90,7 @@ const MassageWebsite = () => {
           {/* Watermark N in Hero Section */}
           <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-5">
             <div 
-              className="text-gold-400/30 text-[12rem] select-none"
+              className="text-gold-400/30 text-[36rem] select-none"
               style={{
                 fontFamily: 'Dancing Script, cursive', 
                 fontWeight: 700,
