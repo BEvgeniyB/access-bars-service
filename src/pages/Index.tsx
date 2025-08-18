@@ -45,7 +45,7 @@ const MassageWebsite = () => {
       {/* Dark overlay for text readability */}
       <div className="absolute inset-0 bg-emerald-900/20 backdrop-blur-[0.5px]"></div>
       {/* Header */}
-      <header className="bg-emerald-900/95 backdrop-blur-sm shadow-lg sticky top-0 z-50 border-b border-gold-400/30 relative">
+      <header className="bg-transparent backdrop-blur-none shadow-lg sticky top-0 z-50 border-b border-gold-400/30 relative">
         <div className="container mx-auto px-4 relative">
           {/* Logo */}
           <div className="text-center py-3 border-b border-gold-400/20 relative">
