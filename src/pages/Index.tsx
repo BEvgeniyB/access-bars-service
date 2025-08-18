@@ -63,7 +63,7 @@ const MassageWebsite = () => {
               className="absolute top-1/2 right-0 -translate-y-1/2 w-20 h-12 object-contain opacity-95 hover:opacity-100 transition-opacity mix-blend-screen"
               style={{filter: 'invert(1) brightness(1.5) sepia(1) saturate(4) hue-rotate(15deg) contrast(1.3)'}}
             />
-            <h1 className="font-montserrat font-bold text-3xl text-gold-400">Гармония энергий</h1>
+            <h1 className="font-montserrat font-bold text-3xl text-[#ffd700]">Гармония энергий</h1>
           </div>
           {/* Navigation */}
           <nav className="flex justify-center items-center py-4">
