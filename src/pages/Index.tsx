@@ -39,7 +39,7 @@ const MassageWebsite = () => {
     <div 
       className="min-h-screen font-openSans relative overflow-hidden"
       style={{
-        background: `url('https://cdn.poehali.dev/files/d701186a-e2c5-485d-b82a-f33656271ae8.jpg') center/cover no-repeat fixed`,
+        background: `url('https://cdn.poehali.dev/files/3e3b96c2-5d85-4f57-a257-a372252239b2.jpg') center/cover no-repeat fixed`,
       }}
     >
       {/* Dark overlay for text readability */}
