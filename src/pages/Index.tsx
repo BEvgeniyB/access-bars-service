@@ -82,23 +82,24 @@ const MassageWebsite = () => {
         </div>
       </header>
 
-      {/* Single Watermark N */}
-      <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-10">
-        <div 
-          className="text-gold-400 text-[15rem] select-none"
-          style={{
-            fontFamily: 'Dancing Script, cursive', 
-            fontWeight: 700,
-          }}
-        >
-          N
-        </div>
-      </div>
+
 
       {/* Hero Section */}
       <section className="py-32 px-4 text-center relative overflow-hidden">
         <div className="container mx-auto relative z-10">
-          <div className="animate-fade-in">
+          {/* Watermark N in Hero Section */}
+          <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-5">
+            <div 
+              className="text-gold-400/30 text-[12rem] select-none"
+              style={{
+                fontFamily: 'Dancing Script, cursive', 
+                fontWeight: 700,
+              }}
+            >
+              N
+            </div>
+          </div>
+          <div className="animate-fade-in relative z-10">
             <h2 className="font-montserrat font-bold text-6xl md:text-7xl text-gold-100 mb-8 leading-tight drop-shadow-2xl">
               Найдите свой
               <span className="text-gold-400 block bg-gradient-to-r from-gold-300 to-gold-500 bg-clip-text text-transparent">внутренний покой</span>
