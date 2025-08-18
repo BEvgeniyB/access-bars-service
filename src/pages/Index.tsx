@@ -130,7 +130,14 @@ const MassageWebsite = () => {
       </section>
 
       {/* Services Section */}
-      <section id="services" className="py-20 bg-emerald-800/30 backdrop-blur-sm relative">
+      <section 
+        id="services" 
+        className="py-20 relative"
+        style={{
+          background: `url('https://cdn.poehali.dev/files/8a7413c3-969a-448c-ba9d-ed0ecea21ba7.jpg') center/cover`,
+          backgroundAttachment: 'fixed'
+        }}
+      >
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 animate-fade-in">
             <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-4">Наши услуги</h2>
