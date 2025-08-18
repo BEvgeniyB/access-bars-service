@@ -3,7 +3,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import Icon from "@/components/ui/icon";
 
 const Training = () => {
-  const courses = [];
+  const courses = [
+    {
+      title: "Access Bars Practitioner",
+      level: "Начальный уровень",
+      duration: "1 день (8 часов)",
+      price: "29 000 ₽",
+      description: "Базовый курс для освоения техники Access Bars",
+      includes: [
+        "Теоретические основы методики",
+        "Практическое обучение 32 точкам",
+        "Сертификат международного образца",
+        "Методические материалы"
+      ]
+    }
+  ];
 
   const instructor = {
     name: "Елена Волкова",
