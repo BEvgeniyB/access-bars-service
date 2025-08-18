@@ -36,64 +36,14 @@ const MassageWebsite = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900 font-openSans relative overflow-hidden">
-      {/* Luxury Background Elements */}
-      <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/90 to-emerald-950/90"></div>
-      <div className="absolute top-0 left-0 w-96 h-96 bg-gold-400/20 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gold-500/20 rounded-full blur-3xl"></div>
-      <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-gold-300/10 rounded-full blur-2xl"></div>
-      
-      {/* Watermark Pattern - Diagonal Lines */}
-      <div className="absolute inset-0 pointer-events-none z-10">
-        {/* Diagonal line 1 - top-left to bottom-right */}
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div 
-            key={`diag1-${i}`}
-            className="absolute text-gold-400 text-lg select-none"
-            style={{
-              fontFamily: 'Dancing Script, cursive', 
-              fontWeight: 600,
-              top: `${10 + i * 15}%`,
-              left: `${5 + i * 15}%`,
-              transform: 'rotate(-45deg)'
-            }}
-          >
-            N
-          </div>
-        ))}
-        {/* Diagonal line 2 - offset */}
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div 
-            key={`diag2-${i}`}
-            className="absolute text-gold-400 text-lg select-none"
-            style={{
-              fontFamily: 'Dancing Script, cursive', 
-              fontWeight: 600,
-              top: `${25 + i * 15}%`,
-              left: `${20 + i * 15}%`,
-              transform: 'rotate(-45deg)'
-            }}
-          >
-            N
-          </div>
-        ))}
-        {/* Diagonal line 3 - top-right to bottom-left */}
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div 
-            key={`diag3-${i}`}
-            className="absolute text-gold-400 text-lg select-none"
-            style={{
-              fontFamily: 'Dancing Script, cursive', 
-              fontWeight: 600,
-              top: `${10 + i * 15}%`,
-              right: `${5 + i * 15}%`,
-              transform: 'rotate(45deg)'
-            }}
-          >
-            N
-          </div>
-        ))}
-      </div>
+    <div 
+      className="min-h-screen font-openSans relative overflow-hidden"
+      style={{
+        background: `url('https://cdn.poehali.dev/files/d701186a-e2c5-485d-b82a-f33656271ae8.jpg') center/cover no-repeat fixed`,
+      }}
+    >
+      {/* Dark overlay for text readability */}
+      <div className="absolute inset-0 bg-emerald-900/20 backdrop-blur-[0.5px]"></div>
       {/* Header */}
       <header className="bg-emerald-900/95 backdrop-blur-sm shadow-lg sticky top-0 z-50 border-b border-gold-400/30 relative">
         <div className="container mx-auto px-4 relative">
@@ -113,7 +63,7 @@ const MassageWebsite = () => {
               className="absolute top-1/2 right-0 -translate-y-1/2 w-20 h-12 object-contain opacity-95 hover:opacity-100 transition-opacity mix-blend-screen"
               style={{filter: 'invert(1) brightness(1.5) sepia(1) saturate(4) hue-rotate(15deg) contrast(1.3)'}}
             />
-            <h1 className="font-montserrat font-bold text-3xl text-[#CFB53B]">Гармония энергий</h1>
+            <h1 className="font-montserrat font-bold text-3xl text-gold-400">Гармония энергий</h1>
           </div>
           {/* Navigation */}
           <nav className="flex justify-center items-center py-4">
