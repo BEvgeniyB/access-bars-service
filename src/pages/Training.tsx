@@ -8,7 +8,7 @@ const Training = () => {
       title: "Access Bars Practitioner",
       level: "Начальный уровень",
       duration: "1 день (8 часов)",
-      price: "25 000 ₽",
+      price: "29 000 ₽",
       description: "Базовый курс для освоения техники Access Bars",
       includes: [
         "Теоретические основы методики",
