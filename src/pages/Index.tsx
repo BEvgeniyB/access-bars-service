@@ -63,7 +63,15 @@ const MassageWebsite = () => {
               className="absolute top-1/2 right-0 -translate-y-1/2 w-20 h-12 object-contain opacity-95 hover:opacity-100 transition-opacity mix-blend-screen"
               style={{filter: 'invert(1) brightness(1.5) sepia(1) saturate(4) hue-rotate(15deg) contrast(1.3)'}}
             />
-            <h1 className="font-montserrat font-bold text-3xl text-[#CFB53B]">Гармония энергий</h1>
+            <h1 
+              className="font-montserrat font-bold text-3xl text-[#CFB53B] px-8 py-4 rounded-2xl relative"
+              style={{
+                background: `url('https://cdn.poehali.dev/files/3e3b96c2-5d85-4f57-a257-a372252239b2.jpg') center/cover`,
+                backgroundAttachment: 'fixed'
+              }}
+            >
+              <span className="relative z-10 drop-shadow-lg">Гармония энергий</span>
+            </h1>
           </div>
           {/* Navigation */}
           <nav className="flex justify-center items-center py-4">
