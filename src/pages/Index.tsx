@@ -82,6 +82,19 @@ const MassageWebsite = () => {
         </div>
       </header>
 
+      {/* Single Watermark N */}
+      <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-5">
+        <div 
+          className="text-gold-400/20 text-[20rem] select-none"
+          style={{
+            fontFamily: 'Dancing Script, cursive', 
+            fontWeight: 700,
+          }}
+        >
+          N
+        </div>
+      </div>
+
       {/* Hero Section */}
       <section className="py-32 px-4 text-center relative overflow-hidden">
         <div className="container mx-auto relative z-10">
