@@ -8,7 +8,7 @@ const MassageWebsite = () => {
     {
       name: "Access Bars",
       duration: "90 мин",
-      price: "от 5 000 ₽",
+      price: "от 7 000 ₽",
       description: "Энергетическая техника для освобождения от ментальных блоков и глубокой трансформации сознания",
       link: "/access-bars"
     },
