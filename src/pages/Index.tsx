@@ -175,7 +175,7 @@ const MassageWebsite = () => {
                     </CardTitle>
                     <div className="text-right">
                       <div className="text-2xl font-bold text-gold-400">{service.price}</div>
-                      <div className="text-sm text-emerald-200">{service.duration}</div>
+
                     </div>
                   </div>
                 </CardHeader>
