@@ -126,21 +126,21 @@ const MassageWebsite = () => {
                 <img 
                   src="https://cdn.poehali.dev/files/7177734d-5aad-4f45-8ffc-6d6f597621c1.JPG"
                   alt="Массажист проводит сеанс массажа"
-                  className="w-full h-80 object-cover rounded-3xl shadow-2xl"
+                  className="w-full h-80 shadow-2xl object-contain rounded-full"
                 />
               </div>
               <div className="animate-slide-up delay-200">
                 <img 
                   src="https://cdn.poehali.dev/files/c599f6e1-ea57-4258-8332-4b538420c522.JPG"
                   alt="Рефлексия на телесном уровне"
-                  className="w-full h-80 object-cover rounded-3xl shadow-2xl"
+                  className="w-full h-80 shadow-2xl object-contain rounded-full"
                 />
               </div>
               <div className="animate-slide-up delay-400">
                 <img 
                   src="https://cdn.poehali.dev/files/bc543c40-0968-43ba-9d4d-9fa312634f00.JPG"
                   alt="Сеанс энерготерапии"
-                  className="w-full h-80 object-cover rounded-3xl shadow-2xl"
+                  className="w-full h-80 shadow-2xl object-contain rounded-full"
                 />
               </div>
             </div>
