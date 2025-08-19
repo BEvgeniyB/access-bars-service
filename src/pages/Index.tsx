@@ -124,7 +124,7 @@ const MassageWebsite = () => {
             <img 
               src="https://cdn.poehali.dev/files/7177734d-5aad-4f45-8ffc-6d6f597621c1.JPG"
               alt="Массажист проводит сеанс массажа"
-              className="w-full h-96 object-cover rounded-3xl shadow-2xl animate-slide-up"
+              className="w-full h-96 object-contain rounded-3xl shadow-2xl animate-slide-up"
             />
           </div>
         </div>
