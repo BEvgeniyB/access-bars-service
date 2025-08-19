@@ -122,8 +122,8 @@ const MassageWebsite = () => {
         <div className="mt-16 relative">
           <div className="max-w-4xl mx-auto">
             <img 
-              src="/img/a58463d0-dcdb-4e5c-9e75-59fff97e775a.jpg"
-              alt="Spa massage stones"
+              src="https://cdn.poehali.dev/files/7177734d-5aad-4f45-8ffc-6d6f597621c1.JPG"
+              alt="Массажист проводит сеанс массажа"
               className="w-full h-96 object-cover rounded-3xl shadow-2xl animate-slide-up"
             />
           </div>
