@@ -110,13 +110,13 @@ const Training = () => {
 
       {/* Courses */}
       <section className="py-16 relative" style={{
-        backgroundImage: `url('https://cdn.poehali.dev/files/1dcdfac9-f41f-45e1-849d-92b17a28a596.png')`,
+        backgroundImage: `url('https://cdn.poehali.dev/files/fd60c33c-3948-432b-92ba-2955cd2ace49.jpg')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         backgroundAttachment: 'fixed'
       }}>
-        <div className="absolute inset-0 bg-emerald-900/70"></div>
+        <div className="absolute inset-0 bg-emerald-900/30"></div>
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Программы обучения</h3>
@@ -174,13 +174,13 @@ const Training = () => {
 
       {/* Master Instructor */}
       <section className="py-16 relative" style={{
-        backgroundImage: `url('https://cdn.poehali.dev/files/1dcdfac9-f41f-45e1-849d-92b17a28a596.png')`,
+        backgroundImage: `url('https://cdn.poehali.dev/files/fd60c33c-3948-432b-92ba-2955cd2ace49.jpg')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         backgroundAttachment: 'fixed'
       }}>
-        <div className="absolute inset-0 bg-emerald-900/60"></div>
+        <div className="absolute inset-0 bg-emerald-900/40"></div>
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Ваш преподаватель</h3>
@@ -236,13 +236,13 @@ const Training = () => {
 
       {/* Benefits */}
       <section className="py-16 relative" style={{
-        backgroundImage: `url('https://cdn.poehali.dev/files/1dcdfac9-f41f-45e1-849d-92b17a28a596.png')`,
+        backgroundImage: `url('https://cdn.poehali.dev/files/fd60c33c-3948-432b-92ba-2955cd2ace49.jpg')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         backgroundAttachment: 'fixed'
       }}>
-        <div className="absolute inset-0 bg-emerald-900/75"></div>
+        <div className="absolute inset-0 bg-emerald-900/35"></div>
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Преимущества обучения у нас</h3>
@@ -266,13 +266,13 @@ const Training = () => {
 
       {/* CTA */}
       <section className="py-20 relative" style={{
-        backgroundImage: `url('https://cdn.poehali.dev/files/1dcdfac9-f41f-45e1-849d-92b17a28a596.png')`,
+        backgroundImage: `url('https://cdn.poehali.dev/files/fd60c33c-3948-432b-92ba-2955cd2ace49.jpg')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         backgroundAttachment: 'fixed'
       }}>
-        <div className="absolute inset-0 bg-emerald-900/65"></div>
+        <div className="absolute inset-0 bg-emerald-900/30"></div>
         <div className="container mx-auto px-4 text-center">
           <h3 className="font-montserrat font-bold text-3xl mb-6 text-gold-100">Готовы начать обучение?</h3>
           <p className="text-xl mb-8 max-w-2xl mx-auto text-emerald-100">
