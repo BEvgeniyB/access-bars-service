@@ -46,7 +46,7 @@ const AccessBars = () => {
     {
       name: "Стандартная сессия", 
       duration: "60 мин",
-      price: "6 000 ₽",
+      price: "8 000 ₽",
       description: "Классический сеанс Access Bars для регулярной практики"
     },
     {
