@@ -114,7 +114,7 @@ const AccessBars = () => {
             <img 
               src="https://cdn.poehali.dev/files/40e60d43-5726-43aa-869b-a862f9704781.jpg"
               alt="Access Bars therapy session"
-              className="w-full h-96 object-cover rounded-3xl shadow-2xl animate-slide-up"
+              className="w-full h-96 rounded-3xl shadow-2xl animate-slide-up object-contain"
             />
           </div>
         </div>
