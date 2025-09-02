@@ -112,7 +112,7 @@ const AccessBars = () => {
         <div className="mt-16 relative">
           <div className="max-w-4xl mx-auto">
             <img 
-              src="/img/2fd25de9-f152-4a8b-9d14-71a287e4ec8c.jpg"
+              src="https://cdn.poehali.dev/files/40e60d43-5726-43aa-869b-a862f9704781.jpg"
               alt="Access Bars therapy session"
               className="w-full h-96 object-cover rounded-3xl shadow-2xl animate-slide-up"
             />
