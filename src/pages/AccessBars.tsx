@@ -108,14 +108,26 @@ const AccessBars = () => {
           </div>
         </div>
         
-        {/* Hero Image */}
+        {/* Hero Images */}
         <div className="mt-16 relative">
-          <div className="max-w-4xl mx-auto">
-            <img 
-              src="https://cdn.poehali.dev/files/40e60d43-5726-43aa-869b-a862f9704781.jpg"
-              alt="Access Bars therapy session"
-              className="w-full h-96 rounded-3xl shadow-2xl animate-slide-up object-contain"
-            />
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <img 
+                src="https://cdn.poehali.dev/files/ce1034c3-ae7a-425f-9eb0-7c2712c3c240.jpg"
+                alt="Специалист Access Bars"
+                className="w-full h-96 object-cover rounded-3xl shadow-2xl animate-slide-up"
+              />
+              <img 
+                src="https://cdn.poehali.dev/files/40e60d43-5726-43aa-869b-a862f9704781.jpg"
+                alt="Access Bars therapy session"
+                className="w-full h-96 object-cover rounded-3xl shadow-2xl animate-slide-up"
+              />
+              <img 
+                src="https://cdn.poehali.dev/files/2e7c5f05-7502-4d70-8942-b7055e5a89f5.jpg"
+                alt="Консультация Access Bars"
+                className="w-full h-96 object-cover rounded-3xl shadow-2xl animate-slide-up"
+              />
+            </div>
           </div>
         </div>
       </section>
