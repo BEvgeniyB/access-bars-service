@@ -96,10 +96,13 @@ const Healing = () => {
             <h2 className="font-montserrat font-bold text-4xl md:text-5xl text-gold-100 mb-6">
               Перцептивные технологии <span className="text-gold-400">исцеления</span>
             </h2>
-            <p className="text-xl text-emerald-100 mb-8 leading-relaxed">
-              Уникальные методы энергетического целительства для глубокого исцеления 
-              на всех уровнях: физическом, эмоциональном, ментальном и духовном
-            </p>
+            <p className="text-emerald-100 mb-8 leading-relaxed text-center text-base px-1">Целительский сеанс.
+Что это такое и как проходит?
+Телесная практика на основе обучения "Перцептивные технологии" Школы Целителей Галины Серегиной.
+Работа происходит с опорно-двигательным аппаратом, мышцами, связками тела и самое главное-психосоматическими процессами.
+Это оздоровительный процесс!
+Помогает при очень большом перечне заболеваний и дисфункций тела. Противопоказаний нет!
+Можно детям, беременным и инвалидам.</p>
             <div className="flex flex-wrap justify-center gap-4">
               <Button size="lg" className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold">
                 <Icon name="Calendar" className="mr-2" size={20} />
