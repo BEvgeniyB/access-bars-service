@@ -172,10 +172,13 @@ const Healing = () => {
       <section className="py-16 bg-emerald-800/20 backdrop-blur-sm relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Используемые техники</h3>
-            <p className="text-lg text-emerald-100 max-w-2xl mx-auto">
-              Комплексный подход с применением различных методов целительства
-            </p>
+            <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Целительский сеанс.</h3>
+            <p className="text-lg text-emerald-100 max-w-2xl mx-auto">Что это такое и как проходит?
+Телесная практика на основе обучения "Перцептивные технологии" Школы Целителей Галины Серегиной.
+Работа происходит с опорно-двигательным аппаратом, мышцами, связками тела и самое главное-психосоматическими процессами.
+Это оздоровительный процесс!
+Помогает при очень большом перечне заболеваний и дисфункций тела. Противопоказаний нет!
+Можно детям, беременным и инвалидам.</p>
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
