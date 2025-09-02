@@ -102,10 +102,10 @@ const AccessBars = () => {
                   Выбрать сессию
                 </Button>
               </a>
-              <a href="#sessions">
+              <a href="#benefits">
                 <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold px-8 py-3 text-lg backdrop-blur-sm">
-                  <Icon name="Package" className="mr-2" size={20} />
-                  Посмотреть пакеты
+                  <Icon name="Heart" className="mr-2" size={20} />
+                  Польза Access Bars
                 </Button>
               </a>
             </div>
