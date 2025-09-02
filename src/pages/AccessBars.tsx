@@ -96,14 +96,18 @@ const AccessBars = () => {
               освобождения от стресса и активации внутренних ресурсов организма
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold px-8 py-3 text-lg shadow-2xl border-2 border-gold-400">
-                <Icon name="Calendar" className="mr-2" size={20} />
-                Записаться на сессию
-              </Button>
-              <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold px-8 py-3 text-lg backdrop-blur-sm">
-                <Icon name="Play" className="mr-2" size={20} />
-                Смотреть видео
-              </Button>
+              <a href="#sessions">
+                <Button size="lg" className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold px-8 py-3 text-lg shadow-2xl border-2 border-gold-400">
+                  <Icon name="Calendar" className="mr-2" size={20} />
+                  Выбрать сессию
+                </Button>
+              </a>
+              <a href="#sessions">
+                <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold px-8 py-3 text-lg backdrop-blur-sm">
+                  <Icon name="Package" className="mr-2" size={20} />
+                  Посмотреть пакеты
+                </Button>
+              </a>
             </div>
           </div>
         </div>
