@@ -148,9 +148,9 @@ const Training = () => {
                       <div className="text-emerald-200 font-semibold">Стоимость:</div>
                       <div className="space-y-1 text-sm">
                         <div className="text-gold-400 font-bold text-lg">29 000₽</div>
-                        <div className="text-emerald-200">Повторно: 14 500₽</div>
+                        <div className="text-gold-400 font-bold">Повторно: 14 500₽</div>
                         <div className="text-emerald-200">Дети до 16 лет: бесплатно</div>
-                        <div className="text-emerald-200">16-18 лет: 14 500₽</div>
+                        <div className="text-gold-400 font-bold">16-18 лет: 14 500₽</div>
                         <div className="text-emerald-300 text-xs italic">В сопровождении родителей</div>
                       </div>
                     </div>
