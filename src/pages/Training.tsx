@@ -58,11 +58,15 @@ const Training = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900 relative overflow-hidden">
-      {/* Luxury Background Elements */}
-      <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/90 to-emerald-950/90"></div>
-      <div className="absolute top-0 left-0 w-96 h-96 bg-gold-400/20 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gold-500/20 rounded-full blur-3xl"></div>
+    <div className="min-h-screen relative overflow-hidden" style={{
+        backgroundImage: `url('https://cdn.poehali.dev/files/1dcdfac9-f41f-45e1-849d-92b17a28a596.png')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed'
+      }}>
+      {/* Overlay for readability */}
+      <div className="absolute inset-0 bg-emerald-900/70"></div>
       {/* Header */}
       <header className="bg-emerald-900/95 backdrop-blur-sm shadow-lg sticky top-0 z-50 border-b border-gold-400/30 relative">
         <div className="container mx-auto px-4 py-4 relative">
