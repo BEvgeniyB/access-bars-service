@@ -109,7 +109,14 @@ const Training = () => {
       </section>
 
       {/* Courses */}
-      <section className="py-16 bg-emerald-800/30 backdrop-blur-sm relative">
+      <section className="py-16 relative" style={{
+        backgroundImage: `url('https://cdn.poehali.dev/files/1dcdfac9-f41f-45e1-849d-92b17a28a596.png')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed'
+      }}>
+        <div className="absolute inset-0 bg-emerald-900/70"></div>
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Программы обучения</h3>
@@ -166,7 +173,14 @@ const Training = () => {
       </section>
 
       {/* Master Instructor */}
-      <section className="py-16 bg-emerald-800/20 backdrop-blur-sm relative">
+      <section className="py-16 relative" style={{
+        backgroundImage: `url('https://cdn.poehali.dev/files/1dcdfac9-f41f-45e1-849d-92b17a28a596.png')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed'
+      }}>
+        <div className="absolute inset-0 bg-emerald-900/60"></div>
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Ваш преподаватель</h3>
@@ -221,7 +235,14 @@ const Training = () => {
       </section>
 
       {/* Benefits */}
-      <section className="py-16 bg-emerald-800/30 backdrop-blur-sm relative">
+      <section className="py-16 relative" style={{
+        backgroundImage: `url('https://cdn.poehali.dev/files/1dcdfac9-f41f-45e1-849d-92b17a28a596.png')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed'
+      }}>
+        <div className="absolute inset-0 bg-emerald-900/75"></div>
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Преимущества обучения у нас</h3>
@@ -244,7 +265,14 @@ const Training = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-gradient-to-r from-emerald-600/20 to-emerald-700/20 backdrop-blur-sm relative">
+      <section className="py-20 relative" style={{
+        backgroundImage: `url('https://cdn.poehali.dev/files/1dcdfac9-f41f-45e1-849d-92b17a28a596.png')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed'
+      }}>
+        <div className="absolute inset-0 bg-emerald-900/65"></div>
         <div className="container mx-auto px-4 text-center">
           <h3 className="font-montserrat font-bold text-3xl mb-6 text-gold-100">Готовы начать обучение?</h3>
           <p className="text-xl mb-8 max-w-2xl mx-auto text-emerald-100">
