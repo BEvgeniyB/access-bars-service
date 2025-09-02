@@ -125,7 +125,7 @@ const Training = () => {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-8 max-w-7xl mx-auto">
             {courses.map((course, index) => (
               <Card key={index} className="relative overflow-hidden hover:shadow-xl transition-all duration-300 group bg-emerald-800/30 backdrop-blur-sm">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold-400 to-gold-500"></div>
@@ -197,6 +197,46 @@ const Training = () => {
                 </CardContent>
               </Card>
             ))}
+            
+            {/* Отдельная информационная секция */}
+            <Card className="relative overflow-hidden hover:shadow-xl transition-all duration-300 group bg-emerald-800/30 backdrop-blur-sm">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold-400 to-gold-500"></div>
+              <CardHeader>
+                <CardTitle className="text-xl font-montserrat text-gold-200">О технике Access Bars</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-emerald-100 text-sm leading-relaxed space-y-3">
+                  <p className="font-semibold text-gold-200">Приглашаю вас на обучение Access Bars💆‍♀️</p>
+                  <p className="font-bold">Всего 1 день!</p>
+                  <p>Что в переводе означает Доступ к осознанности</p>
+                  <p>Где осознанность- способность постоянно открываться большим возможностям, большему выбору и большему в жизни.</p>
+                  <p>А Бары это 32 точки на голове, которые отвечают за основные сферы жизни:</p>
+                  <div className="grid grid-cols-2 gap-1 text-xs text-emerald-200">
+                    <div>• Деньги</div>
+                    <div>• Контроль</div>
+                    <div>• Созидание</div>
+                    <div>• Создание связей</div>
+                    <div>• Тело</div>
+                    <div>• Исцеление</div>
+                    <div>• Сексуальность</div>
+                    <div>• Благодарность</div>
+                    <div>• Коммуникации</div>
+                    <div>• И т.д...</div>
+                  </div>
+                  <p>Прикасаясь к этим точкам, происходит удаление ненужных программ и ограничений...</p>
+                  <p>После чего в вашей жизни происходят чудеса и все что вы хотите максимально легко и просто появляется в вашей жизни💫</p>
+                  <p className="font-bold text-gold-200">Обучение всего 1 день!</p>
+                  <div className="space-y-1 text-xs">
+                    <div>✔ Вы получаете новую профессию</div>
+                    <div>✔ Сертификат международного образца</div>
+                    <div>✔ Учебное пособие</div>
+                    <div>✔ Инструмент на всю жизнь</div>
+                    <div>✔ 2 сессии баров за одно обучение</div>
+                  </div>
+                  <p className="text-gold-300 font-semibold">И безграничные возможности💫</p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
