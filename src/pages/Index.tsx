@@ -124,8 +124,8 @@ const MassageWebsite = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="animate-slide-up">
                 <img 
-                  src="https://cdn.poehali.dev/files/7177734d-5aad-4f45-8ffc-6d6f597621c1.JPG"
-                  alt="Массажист проводит сеанс массажа"
+                  src="https://cdn.poehali.dev/files/38fa9efb-1bf6-477f-abf1-6f3cb074aea6.jpg"
+                  alt="Женщина читает журнал на диване"
                   className="w-full h-80 shadow-2xl object-contain rounded-full"
                 />
               </div>
