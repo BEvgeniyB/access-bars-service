@@ -82,7 +82,8 @@ const AccessBars = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="py-20 px-4 text-center relative overflow-hidden">
+      <section className="py-20 px-4 text-center relative overflow-hidden" style={{backgroundImage: `url('https://cdn.poehali.dev/files/12b737b3-bf4d-499d-8f9a-ff594a4f705f.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center'}}>
+        <div className="absolute inset-0 bg-emerald-900/40"></div>
         <div className="container mx-auto relative z-10">
           <div className="animate-fade-in">
             <h2 className="font-montserrat font-bold text-5xl md:text-6xl text-gold-100 mb-6 leading-tight drop-shadow-2xl">
