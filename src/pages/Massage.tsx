@@ -126,8 +126,8 @@ const Massage = () => {
         </div>
       </div>
 
-      {/* Hero Section */>
-      <section className="py-32 px-4 text-center relative overflow-hidden">
+      {/* Hero Section */}
+      <section id="hero" className="py-32 px-4 text-center relative overflow-hidden">
         <div className="container mx-auto relative z-10">
           <div className="animate-fade-in">
             <div className="inline-flex items-center gap-2 bg-emerald-800/30 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-gold-400/20">
