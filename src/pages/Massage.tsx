@@ -46,7 +46,13 @@ const Massage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-700 relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden" style={{
+        backgroundImage: `url('https://cdn.poehali.dev/files/3d793832-1b45-412e-9e96-8322568689f1.png')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed'
+      }}>
       {/* Header */}
       <header className="absolute top-0 left-0 right-0 z-50 p-6">
         <div className="flex justify-between items-center max-w-6xl mx-auto">
