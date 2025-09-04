@@ -260,7 +260,7 @@ const Massage = () => {
       {/* CTA Section */}
       <section className="py-20">
         <div className="container mx-auto px-4 text-center">
-          <div className="max-w-4xl mx-auto bg-gradient-to-r from-emerald-800 to-emerald-700 rounded-3xl p-12 text-center border-2 border-gold-400/30 shadow-2xl animate-fade-in">
+          <div className="max-w-4xl mx-auto from-emerald-800 to-emerald-700 rounded-3xl p-12 text-center border-2 border-gold-400/30 shadow-2xl animate-fade-in bg-green-800">
             <div className="w-20 h-20 bg-gold-400/20 rounded-full flex items-center justify-center mx-auto mb-6">
               <Icon name="Calendar" className="text-gold-400" size={32} />
             </div>
