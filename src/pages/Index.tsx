@@ -85,8 +85,73 @@ const MassageWebsite = () => {
 
 
 
+      {/* Navigation Menu */}
+      <div className="fixed top-20 left-4 z-40">
+        <div className="group">
+          <Button 
+            className="border-2 border-gold-400/50 text-gold-400 hover:bg-gold-400/10 shadow-xl" 
+            style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}
+            onClick={() => {
+              const menu = document.getElementById('section-menu');
+              menu?.classList.toggle('hidden');
+            }}
+          >
+            <Icon name="Menu" size={20} />
+            <span className="ml-2 hidden sm:inline">Разделы</span>
+          </Button>
+          
+          <div id="section-menu" className="hidden absolute top-12 left-0 w-64 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
+            <div className="p-2 space-y-1">
+              <button 
+                className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
+                onClick={() => {
+                  document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' });
+                  document.getElementById('section-menu')?.classList.add('hidden');
+                }}
+              >
+                <Icon name="Home" size={16} />
+                Главная
+              </button>
+              
+              <button 
+                className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
+                onClick={() => {
+                  document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
+                  document.getElementById('section-menu')?.classList.add('hidden');
+                }}
+              >
+                <Icon name="Sparkles" size={16} />
+                Наши услуги
+              </button>
+              
+              <button 
+                className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
+                onClick={() => {
+                  document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
+                  document.getElementById('section-menu')?.classList.add('hidden');
+                }}
+              >
+                <Icon name="User" size={16} />
+                Обо мне
+              </button>
+              
+              <button 
+                className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
+                onClick={() => {
+                  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                  document.getElementById('section-menu')?.classList.add('hidden');
+                }}
+              >
+                <Icon name="Phone" size={16} />
+                Контакты
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Hero Section */}
-      <section className="py-32 px-4 text-center relative overflow-hidden">
+      <section id="hero" className="py-32 px-4 text-center relative overflow-hidden">
         <div className="container mx-auto relative z-10">
           {/* Watermark N in Hero Section */}
           <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-5">
@@ -147,7 +212,7 @@ const MassageWebsite = () => {
       </section>
 
       {/* Services Section */}
-      <section 
+      <section id="services" 
         id="services" 
         className="py-20 relative"
         style={{
@@ -195,7 +260,7 @@ const MassageWebsite = () => {
       </section>
 
       {/* About Section */}
-      <section 
+      <section id="about" 
         id="about" 
         className="py-20 relative"
         style={{
