@@ -111,7 +111,7 @@ const AccessBars = () => {
               <button 
                 className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
                 onClick={() => {
-                  document.getElementById('what-is')?.scrollIntoView({ behavior: 'smooth' });
+                  document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
                   document.getElementById('section-menu')?.classList.add('hidden');
                 }}
               >
@@ -402,7 +402,7 @@ const AccessBars = () => {
       </section>
 
       {/* Contact Section */}
-      <section className="py-20 bg-emerald-800/30 backdrop-blur-sm relative">
+      <section id="booking" className="py-20 bg-emerald-800/30 backdrop-blur-sm relative">
         <div className="container mx-auto px-4 text-center">
           <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-8">Записаться на Access Bars</h2>
           <p className="text-xl text-emerald-100 mb-8 max-w-2xl mx-auto">
