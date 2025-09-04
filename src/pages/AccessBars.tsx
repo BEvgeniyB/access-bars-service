@@ -422,7 +422,7 @@ const AccessBars = () => {
           
           <Button size="lg" className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-medium px-12 py-4 text-lg">
             <Icon name="Phone" className="mr-2" size={20} />
-            Позвонить: +7 (495) 123-45-67
+            Позвонить: +7(918)4141221
           </Button>
         </div>
       </section>

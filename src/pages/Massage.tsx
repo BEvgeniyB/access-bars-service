@@ -270,7 +270,7 @@ const Massage = () => {
               </Button>
               <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold px-10 py-4 text-lg backdrop-blur-sm">
                 <Icon name="Phone" className="mr-2" size={18} />
-                +7 (495) 123-45-67
+                +7(918)4141221
               </Button>
             </div>
           </div>

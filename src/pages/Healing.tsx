@@ -339,7 +339,7 @@ const Healing = () => {
           <div className="flex flex-wrap justify-center gap-4">
             <Button size="lg" className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold">
               <Icon name="Phone" className="mr-2" size={20} />
-              +7 (495) 123-45-67
+              +7(918)4141221
             </Button>
             <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
               <Icon name="MessageCircle" className="mr-2" size={20} />
@@ -362,7 +362,7 @@ const Healing = () => {
             <div>
               <h4 className="font-semibold text-lg mb-4 text-gold-200">Контакты</h4>
               <div className="space-y-2 text-emerald-200">
-                <p>+7 (495) 123-45-67</p>
+                <p>+7(918)4141221</p>
                 <p>healing@harmony-energy.ru</p>
                 <p>Москва, ул. Примерная, 123</p>
               </div>

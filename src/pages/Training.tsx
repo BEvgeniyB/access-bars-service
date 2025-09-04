@@ -425,7 +425,7 @@ const Training = () => {
             <div>
               <h4 className="font-semibold text-lg mb-4 text-gold-200">Контакты</h4>
               <div className="space-y-2 text-emerald-200">
-                <p>+7 (495) 123-45-67</p>
+                <p>+7(918)4141221</p>
                 <p>info@harmony-energy.ru</p>
                 <p>Москва, ул. Примерная, 123</p>
               </div>
