@@ -212,13 +212,13 @@ const Healing = () => {
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {results.map((result, index) => (
-              <Card key={index} className="text-center p-6 hover:shadow-lg transition-shadow bg-white/95 border-2 border-gold-400/40 shadow-2xl">
+              <Card key={index} className="text-center p-6 hover:shadow-lg transition-shadow bg-black/80 border-2 border-gold-400/50 shadow-xl">
                 <CardContent className="space-y-4">
                   <div className="w-16 h-16 bg-gold-400/30 rounded-full flex items-center justify-center mx-auto">
                     <Icon name={result.icon} className="text-gold-400" size={32} />
                   </div>
-                  <h4 className="font-montserrat font-bold text-lg text-emerald-800">{result.title}</h4>
-                  <p className="text-emerald-700 text-sm leading-relaxed">{result.description}</p>
+                  <h4 className="font-montserrat font-bold text-lg text-gold-200">{result.title}</h4>
+                  <p className="text-emerald-100 text-sm leading-relaxed">{result.description}</p>
                 </CardContent>
               </Card>
             ))}
