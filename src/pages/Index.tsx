@@ -210,9 +210,81 @@ const MassageWebsite = () => {
               <p className="text-lg text-emerald-100 mb-6 leading-relaxed">
                 Гармония энергий — это оазис спокойствия в центре города. 
               </p>
-              <p className="text-lg text-emerald-100 mb-4 leading-relaxed text-left">Профессиональный целитель и наставник Ваш путь к гармонии тела и души О специалисте Сертифицированный мастер с 6-летним опытом работы Духовный наставник по призванию Эксперт в области энергетического целительства Владею техниками Access Bars, перцептивными технологиями и массажем Уникальное наследие Мой уникальный и сильный дар перешёл ко мне по линии обоих родов — и по материнской, и по отцовской. Две противоположные энергии соединились во мне, создав необычную синергию. Индивидуальный подход к каждому клиенту Ключевые направления работы : 
-Access Bars — освобождение разума от ментальных блоков. Энергетическое целительство Различные техники массажа. Перцептивные технологии.</p>
-              <p className="text-lg text-emerald-100 mb-8 leading-relaxed">После сеансов  вы почувствуете глубокое расслабление и внутренний покой. Освободитесь от стресса и ментальных блоков, восстановите энергетический баланс и гармонию. Ваше тело обретет легкость, разум — ясность, а душа — спокойствие. Многие клиенты отмечают улучшение сна, повышение жизненной энергии и общее ощущение благополучия.</p>
+              <div className="text-lg text-emerald-100 mb-8 leading-relaxed space-y-4">
+                <div className="mb-6">
+                  <h3 className="font-montserrat font-semibold text-2xl text-gold-200 mb-4">Профессиональный целитель и наставник</h3>
+                  <p className="text-lg text-emerald-100">Ваш путь к гармонии тела и души</p>
+                </div>
+
+                <div className="mb-6">
+                  <h4 className="font-montserrat font-semibold text-xl text-gold-300 mb-3">О специалисте</h4>
+                  <ul className="list-disc list-inside space-y-2 text-emerald-100">
+                    <li>Сертифицированный мастер с 6-летним опытом работы</li>
+                    <li>Духовный наставник по призванию</li>
+                    <li>Эксперт в области энергетического целительства</li>
+                    <li>Владею техниками Access Bars, перцептивными технологиями и массажем</li>
+                  </ul>
+                </div>
+
+                <div className="mb-6">
+                  <h4 className="font-montserrat font-semibold text-xl text-gold-300 mb-3">Уникальное наследие</h4>
+                  <ul className="list-disc list-inside space-y-2 text-emerald-100">
+                    <li>Двойная энергия — дар, переданный по материнской и отцовской линии</li>
+                    <li>Особая синергия противоположных энергий</li>
+                    <li>Индивидуальный подход к каждому клиенту</li>
+                  </ul>
+                </div>
+
+                <div className="mb-6">
+                  <h4 className="font-montserrat font-semibold text-xl text-gold-300 mb-3">Ключевые направления работы</h4>
+                  <ul className="list-disc list-inside space-y-2 text-emerald-100">
+                    <li>Access Bars — освобождение разума от ментальных блоков</li>
+                    <li>Энергетическое целительство</li>
+                    <li>Различные техники массажа</li>
+                    <li>Перцептивные технологии</li>
+                  </ul>
+                </div>
+
+                <div className="mb-6">
+                  <h4 className="font-montserrat font-semibold text-xl text-gold-300 mb-3">Результаты работы</h4>
+                  <ul className="list-disc list-inside space-y-2 text-emerald-100">
+                    <li>Глубокое расслабление и внутренний покой</li>
+                    <li>Освобождение от стресса и ментальных блоков</li>
+                    <li>Восстановление энергетического баланса</li>
+                    <li>Улучшение качества сна</li>
+                    <li>Повышение жизненной энергии</li>
+                    <li>Гармония тела, разума и души</li>
+                  </ul>
+                </div>
+
+                <div className="mb-6">
+                  <h4 className="font-montserrat font-semibold text-xl text-gold-300 mb-3">Что вы получите</h4>
+                  <ul className="list-disc list-inside space-y-2 text-emerald-100">
+                    <li>Коррекцию дисфункций на физическом, психическом и энергетическом уровнях</li>
+                    <li>Внутреннюю опору и уверенность</li>
+                    <li>Трезвый взгляд на мир</li>
+                    <li>Чувство свободы и расширения энергии</li>
+                    <li>Легкость в теле и ясность разума</li>
+                  </ul>
+                </div>
+
+                <div className="mb-6">
+                  <h4 className="font-montserrat font-semibold text-xl text-gold-300 mb-3">Отзывы клиентов</h4>
+                  <p className="text-emerald-100 mb-2">Многие отмечают:</p>
+                  <ul className="list-disc list-inside space-y-2 text-emerald-100">
+                    <li>Общее улучшение самочувствия</li>
+                    <li>Повышение уровня энергии</li>
+                    <li>Ощущение внутреннего благополучия</li>
+                    <li>Гармонию в жизни</li>
+                  </ul>
+                </div>
+
+                <div className="mt-8 p-6 bg-gold-400/10 backdrop-blur-sm rounded-2xl">
+                  <p className="text-gold-200 font-semibold text-center">
+                    Позвольте себе погрузиться в мир гармонии и исцеления. Запишитесь на сеанс прямо сейчас!
+                  </p>
+                </div>
+              </div>
               
               <div className="grid grid-cols-2 gap-6">
                 <div className="text-center p-6 bg-emerald-800/30 backdrop-blur-sm rounded-2xl shadow-lg">
