@@ -135,12 +135,12 @@ const Training = () => {
               <button 
                 className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
                 onClick={() => {
-                  document.getElementById('testimonials')?.scrollIntoView({ behavior: 'smooth' });
+                  document.querySelector('footer')?.scrollIntoView({ behavior: 'smooth' });
                   document.getElementById('section-menu')?.classList.add('hidden');
                 }}
               >
                 <Icon name="MessageCircle" size={16} />
-                Отзывы
+                О преподавателе
               </button>
               
               <button 
@@ -184,7 +184,7 @@ const Training = () => {
       </section>
 
       {/* Courses */}
-      <section className="py-16 relative" style={{
+      <section id="courses" className="py-16 relative" style={{
         backgroundImage: `url('https://cdn.poehali.dev/files/fd60c33c-3948-432b-92ba-2955cd2ace49.jpg')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -356,7 +356,7 @@ const Training = () => {
       </section>
 
       {/* Benefits */}
-      <section className="py-16 relative" style={{
+      <section id="features" className="py-16 relative" style={{
         backgroundImage: `url('https://cdn.poehali.dev/files/fd60c33c-3948-432b-92ba-2955cd2ace49.jpg')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -386,7 +386,7 @@ const Training = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-20 relative" style={{
+      <section id="contact" className="py-20 relative" style={{
         backgroundImage: `url('https://cdn.poehali.dev/files/fd60c33c-3948-432b-92ba-2955cd2ace49.jpg')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
