@@ -210,15 +210,15 @@ const MassageWebsite = () => {
               <p className="text-lg text-emerald-100 mb-6 leading-relaxed">
                 Гармония энергий — это оазис спокойствия в центре города. 
               </p>
-              <div className="text-lg text-emerald-100 mb-8 leading-relaxed space-y-4">
-                <div className="mb-6">
-                  <h3 className="font-montserrat font-semibold text-2xl text-gold-200 mb-4">Профессиональный целитель и наставник</h3>
+              <div className="text-lg text-emerald-100 mb-8 leading-relaxed space-y-2">
+                <div className="mb-3">
+                  <h3 className="font-montserrat font-semibold text-2xl text-gold-200 mb-2">Профессиональный целитель и наставник</h3>
                   <p className="text-lg text-emerald-100">Ваш путь к гармонии тела и души</p>
                 </div>
 
-                <div className="mb-6">
-                  <h4 className="font-montserrat font-semibold text-xl text-gold-300 mb-3">О специалисте</h4>
-                  <ul className="list-disc list-inside space-y-2 text-emerald-100">
+                <div className="mb-3">
+                  <h4 className="font-montserrat font-semibold text-xl text-gold-300 mb-1">О специалисте</h4>
+                  <ul className="list-disc list-inside space-y-1 text-emerald-100">
                     <li>Сертифицированный мастер с 6-летним опытом работы</li>
                     <li>Духовный наставник по призванию</li>
                     <li>Эксперт в области энергетического целительства</li>
@@ -226,18 +226,18 @@ const MassageWebsite = () => {
                   </ul>
                 </div>
 
-                <div className="mb-6">
-                  <h4 className="font-montserrat font-semibold text-xl text-gold-300 mb-3">Уникальное наследие</h4>
-                  <ul className="list-disc list-inside space-y-2 text-emerald-100">
+                <div className="mb-3">
+                  <h4 className="font-montserrat font-semibold text-xl text-gold-300 mb-1">Уникальное наследие</h4>
+                  <ul className="list-disc list-inside space-y-1 text-emerald-100">
                     <li>Двойная энергия — дар, переданный по материнской и отцовской линии</li>
                     <li>Особая синергия противоположных энергий</li>
                     <li>Индивидуальный подход к каждому клиенту</li>
                   </ul>
                 </div>
 
-                <div className="mb-6">
-                  <h4 className="font-montserrat font-semibold text-xl text-gold-300 mb-3">Ключевые направления работы</h4>
-                  <ul className="list-disc list-inside space-y-2 text-emerald-100">
+                <div className="mb-3">
+                  <h4 className="font-montserrat font-semibold text-xl text-gold-300 mb-1">Ключевые направления работы</h4>
+                  <ul className="list-disc list-inside space-y-1 text-emerald-100">
                     <li>Access Bars — освобождение разума от ментальных блоков</li>
                     <li>Энергетическое целительство</li>
                     <li>Различные техники массажа</li>
@@ -245,9 +245,9 @@ const MassageWebsite = () => {
                   </ul>
                 </div>
 
-                <div className="mb-6">
-                  <h4 className="font-montserrat font-semibold text-xl text-gold-300 mb-3">Результаты работы</h4>
-                  <ul className="list-disc list-inside space-y-2 text-emerald-100">
+                <div className="mb-3">
+                  <h4 className="font-montserrat font-semibold text-xl text-gold-300 mb-1">Результаты работы</h4>
+                  <ul className="list-disc list-inside space-y-1 text-emerald-100">
                     <li>Глубокое расслабление и внутренний покой</li>
                     <li>Освобождение от стресса и ментальных блоков</li>
                     <li>Восстановление энергетического баланса</li>
@@ -257,9 +257,9 @@ const MassageWebsite = () => {
                   </ul>
                 </div>
 
-                <div className="mb-6">
-                  <h4 className="font-montserrat font-semibold text-xl text-gold-300 mb-3">Что вы получите</h4>
-                  <ul className="list-disc list-inside space-y-2 text-emerald-100">
+                <div className="mb-3">
+                  <h4 className="font-montserrat font-semibold text-xl text-gold-300 mb-1">Что вы получите</h4>
+                  <ul className="list-disc list-inside space-y-1 text-emerald-100">
                     <li>Коррекцию дисфункций на физическом, психическом и энергетическом уровнях</li>
                     <li>Внутреннюю опору и уверенность</li>
                     <li>Трезвый взгляд на мир</li>
@@ -268,10 +268,10 @@ const MassageWebsite = () => {
                   </ul>
                 </div>
 
-                <div className="mb-6">
-                  <h4 className="font-montserrat font-semibold text-xl text-gold-300 mb-3">Отзывы клиентов</h4>
-                  <p className="text-emerald-100 mb-2">Многие отмечают:</p>
-                  <ul className="list-disc list-inside space-y-2 text-emerald-100">
+                <div className="mb-3">
+                  <h4 className="font-montserrat font-semibold text-xl text-gold-300 mb-1">Отзывы клиентов</h4>
+                  <p className="text-emerald-100 mb-1">Многие отмечают:</p>
+                  <ul className="list-disc list-inside space-y-1 text-emerald-100">
                     <li>Общее улучшение самочувствия</li>
                     <li>Повышение уровня энергии</li>
                     <li>Ощущение внутреннего благополучия</li>
@@ -279,7 +279,7 @@ const MassageWebsite = () => {
                   </ul>
                 </div>
 
-                <div className="mt-8 p-6 bg-gold-400/10 backdrop-blur-sm rounded-2xl">
+                <div className="mt-4 p-6 bg-gold-400/10 backdrop-blur-sm rounded-2xl">
                   <p className="text-gold-200 font-semibold text-center">
                     Позвольте себе погрузиться в мир гармонии и исцеления. Запишитесь на сеанс прямо сейчас!
                   </p>
