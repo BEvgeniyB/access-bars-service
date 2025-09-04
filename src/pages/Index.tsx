@@ -289,7 +289,7 @@ const MassageWebsite = () => {
                   <div className="text-emerald-200">Довольных клиентов</div>
                 </div>
                 <div className="text-center p-6 bg-emerald-800/30 backdrop-blur-sm rounded-2xl shadow-lg">
-                  <div className="text-3xl font-bold text-gold-400 mb-2">5</div>
+                  <div className="text-3xl font-bold text-gold-400 mb-2">6</div>
                   <div className="text-emerald-200">Лет опыта</div>
                 </div>
               </div>
