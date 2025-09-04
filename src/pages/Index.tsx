@@ -414,7 +414,7 @@ const MassageWebsite = () => {
             </div>
             <div className="flex items-center gap-3 text-lg">
               <Icon name="Clock" className="text-gold-400" size={24} />
-              <span className="text-emerald-200">Ежедневно 9:00-21:00</span>
+              <span className="text-emerald-200">Ежедневно 12:00-22:00</span>
             </div>
           </div>
           
