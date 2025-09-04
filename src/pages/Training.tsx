@@ -320,7 +320,7 @@ const Training = () => {
                     </div>
                     <h4 className="font-montserrat font-bold text-2xl text-gold-200 mb-2">{instructor.name}</h4>
                     <p className="text-gold-400 font-semibold text-lg mb-2">{instructor.level}</p>
-                    <p className="text-emerald-200 font-medium">Опыт: {instructor.experience}</p>
+                    <p className="text-emerald-200 font-medium">Опыт: 6+ лет</p>
                   </div>
                   
                   <div className="md:col-span-2 space-y-6">
