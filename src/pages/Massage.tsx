@@ -54,7 +54,8 @@ const Massage = () => {
             Гармония энергий
           </div>
           <nav className="hidden md:flex space-x-8">
-            <a href="/#services" className="text-emerald-100 hover:text-gold-400 transition-colors font-medium">Услуги</a>
+            <a href="/#services" className="text-emerald-100 hover:text-gold-400 transition-colors font-medium">Главная
+</a>
             <a href="/#about" className="text-emerald-100 hover:text-gold-400 transition-colors font-medium">О нас</a>
             <a href="/#contact" className="text-emerald-100 hover:text-gold-400 transition-colors font-medium">Контакты</a>
           </nav>
