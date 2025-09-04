@@ -280,11 +280,7 @@ const MassageWebsite = () => {
                   </ul>
                 </div>
 
-                <div className="mt-4 p-6 bg-gold-400/10 backdrop-blur-sm rounded-2xl">
-                  <p className="text-gold-200 font-semibold text-center">
-                    Позвольте себе погрузиться в мир гармонии и исцеления. Запишитесь на сеанс прямо сейчас!
-                  </p>
-                </div>
+
               </div>
               
               <div className="grid grid-cols-2 gap-6">
@@ -300,6 +296,11 @@ const MassageWebsite = () => {
             </div>
             
             <div className="space-y-6">
+              <div className="p-6 bg-gold-400/10 backdrop-blur-sm rounded-2xl">
+                <p className="text-gold-200 font-semibold text-center">
+                  Позвольте себе погрузиться в мир гармонии и исцеления. Запишитесь на сеанс прямо сейчас!
+                </p>
+              </div>
               <div className="bg-emerald-800/30 backdrop-blur-sm p-6 rounded-2xl shadow-lg flex items-center gap-4">
                 <div className="w-12 h-12 bg-gold-400/20 rounded-full flex items-center justify-center">
                   <Icon name="Leaf" className="text-gold-400" size={24} />
