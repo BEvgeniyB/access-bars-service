@@ -229,7 +229,7 @@ const Massage = () => {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-20 bg-gradient-to-r from-emerald-700/20 to-emerald-600/20 backdrop-blur-sm relative">
+      <section className="py-20 relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 animate-fade-in">
             <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-4">Преимущества массажа</h2>
