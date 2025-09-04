@@ -296,7 +296,7 @@ const MassageWebsite = () => {
             </div>
             
             <div className="space-y-6">
-              <div className="p-6 bg-gold-400/10 backdrop-blur-sm rounded-2xl">
+              <div className="p-6 backdrop-blur-sm rounded-2xl bg-green-800">
                 <p className="text-gold-200 font-semibold text-center">
                   Позвольте себе погрузиться в мир гармонии и исцеления. Запишитесь на сеанс прямо сейчас!
                 </p>
