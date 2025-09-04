@@ -158,8 +158,8 @@ const Training = () => {
         </div>
       </div>
 
-      {/* Hero Section */>
-      <section className="py-20 text-center relative z-10">
+      {/* Hero Section */}
+      <section id="hero" className="py-20 text-center relative z-10">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <h2 className="font-montserrat font-bold text-4xl md:text-5xl text-gold-100 mb-6">
