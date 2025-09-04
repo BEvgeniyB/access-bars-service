@@ -89,8 +89,83 @@ const Healing = () => {
         </div>
       </header>
 
+      {/* Navigation Menu */}
+      <div className="fixed top-20 left-4 z-40">
+        <div className="group">
+          <Button 
+            className="bg-black/80 border-2 border-gold-400/50 text-gold-400 hover:bg-gold-400/10 shadow-xl"
+            onClick={() => {
+              const menu = document.getElementById('section-menu');
+              menu?.classList.toggle('hidden');
+            }}
+          >
+            <Icon name="Menu" size={20} />
+            <span className="ml-2 hidden sm:inline">Разделы</span>
+          </Button>
+          
+          <div id="section-menu" className="hidden absolute top-12 left-0 w-64 bg-black/90 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden">
+            <div className="p-2 space-y-1">
+              <button 
+                className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
+                onClick={() => {
+                  document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' });
+                  document.getElementById('section-menu')?.classList.add('hidden');
+                }}
+              >
+                <Icon name="Home" size={16} />
+                Главная секция
+              </button>
+              
+              <button 
+                className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
+                onClick={() => {
+                  document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
+                  document.getElementById('section-menu')?.classList.add('hidden');
+                }}
+              >
+                <Icon name="Sparkles" size={16} />
+                Услуги целительства
+              </button>
+              
+              <button 
+                className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
+                onClick={() => {
+                  document.getElementById('results')?.scrollIntoView({ behavior: 'smooth' });
+                  document.getElementById('section-menu')?.classList.add('hidden');
+                }}
+              >
+                <Icon name="Target" size={16} />
+                Результаты работы
+              </button>
+              
+              <button 
+                className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
+                onClick={() => {
+                  document.getElementById('process')?.scrollIntoView({ behavior: 'smooth' });
+                  document.getElementById('section-menu')?.classList.add('hidden');
+                }}
+              >
+                <Icon name="Settings" size={16} />
+                Процесс сеанса
+              </button>
+              
+              <button 
+                className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
+                onClick={() => {
+                  document.getElementById('cta')?.scrollIntoView({ behavior: 'smooth' });
+                  document.getElementById('section-menu')?.classList.add('hidden');
+                }}
+              >
+                <Icon name="Phone" size={16} />
+                Записаться
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Hero Section */}
-      <section className="py-20 text-center relative z-10">
+      <section id="hero" className="py-20 text-center relative z-10">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <h2 className="font-montserrat font-bold text-4xl md:text-5xl text-gold-100 mb-6">
@@ -118,7 +193,7 @@ const Healing = () => {
       </section>
 
       {/* Services */}
-      <section className="py-16 relative" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
+      <section id="services" className="py-16 relative" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Услуги целительства</h3>
@@ -201,7 +276,7 @@ const Healing = () => {
       </section>
 
       {/* Results */}
-      <section className="py-16 relative" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
+      <section id="results" className="py-16 relative" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Результаты работы</h3>
@@ -227,7 +302,7 @@ const Healing = () => {
       </section>
 
       {/* Process */}
-      <section className="py-16 bg-emerald-800/20  relative">
+      <section id="process" className="py-16 bg-emerald-800/20  relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Как проходит сеанс</h3>
@@ -255,7 +330,7 @@ const Healing = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-20 relative" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
+      <section id="cta" className="py-20 relative" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
         <div className="container mx-auto px-4 text-center">
           <h3 className="font-montserrat font-bold text-3xl mb-6 text-gold-100">Готовы к исцелению?</h3>
           <p className="text-xl mb-8 max-w-2xl mx-auto text-emerald-100">
