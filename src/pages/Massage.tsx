@@ -66,7 +66,7 @@ const Massage = () => {
       <div className="fixed top-20 left-4 z-40">
         <div className="group">
           <Button 
-            className="bg-emerald-900/80 border-2 border-gold-400/50 text-gold-400 hover:bg-gold-400/10 shadow-xl"
+            className="bg-black/80 border-2 border-gold-400/50 text-gold-400 hover:bg-gold-400/10 shadow-xl"
             onClick={() => {
               const menu = document.getElementById('section-menu');
               menu?.classList.toggle('hidden');
@@ -76,12 +76,12 @@ const Massage = () => {
             <span className="ml-2 hidden sm:inline">Разделы</span>
           </Button>
           
-          <div id="section-menu" className="hidden absolute top-12 left-0 w-64 bg-emerald-900/90 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden">
+          <div id="section-menu" className="hidden absolute top-12 left-0 w-64 bg-black/90 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden">
             <div className="p-2 space-y-1">
               <button 
                 className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
                 onClick={() => {
-                  document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' });
+                  document.querySelector('header')?.scrollIntoView({ behavior: 'smooth' });
                   document.getElementById('section-menu')?.classList.add('hidden');
                 }}
               >
