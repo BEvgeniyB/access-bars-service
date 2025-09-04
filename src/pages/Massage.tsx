@@ -176,7 +176,7 @@ const Massage = () => {
       </section>
 
       {/* Services Section */}
-      <section className="py-20 bg-emerald-800/30 backdrop-blur-sm relative">
+      <section className="py-20 relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 animate-fade-in">
             <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-4">Услуги массажа</h2>
