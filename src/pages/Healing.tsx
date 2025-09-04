@@ -68,13 +68,13 @@ const Healing = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900 relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover no-repeat fixed`}}>
       {/* Luxury Background Elements */}
-      <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/90 to-emerald-950/90"></div>
-      <div className="absolute top-0 right-0 w-96 h-96 bg-gold-400/20 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-gold-500/20 rounded-full blur-3xl"></div>
+      <div className="absolute inset-0 opacity-0"></div>
+      <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full blur-3xl" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}></div>
       {/* Header */}
-      <header className="bg-emerald-900/95 backdrop-blur-sm shadow-lg sticky top-0 z-50 border-b border-gold-400/30 relative">
+      <header className="shadow-lg sticky top-0 z-50 border-b border-gold-400/30 relative" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
         <div className="container mx-auto px-4 py-4 relative">
           <nav className="flex justify-between items-center">
             <h1 className="font-montserrat font-bold text-2xl text-gold-400">Гармония энергий</h1>
@@ -108,7 +108,7 @@ const Healing = () => {
                 <Icon name="Calendar" className="mr-2" size={20} />
                 Записаться на сеанс
               </Button>
-              <Button variant="outline" size="lg" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold backdrop-blur-sm">
+              <Button variant="outline" size="lg" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
                 <Icon name="Phone" className="mr-2" size={20} />
                 Консультация
               </Button>
@@ -118,7 +118,7 @@ const Healing = () => {
       </section>
 
       {/* Services */}
-      <section className="py-16 bg-emerald-800/30 backdrop-blur-sm relative">
+      <section className="py-16 relative" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Услуги целительства</h3>
@@ -129,11 +129,11 @@ const Healing = () => {
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
             {services.map((service, index) => (
-              <Card key={index} className="relative overflow-hidden hover:shadow-xl transition-all duration-300 group h-full bg-emerald-800/30 backdrop-blur-sm">
+              <Card key={index} className="relative overflow-hidden hover:shadow-xl transition-all duration-300 group h-full" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}} style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold-400 to-gold-500"></div>
                 <CardHeader className="pb-4">
                   <div className="flex items-start justify-between mb-3">
-                    <div className="w-12 h-12 bg-gradient-to-r from-gold-400/20 to-gold-500/20 rounded-full flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
                       <Icon name={service.icon} className="text-gold-400" size={24} />
                     </div>
                     <span className="text-2xl font-bold text-gold-400">{service.price}</span>
@@ -172,7 +172,7 @@ const Healing = () => {
       </section>
 
       {/* Techniques */}
-      <section className="py-16 bg-emerald-800/20 backdrop-blur-sm relative">
+      <section className="py-16 bg-emerald-800/20  relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Целительский сеанс.</h3>
@@ -186,7 +186,7 @@ const Healing = () => {
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {techniques.map((technique, index) => (
-              <Card key={index} className="text-center p-6 hover:shadow-lg transition-shadow bg-emerald-800/30 backdrop-blur-sm">
+              <Card key={index} className="text-center p-6 hover:shadow-lg transition-shadow ">
                 <CardContent className="space-y-4">
                   <div className="w-16 h-16 bg-gradient-to-r from-gold-400/20 to-gold-500/20 rounded-full flex items-center justify-center mx-auto">
                     <Icon name="Sparkles" className="text-gold-400" size={28} />
@@ -201,7 +201,7 @@ const Healing = () => {
       </section>
 
       {/* Results */}
-      <section className="py-16 bg-emerald-800/30 backdrop-blur-sm relative">
+      <section className="py-16 relative" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Результаты работы</h3>
@@ -212,7 +212,7 @@ const Healing = () => {
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {results.map((result, index) => (
-              <Card key={index} className="text-center p-6 hover:shadow-lg transition-shadow bg-emerald-800/30 backdrop-blur-sm">
+              <Card key={index} className="text-center p-6 hover:shadow-lg transition-shadow ">
                 <CardContent className="space-y-4">
                   <div className="w-16 h-16 bg-gradient-to-r from-gold-400/20 to-gold-500/20 rounded-full flex items-center justify-center mx-auto">
                     <Icon name={result.icon} className="text-gold-400" size={32} />
@@ -227,7 +227,7 @@ const Healing = () => {
       </section>
 
       {/* Process */}
-      <section className="py-16 bg-emerald-800/20 backdrop-blur-sm relative">
+      <section className="py-16 bg-emerald-800/20  relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Как проходит сеанс</h3>
@@ -255,7 +255,7 @@ const Healing = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-gradient-to-r from-emerald-600/20 to-emerald-700/20 backdrop-blur-sm relative">
+      <section className="py-20 relative" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
         <div className="container mx-auto px-4 text-center">
           <h3 className="font-montserrat font-bold text-3xl mb-6 text-gold-100">Готовы к исцелению?</h3>
           <p className="text-xl mb-8 max-w-2xl mx-auto text-emerald-100">
@@ -266,7 +266,7 @@ const Healing = () => {
               <Icon name="Phone" className="mr-2" size={20} />
               +7 (495) 123-45-67
             </Button>
-            <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold backdrop-blur-sm">
+            <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
               <Icon name="MessageCircle" className="mr-2" size={20} />
               WhatsApp
             </Button>
@@ -275,7 +275,7 @@ const Healing = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-emerald-950/90 backdrop-blur-sm text-white py-12">
+      <footer className="text-white py-12" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8">
             <div>
