@@ -39,13 +39,13 @@ const MassageWebsite = () => {
     <div 
       className="min-h-screen font-openSans relative overflow-hidden"
       style={{
-        background: `url('https://cdn.poehali.dev/files/d701186a-e2c5-485d-b82a-f33656271ae8.jpg') center/cover no-repeat fixed`,
+        background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover no-repeat fixed`,
       }}
     >
       {/* Dark overlay for text readability */}
-      <div className="absolute inset-0 bg-emerald-900/20 backdrop-blur-[0.5px]"></div>
+      <div className="absolute inset-0 opacity-0"></div>
       {/* Header */}
-      <header className="bg-transparent backdrop-blur-none shadow-lg sticky top-0 z-50 border-b border-gold-400/30 relative">
+      <header className="shadow-lg sticky top-0 z-50 border-b border-gold-400/30 relative" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
         <div className="container mx-auto px-4 relative">
           {/* Logo */}
           <div className="text-center py-3 border-b border-gold-400/20 relative">
@@ -108,7 +108,7 @@ const MassageWebsite = () => {
             <p className="text-xl text-emerald-100 mb-12 max-w-3xl mx-auto leading-relaxed">Глубокие энергетические практики и исцеление в атмосфере абсолютного спокойствия и гармонии</p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
               <Button size="lg" className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold px-10 py-4 text-lg shadow-2xl border-2 border-gold-400" onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}>ЗАПИСАТЬСЯ</Button>
-              <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold px-10 py-4 text-lg backdrop-blur-sm">
+              <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold px-10 py-4 text-lg" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
                 <Icon name="Phone" className="mr-2" size={20} />
                 +7 (495) 123-45-67
               </Button>
@@ -151,7 +151,7 @@ const MassageWebsite = () => {
         id="services" 
         className="py-20 relative"
         style={{
-          background: `url('https://cdn.poehali.dev/files/8a7413c3-969a-448c-ba9d-ed0ecea21ba7.jpg') center/cover`,
+          background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`,
           backgroundAttachment: 'fixed'
         }}
       >
@@ -165,7 +165,7 @@ const MassageWebsite = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {services.map((service, index) => (
-              <Card key={index} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg hover:-translate-y-2 bg-emerald-800/30 backdrop-blur-sm">
+              <Card key={index} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg hover:-translate-y-2" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
                 <CardHeader className="pb-4">
                   <div className="flex justify-between items-start mb-2">
                     <CardTitle className="font-montserrat text-xl text-gold-200 group-hover:text-gold-400 transition-colors">
@@ -199,7 +199,7 @@ const MassageWebsite = () => {
         id="about" 
         className="py-20 relative"
         style={{
-          background: `url('https://cdn.poehali.dev/files/cd6e0bc8-418e-4a70-aad0-acd89a5e74f0.jpg') center/cover`,
+          background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`,
           backgroundAttachment: 'fixed'
         }}
       >
@@ -296,13 +296,13 @@ const MassageWebsite = () => {
             </div>
             
             <div className="space-y-6">
-              <div className="p-6 backdrop-blur-sm rounded-2xl bg-green-800">
+              <div className="p-6 rounded-2xl" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
                 <p className="font-semibold text-center text-amber-400">
                   Позвольте себе погрузиться в мир гармонии и исцеления. Запишитесь на сеанс прямо сейчас!
                 </p>
               </div>
-              <div className="bg-emerald-800/30 backdrop-blur-sm p-6 rounded-2xl shadow-lg flex items-center gap-4">
-                <div className="w-12 h-12 bg-gold-400/20 rounded-full flex items-center justify-center">
+              <div className="p-6 rounded-2xl shadow-lg flex items-center gap-4" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
+                <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
                   <Icon name="Leaf" className="text-gold-400" size={24} />
                 </div>
                 <div>
@@ -311,8 +311,8 @@ const MassageWebsite = () => {
                 </div>
               </div>
               
-              <div className="bg-emerald-800/30 backdrop-blur-sm p-6 rounded-2xl shadow-lg flex items-center gap-4">
-                <div className="w-12 h-12 bg-gold-400/20 rounded-full flex items-center justify-center">
+              <div className="p-6 rounded-2xl shadow-lg flex items-center gap-4" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
+                <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
                   <Icon name="Award" className="text-gold-400" size={24} />
                 </div>
                 <div>
@@ -321,8 +321,8 @@ const MassageWebsite = () => {
                 </div>
               </div>
               
-              <div className="bg-emerald-800/30 backdrop-blur-sm p-6 rounded-2xl shadow-lg flex items-center gap-4">
-                <div className="w-12 h-12 bg-gold-400/20 rounded-full flex items-center justify-center">
+              <div className="p-6 rounded-2xl shadow-lg flex items-center gap-4" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
+                <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
                   <Icon name="Heart" className="text-gold-400" size={24} />
                 </div>
                 <div>
@@ -336,7 +336,7 @@ const MassageWebsite = () => {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20 bg-emerald-800/30 backdrop-blur-sm relative">
+      <section id="contact" className="py-20 relative" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
         <div className="container mx-auto px-4 text-center">
           <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-8">Записаться на сеанс</h2>
           <p className="text-xl text-emerald-100 mb-8 max-w-2xl mx-auto">
@@ -362,7 +362,7 @@ const MassageWebsite = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-emerald-950/90 backdrop-blur-sm text-white py-12">
+      <footer className="text-white py-12" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
         <div className="container mx-auto px-4 text-center">
           <h3 className="font-montserrat font-bold text-2xl mb-4 text-gold-200">Гармония энергий</h3>
           <p className="text-emerald-200 mb-6">Ваш путь к внутренней гармонии и красоте</p>
