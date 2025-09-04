@@ -20,7 +20,7 @@ const Training = () => {
   ];
 
   const instructor = {
-    name: "Елена Волкова",
+    name: "Наталья Великая",
     level: "Access Consciousness Certified Facilitator",
     experience: "10+ лет",
     image: "👩‍🏫",
