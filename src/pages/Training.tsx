@@ -174,10 +174,7 @@ const Training = () => {
                 <Icon name="Calendar" className="mr-2" size={20} />
                 Выбрать курс
               </Button>
-              <Button variant="outline" size="lg" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold backdrop-blur-sm">
-                <Icon name="Download" className="mr-2" size={20} />
-                Скачать программу
-              </Button>
+              <Button variant="outline" size="lg" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold backdrop-blur-sm">+7(918) 414-1221</Button>
             </div>
           </div>
         </div>
