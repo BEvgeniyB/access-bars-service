@@ -204,9 +204,10 @@ const MassageWebsite = () => {
         }}
       >
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
+          <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-12 text-center">Обо мне ...</h2>
+          
+          <div className="grid md:grid-cols-2 gap-12 items-start mb-12">
             <div className="animate-fade-in">
-              <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-6">Обо мне ...</h2>
               <p className="text-lg text-emerald-100 mb-6 leading-relaxed">
                 Гармония энергий — это оазис спокойствия в центре города. 
               </p>
