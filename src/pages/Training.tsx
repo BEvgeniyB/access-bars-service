@@ -418,9 +418,7 @@ const Training = () => {
           <div className="grid md:grid-cols-3 gap-8">
             <div>
               <h4 className="font-montserrat font-bold text-xl mb-4 text-gold-200">Гармония энергий</h4>
-              <p className="text-emerald-200 mb-4">
-                Центр обучения и практики Access Bars в Москве
-              </p>
+              <p className="text-emerald-200 mb-4">Обучения и практики Access Bars в Москве</p>
             </div>
             <div>
               <h4 className="font-semibold text-lg mb-4 text-gold-200">Контакты</h4>
