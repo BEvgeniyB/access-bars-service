@@ -132,7 +132,8 @@ const Massage = () => {
       </div>
 
       {/* Hero Section */}
-      <section id="hero" className="pt-24 pb-16 md:py-32 px-4 text-center relative overflow-hidden">
+      <main>
+      <section id="hero" className="pt-24 pb-16 md:py-32 px-4 text-center relative overflow-hidden" itemScope itemType="https://schema.org/Service">
         <div className="container mx-auto relative z-10">
           <div className="animate-fade-in">
             <div className="inline-flex items-center gap-2 bg-emerald-800/30 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-gold-400/20">
@@ -145,7 +146,7 @@ const Massage = () => {
               <span className="text-gold-400 block bg-gradient-to-r from-gold-300 to-gold-500 bg-clip-text text-transparent">Ароматерапия</span>
             </h1>
             
-            <p className="text-xl text-emerald-100 mb-12 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-emerald-100 mb-12 max-w-3xl mx-auto leading-relaxed" itemProp="description">
               Восстановите гармонию тела и души с помощью классических техник массажа 
               и целебной силы натуральных эфирных масел
             </p>

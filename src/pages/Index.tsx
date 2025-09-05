@@ -146,6 +146,7 @@ const MassageWebsite = () => {
       </div>
 
       {/* Hero Section */}
+      <main>
       <section id="hero" className="pt-24 pb-16 md:py-32 px-4 text-center relative overflow-hidden">
         <div className="container mx-auto relative z-10">
           {/* Watermark N in Hero Section */}
@@ -161,10 +162,10 @@ const MassageWebsite = () => {
             </div>
           </div>
           <div className="animate-fade-in relative z-10">
-            <h2 className="font-montserrat font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-gold-100 mb-8 leading-tight drop-shadow-2xl">
+            <h1 className="font-montserrat font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-gold-100 mb-8 leading-tight drop-shadow-2xl">
               <span className="block">Найдите свой</span>
               <span className="text-gold-400 block bg-gradient-to-r from-gold-300 to-gold-500 bg-clip-text text-transparent">внутренний покой</span>
-            </h2>
+            </h1>
             <p className="text-xl text-emerald-100 mb-12 max-w-3xl mx-auto leading-relaxed">Глубокие энергетические практики и исцеление в атмосфере абсолютного спокойствия и гармонии</p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
               <Button size="lg" className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold px-10 py-4 text-lg shadow-2xl border-2 border-gold-400" onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}>ЗАПИСАТЬСЯ</Button>

@@ -170,7 +170,7 @@ const Healing = () => {
           <div className="max-w-4xl mx-auto">
             <h2 className="font-montserrat font-bold text-4xl md:text-5xl text-gold-100 mb-6">
               Перцептивные технологии <span className="text-gold-400">исцеления</span>
-            </h2>
+            </h1>
             <p className="text-emerald-100 mb-8 leading-relaxed text-center px-0 text-xl font-medium">Целительский сеанс.
 Что это такое и как проходит?
 Телесная практика на основе обучения "Перцептивные технологии" Школы Целителей Галины Серегиной.
