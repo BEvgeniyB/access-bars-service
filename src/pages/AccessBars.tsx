@@ -63,17 +63,17 @@ const AccessBars = () => {
       <div className="absolute inset-0 bg-emerald-900/80"></div>
       {/* Header */}
       <header className="bg-emerald-900/95 backdrop-blur-sm shadow-lg sticky top-0 z-50 border-b border-gold-400/30 relative">
-        <div className="container mx-auto px-4 py-4 relative">
+        <div className="container mx-auto px-4 py-2 md:py-4 relative">
           <nav className="flex justify-between items-center">
-            <h1 className="font-montserrat font-bold text-2xl text-gold-400">Гармония энергий</h1>
-            <div className="flex gap-6 items-center">
-              <a href="/" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Главная</a>
-              <a href="#about" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">О методике</a>
-              <a href="#benefits" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Польза</a>
-              <a href="#sessions" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Сессии</a>
-              <a href="/training" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Обучение</a>
-              <a href="/healing" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Целительство</a>
-              <Button className="bg-gold-500 hover:bg-gold-600 text-emerald-900 font-bold border-2 border-gold-400 shadow-lg">
+            <h1 className="font-montserrat font-bold text-xl md:text-2xl text-gold-400">Гармония энергий</h1>
+            <div className="flex gap-2 sm:gap-4 md:gap-6 items-center">
+              <a href="/" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base">Главная</a>
+              <a href="#about" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base hidden sm:block">О методике</a>
+              <a href="#benefits" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base hidden sm:block">Польза</a>
+              <a href="#sessions" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base">Сессии</a>
+              <a href="/training" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base hidden md:block">Обучение</a>
+              <a href="/healing" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base hidden md:block">Целительство</a>
+              <Button className="bg-gold-500 hover:bg-gold-600 text-emerald-900 font-bold border-2 border-gold-400 shadow-lg text-xs sm:text-sm px-2 sm:px-4">
                 Записаться
               </Button>
             </div>
@@ -82,20 +82,20 @@ const AccessBars = () => {
       </header>
 
       {/* Navigation Menu */}
-      <div className="fixed top-20 left-4 z-40">
+      <div className="fixed top-16 md:top-20 left-2 md:left-4 z-40">
         <div className="group">
           <Button 
-            className="bg-black/80 border-2 border-gold-400/50 text-gold-400 hover:bg-gold-400/10 shadow-xl"
+            className="bg-black/80 border-2 border-gold-400/50 text-gold-400 hover:bg-gold-400/10 shadow-xl text-xs md:text-sm"
             onClick={() => {
               const menu = document.getElementById('section-menu');
               menu?.classList.toggle('hidden');
             }}
           >
-            <Icon name="Menu" size={20} />
-            <span className="ml-2 hidden sm:inline">Разделы</span>
+            <Icon name="Menu" size={16} />
+            <span className="ml-1 md:ml-2 hidden sm:inline">Разделы</span>
           </Button>
           
-          <div id="section-menu" className="hidden absolute top-12 left-0 w-64 bg-black/90 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden">
+          <div id="section-menu" className="hidden absolute top-10 md:top-12 left-0 w-56 md:w-64 bg-black/90 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden">
             <div className="p-2 space-y-1">
               <button 
                 className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"

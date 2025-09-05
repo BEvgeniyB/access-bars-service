@@ -53,29 +53,28 @@ const MassageWebsite = () => {
             <img 
               src="/img/d400ba6e-3090-41d0-afab-e8e8c2a5655b.jpg" 
               alt="Natalia" 
-              className="absolute top-1/2 left-0 -translate-y-1/2 w-20 h-12 opacity-95 hover:opacity-100 transition-opacity mix-blend-screen object-fill rounded-0"
+              className="absolute top-1/2 left-0 -translate-y-1/2 w-12 sm:w-16 md:w-20 h-8 sm:h-10 md:h-12 opacity-95 hover:opacity-100 transition-opacity mix-blend-screen object-fill rounded-0"
               style={{filter: 'invert(1) brightness(1.5) sepia(1) saturate(4) hue-rotate(15deg) contrast(1.3)'}}
             />
             {/* Natalia Logo in top right */}
             <img 
               src="/img/d400ba6e-3090-41d0-afab-e8e8c2a5655b.jpg" 
               alt="Natalia" 
-              className="absolute top-1/2 right-0 -translate-y-1/2 w-20 h-12 object-contain opacity-95 hover:opacity-100 transition-opacity mix-blend-screen"
+              className="absolute top-1/2 right-0 -translate-y-1/2 w-12 sm:w-16 md:w-20 h-8 sm:h-10 md:h-12 object-contain opacity-95 hover:opacity-100 transition-opacity mix-blend-screen"
               style={{filter: 'invert(1) brightness(1.5) sepia(1) saturate(4) hue-rotate(15deg) contrast(1.3)'}}
             />
-            <h1 className="font-montserrat font-bold text-3xl text-gold-400">Гармония энергий</h1>
+            <h1 className="font-montserrat font-bold text-xl sm:text-2xl md:text-3xl text-gold-400">Гармония энергий</h1>
           </div>
           {/* Navigation */}
-          <nav className="flex justify-center items-center py-4">
-            <div className="flex gap-8 items-center">
-              <a href="/access-bars" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Access Bars</a>
-              <a href="/training" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Обучение</a>
-              <a href="/massage" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Массаж</a>
-              <a href="/healing" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Целительство</a>
-              <a href="#about" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Обо мне
-</a>
-              <a href="#contact" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Контакты</a>
-              <Button className="bg-gold-500 hover:bg-gold-600 text-emerald-900 font-bold border-2 border-gold-400 shadow-lg ml-4">
+          <nav className="flex justify-center items-center py-2 md:py-4">
+            <div className="flex gap-2 sm:gap-4 md:gap-8 items-center flex-wrap justify-center">
+              <a href="/access-bars" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base">Access Bars</a>
+              <a href="/training" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base">Обучение</a>
+              <a href="/massage" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base">Массаж</a>
+              <a href="/healing" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base">Целительство</a>
+              <a href="#about" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base hidden sm:block">Обо мне</a>
+              <a href="#contact" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base hidden sm:block">Контакты</a>
+              <Button className="bg-gold-500 hover:bg-gold-600 text-emerald-900 font-bold border-2 border-gold-400 shadow-lg text-xs sm:text-sm px-2 sm:px-4">
                 Записаться
               </Button>
             </div>
@@ -86,17 +85,17 @@ const MassageWebsite = () => {
 
 
       {/* Navigation Menu */}
-      <div className="fixed top-36 left-4 z-40">
+      <div className="fixed top-28 sm:top-32 md:top-36 left-2 md:left-4 z-40">
         <div className="group">
           <Button 
-            className="bg-black/80 border-2 border-gold-400/50 text-gold-400 hover:bg-gold-400/10 shadow-xl"
+            className="bg-black/80 border-2 border-gold-400/50 text-gold-400 hover:bg-gold-400/10 shadow-xl text-xs md:text-sm"
             onClick={() => {
               const menu = document.getElementById('section-menu');
               menu?.classList.toggle('hidden');
             }}
           >
-            <Icon name="Menu" size={20} />
-            <span className="ml-2 hidden sm:inline">Разделы</span>
+            <Icon name="Menu" size={16} />
+            <span className="ml-1 md:ml-2 hidden sm:inline">Разделы</span>
           </Button>
           
           <div id="section-menu" className="hidden absolute top-12 left-0 w-64 bg-black/90 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden">

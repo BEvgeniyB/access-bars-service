@@ -75,32 +75,32 @@ const Healing = () => {
       <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full blur-3xl" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}></div>
       {/* Header */}
       <header className="shadow-lg sticky top-0 z-50 border-b border-gold-400/30 relative" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
-        <div className="container mx-auto px-4 py-4 relative">
+        <div className="container mx-auto px-4 py-2 md:py-4 relative">
           <nav className="flex justify-between items-center">
-            <h1 className="font-montserrat font-bold text-2xl text-gold-400">Гармония энергий</h1>
-            <div className="flex gap-6 items-center">
-              <a href="/" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Главная</a>
-              <a href="/access-bars" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Access Bars</a>
-              <a href="/training" className="text-gold-200 hover:text-gold-400 transition-colors font-medium">Обучение</a>
-              <a href="/healing" className="text-gold-200 hover:text-gold-400 transition-colors font-semibold">Целительство</a>
-              <Button className="bg-gold-500 hover:bg-gold-600 text-emerald-900 font-bold border-2 border-gold-400 shadow-lg">Записаться</Button>
+            <h1 className="font-montserrat font-bold text-xl md:text-2xl text-gold-400">Гармония энергий</h1>
+            <div className="flex gap-2 sm:gap-4 md:gap-6 items-center">
+              <a href="/" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base">Главная</a>
+              <a href="/access-bars" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base hidden sm:block">Access Bars</a>
+              <a href="/training" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base hidden sm:block">Обучение</a>
+              <a href="/healing" className="text-gold-200 hover:text-gold-400 transition-colors font-semibold text-xs sm:text-sm md:text-base">Целительство</a>
+              <Button className="bg-gold-500 hover:bg-gold-600 text-emerald-900 font-bold border-2 border-gold-400 shadow-lg text-xs sm:text-sm px-2 sm:px-4">Записаться</Button>
             </div>
           </nav>
         </div>
       </header>
 
       {/* Navigation Menu */}
-      <div className="fixed top-20 left-4 z-40">
+      <div className="fixed top-16 md:top-20 left-2 md:left-4 z-40">
         <div className="group">
           <Button 
-            className="bg-black/80 border-2 border-gold-400/50 text-gold-400 hover:bg-gold-400/10 shadow-xl"
+            className="bg-black/80 border-2 border-gold-400/50 text-gold-400 hover:bg-gold-400/10 shadow-xl text-xs md:text-sm"
             onClick={() => {
               const menu = document.getElementById('section-menu');
               menu?.classList.toggle('hidden');
             }}
           >
-            <Icon name="Menu" size={20} />
-            <span className="ml-2 hidden sm:inline">Разделы</span>
+            <Icon name="Menu" size={16} />
+            <span className="ml-1 md:ml-2 hidden sm:inline">Разделы</span>
           </Button>
           
           <div id="section-menu" className="hidden absolute top-12 left-0 w-64 bg-black/90 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden">
