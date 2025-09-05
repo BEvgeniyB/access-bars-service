@@ -209,7 +209,6 @@ const MassageWebsite = () => {
 
       {/* Services Section */}
       <section id="services" 
-        id="services" 
         className="py-20 relative"
         style={{
           background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`,
@@ -257,7 +256,6 @@ const MassageWebsite = () => {
 
       {/* About Section */}
       <section id="about" 
-        id="about" 
         className="py-20 relative"
         style={{
           background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`,
