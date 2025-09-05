@@ -74,9 +74,6 @@ const MassageWebsite = () => {
               <a href="/healing" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base">Целительство</a>
               <a href="#about" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base hidden sm:block">Обо мне</a>
               <a href="#contact" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base hidden sm:block">Контакты</a>
-              <Button className="bg-gold-500 hover:bg-gold-600 text-emerald-900 font-bold border-2 border-gold-400 shadow-lg text-xs sm:text-sm px-2 sm:px-4">
-                Записаться
-              </Button>
             </div>
           </nav>
         </div>
