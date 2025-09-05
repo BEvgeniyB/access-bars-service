@@ -95,7 +95,7 @@ const AccessBars = () => {
             <span className="ml-1 md:ml-2 hidden sm:inline">Разделы</span>
           </Button>
           
-          <div id="section-menu" className="hidden absolute top-10 md:top-12 left-0 w-56 md:w-64 bg-black/90 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden">
+          <div id="section-menu" className="hidden absolute top-10 md:top-12 left-0 w-56 md:w-64 bg-black/95 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden z-50">
             <div className="p-2 space-y-1">
               <button 
                 className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
@@ -157,11 +157,11 @@ const AccessBars = () => {
       </div>
 
       {/* Hero Section */}
-      <section className="py-20 px-4 text-center relative overflow-hidden" style={{backgroundImage: `url('https://cdn.poehali.dev/files/12b737b3-bf4d-499d-8f9a-ff594a4f705f.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center'}}>
+      <section className="pt-16 pb-16 md:py-20 px-4 text-center relative overflow-hidden" style={{backgroundImage: `url('https://cdn.poehali.dev/files/12b737b3-bf4d-499d-8f9a-ff594a4f705f.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center'}}>
         <div className="container mx-auto relative z-10">
           <div className="animate-fade-in">
-            <h2 className="font-montserrat font-bold text-5xl md:text-6xl text-gold-100 mb-6 leading-tight drop-shadow-2xl">
-              Access Bars
+            <h2 className="font-montserrat font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-gold-100 mb-6 leading-tight drop-shadow-2xl">
+              <span className="block">Access Bars</span>
               <span className="text-gold-400 block bg-gradient-to-r from-gold-300 to-gold-500 bg-clip-text text-transparent">Энергетическая терапия</span>
             </h2>
             <p className="text-xl text-emerald-100 mb-8 max-w-3xl mx-auto leading-relaxed">

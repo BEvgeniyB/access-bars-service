@@ -98,7 +98,7 @@ const MassageWebsite = () => {
             <span className="ml-1 md:ml-2 hidden sm:inline">Разделы</span>
           </Button>
           
-          <div id="section-menu" className="hidden absolute top-12 left-0 w-64 bg-black/90 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden">
+          <div id="section-menu" className="hidden absolute top-12 left-0 w-64 bg-black/95 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden z-50">
             <div className="p-2 space-y-1">
               <button 
                 className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
@@ -149,7 +149,7 @@ const MassageWebsite = () => {
       </div>
 
       {/* Hero Section */}
-      <section id="hero" className="py-32 px-4 text-center relative overflow-hidden">
+      <section id="hero" className="pt-24 pb-16 md:py-32 px-4 text-center relative overflow-hidden">
         <div className="container mx-auto relative z-10">
           {/* Watermark N in Hero Section */}
           <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-5">
@@ -164,8 +164,8 @@ const MassageWebsite = () => {
             </div>
           </div>
           <div className="animate-fade-in relative z-10">
-            <h2 className="font-montserrat font-bold text-6xl md:text-7xl text-gold-100 mb-8 leading-tight drop-shadow-2xl">
-              Найдите свой
+            <h2 className="font-montserrat font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-gold-100 mb-8 leading-tight drop-shadow-2xl">
+              <span className="block">Найдите свой</span>
               <span className="text-gold-400 block bg-gradient-to-r from-gold-300 to-gold-500 bg-clip-text text-transparent">внутренний покой</span>
             </h2>
             <p className="text-xl text-emerald-100 mb-12 max-w-3xl mx-auto leading-relaxed">Глубокие энергетические практики и исцеление в атмосфере абсолютного спокойствия и гармонии</p>
