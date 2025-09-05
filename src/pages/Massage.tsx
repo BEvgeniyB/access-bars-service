@@ -54,35 +54,34 @@ const Massage = () => {
         backgroundAttachment: 'fixed'
       }}>
       {/* Header */}
-      <header className="absolute top-0 left-0 right-0 z-50 p-6">
+      <header className="absolute top-0 left-0 right-0 z-50 p-4 md:p-6">
         <div className="flex justify-between items-center max-w-6xl mx-auto">
-          <div className="font-montserrat font-bold text-2xl text-gold-400">
+          <div className="font-montserrat font-bold text-xl md:text-2xl text-gold-400">
             Гармония энергий
           </div>
-          <nav className="hidden md:flex space-x-8">
-            <a href="/#services" className="text-emerald-100 hover:text-gold-400 transition-colors font-medium">Главная
-</a>
-            <a href="/#about" className="text-emerald-100 hover:text-gold-400 transition-colors font-medium">О нас</a>
-            <a href="/#contact" className="text-emerald-100 hover:text-gold-400 transition-colors font-medium">Контакты</a>
+          <nav className="flex space-x-4 md:space-x-8">
+            <a href="/" className="text-emerald-100 hover:text-gold-400 transition-colors font-medium text-sm md:text-base">Главная</a>
+            <a href="/healing" className="text-emerald-100 hover:text-gold-400 transition-colors font-medium text-sm md:text-base">Целительство</a>
+            <a href="/access-bars" className="text-emerald-100 hover:text-gold-400 transition-colors font-medium text-sm md:text-base hidden sm:block">Access Bars</a>
           </nav>
         </div>
       </header>
 
       {/* Navigation Menu */}
-      <div className="fixed top-20 left-4 z-40">
+      <div className="fixed top-16 md:top-20 left-2 md:left-4 z-40">
         <div className="group">
           <Button 
-            className="bg-black/80 border-2 border-gold-400/50 text-gold-400 hover:bg-gold-400/10 shadow-xl"
+            className="bg-black/80 border-2 border-gold-400/50 text-gold-400 hover:bg-gold-400/10 shadow-xl text-xs md:text-sm"
             onClick={() => {
               const menu = document.getElementById('section-menu');
               menu?.classList.toggle('hidden');
             }}
           >
-            <Icon name="Menu" size={20} />
-            <span className="ml-2 hidden sm:inline">Разделы</span>
+            <Icon name="Menu" size={16} />
+            <span className="ml-1 md:ml-2 hidden sm:inline">Разделы</span>
           </Button>
           
-          <div id="section-menu" className="hidden absolute top-12 left-0 w-64 bg-black/90 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden">
+          <div id="section-menu" className="hidden absolute top-10 md:top-12 left-0 w-56 md:w-64 bg-black/90 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden">
             <div className="p-2 space-y-1">
               <button 
                 className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
@@ -133,7 +132,7 @@ const Massage = () => {
       </div>
 
       {/* Hero Section */}
-      <section id="hero" className="py-32 px-4 text-center relative overflow-hidden">
+      <section id="hero" className="pt-24 pb-16 md:py-32 px-4 text-center relative overflow-hidden">
         <div className="container mx-auto relative z-10">
           <div className="animate-fade-in">
             <div className="inline-flex items-center gap-2 bg-emerald-800/30 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-gold-400/20">
@@ -141,8 +140,8 @@ const Massage = () => {
               <span className="text-sm font-medium text-gold-200">Профессиональный массаж</span>
             </div>
             
-            <h1 className="font-montserrat font-bold text-6xl md:text-7xl text-gold-100 mb-8 leading-tight drop-shadow-2xl">
-              Массаж и
+            <h1 className="font-montserrat font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-gold-100 mb-8 leading-tight drop-shadow-2xl">
+              <span className="block">Массаж и</span>
               <span className="text-gold-400 block bg-gradient-to-r from-gold-300 to-gold-500 bg-clip-text text-transparent">Ароматерапия</span>
             </h1>
             
