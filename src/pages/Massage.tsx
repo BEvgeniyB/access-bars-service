@@ -282,6 +282,7 @@ const Massage = () => {
           </div>
         </div>
       </section>
+      </main>
     </div>
   );
 };
