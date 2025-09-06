@@ -131,7 +131,7 @@ const Massage = () => {
                 }}
               >
                 <Icon name="Sparkles" size={16} />
-                Виды массажа
+                Услуги массажа
               </button>
               
               <button 
@@ -142,7 +142,7 @@ const Massage = () => {
                 }}
               >
                 <Icon name="Heart" size={16} />
-                Польза массажа
+                Преимущества массажа
               </button>
               
               <button 
@@ -153,7 +153,7 @@ const Massage = () => {
                 }}
               >
                 <Icon name="Phone" size={16} />
-                Записаться
+                Запишитесь на сеанс
               </button>
             </div>
           </div>
@@ -205,7 +205,7 @@ const Massage = () => {
       </section>
 
       {/* Services Section */}
-      <section className="py-20 relative">
+      <section id="services" className="py-20 relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 animate-fade-in">
             <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-4">Услуги массажа</h2>
@@ -258,7 +258,7 @@ const Massage = () => {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-20 relative">
+      <section id="benefits" className="py-20 relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 animate-fade-in">
             <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-4">Преимущества массажа</h2>
@@ -287,7 +287,7 @@ const Massage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20">
+      <section id="contact" className="py-20">
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-4xl mx-auto bg-emerald-800/30 backdrop-blur-sm rounded-3xl p-12 text-center border-2 border-gold-400/30 shadow-2xl animate-fade-in">
             <div className="w-20 h-20 bg-gold-400/20 rounded-full flex items-center justify-center mx-auto mb-6">
