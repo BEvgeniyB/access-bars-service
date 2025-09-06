@@ -76,8 +76,8 @@ const Training = () => {
               <h1 className="font-montserrat font-bold text-xl text-gold-400">Гармония энергий</h1>
             </div>
             <nav className="flex justify-center gap-4 text-xs">
+              <a href="/" className="text-gold-200 hover:text-gold-400 transition-colors">Главная</a>
               <a href="/access-bars" className="text-gold-200 hover:text-gold-400 transition-colors">Access Bars</a>
-              <a href="/training" className="text-gold-400 font-medium">Обучение</a>
               <a href="/massage" className="text-gold-200 hover:text-gold-400 transition-colors">Массаж</a>
               <a href="/healing" className="text-gold-200 hover:text-gold-400 transition-colors">Целительство</a>
             </nav>
