@@ -64,9 +64,9 @@ const Massage = () => {
               </div>
             </div>
             <nav className="flex justify-center gap-4 text-xs">
+              <a href="/" className="text-emerald-100 hover:text-gold-400 transition-colors">Главная</a>
               <a href="/access-bars" className="text-emerald-100 hover:text-gold-400 transition-colors">Access Bars</a>
               <a href="/training" className="text-emerald-100 hover:text-gold-400 transition-colors">Обучение</a>
-              <a href="/massage" className="text-gold-400 font-medium">Массаж</a>
               <a href="/healing" className="text-emerald-100 hover:text-gold-400 transition-colors">Целительство</a>
             </nav>
           </div>
