@@ -106,7 +106,7 @@ const AccessBars = () => {
             <span className="ml-1 md:ml-2 hidden sm:inline">Разделы</span>
           </Button>
           
-          <div id="section-menu" className="hidden absolute top-10 md:top-12 left-0 w-56 md:w-64 bg-black/95 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden z-50">
+          <div id="section-menu" className="hidden absolute bottom-12 md:top-12 md:bottom-auto left-0 w-56 md:w-64 bg-black/95 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden z-50">
             <div className="p-2 space-y-1">
               <a 
                 href="/"
