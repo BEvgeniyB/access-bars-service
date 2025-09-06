@@ -64,7 +64,21 @@ const AccessBars = () => {
       {/* Header */}
       <header className="bg-emerald-900/95 backdrop-blur-sm shadow-lg sticky top-0 z-50 border-b border-gold-400/30 relative">
         <div className="container mx-auto px-4 py-2 md:py-4 relative">
-          <nav className="flex justify-between items-center">
+          {/* Mobile Layout */}
+          <div className="block md:hidden">
+            <div className="text-center mb-3">
+              <h1 className="font-montserrat font-bold text-xl text-gold-400">Гармония энергий</h1>
+            </div>
+            <nav className="flex justify-center gap-4 text-xs">
+              <a href="/access-bars" className="text-gold-400 font-medium">Access Bars</a>
+              <a href="/training" className="text-gold-200 hover:text-gold-400 transition-colors">Обучение</a>
+              <a href="/massage" className="text-gold-200 hover:text-gold-400 transition-colors">Массаж</a>
+              <a href="/healing" className="text-gold-200 hover:text-gold-400 transition-colors">Целительство</a>
+            </nav>
+          </div>
+          
+          {/* Desktop Layout */}
+          <nav className="hidden md:flex justify-between items-center">
             <h1 className="font-montserrat font-bold text-xl md:text-2xl text-gold-400">Гармония энергий</h1>
             <div className="flex gap-2 sm:gap-4 md:gap-6 items-center">
               <a href="/" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base">Главная</a>
@@ -79,7 +93,7 @@ const AccessBars = () => {
       </header>
 
       {/* Navigation Menu */}
-      <div className="fixed top-16 md:top-20 left-2 md:left-4 z-40">
+      <div className="fixed bottom-4 left-4 md:top-16 md:bottom-auto md:left-2 md:right-auto z-40">
         <div className="group">
           <Button 
             className="bg-black/80 border-2 border-gold-400/50 text-gold-400 hover:bg-gold-400/10 shadow-xl text-xs md:text-sm"
