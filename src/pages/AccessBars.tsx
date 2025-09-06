@@ -94,6 +94,17 @@ const AccessBars = () => {
           
           <div id="section-menu" className="hidden absolute top-10 md:top-12 left-0 w-56 md:w-64 bg-black/95 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden z-50">
             <div className="p-2 space-y-1">
+              <a 
+                href="/"
+                className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3 block"
+                onClick={() => {
+                  document.getElementById('section-menu')?.classList.add('hidden');
+                }}
+              >
+                <Icon name="Home" size={16} />
+                Главная
+              </a>
+              
               <button 
                 className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
                 onClick={() => {
@@ -101,8 +112,8 @@ const AccessBars = () => {
                   document.getElementById('section-menu')?.classList.add('hidden');
                 }}
               >
-                <Icon name="Home" size={16} />
-                Главная
+                <Icon name="ArrowUp" size={16} />
+                В начало
               </button>
               
               <button 
