@@ -159,7 +159,7 @@ const AccessBars = () => {
           <div className="animate-fade-in">
             <h2 className="font-montserrat font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-gold-100 mb-6 leading-tight drop-shadow-2xl">
               <span className="block">Access Bars</span>
-              <span className="text-gold-400 block bg-gradient-to-r from-gold-300 to-gold-500 bg-clip-text text-transparent">Энергетическая терапия</span>
+              <span className="text-gold-400 block bg-gradient-to-r from-gold-300 to-gold-500 bg-clip-text text-transparent text-4xl">Энергетическая техника освобождения разума</span>
             </h2>
             <p className="text-xl text-emerald-100 mb-8 max-w-3xl mx-auto leading-relaxed">
               Уникальная методика работы с энергетическими точками головы для глубокого расслабления, 
