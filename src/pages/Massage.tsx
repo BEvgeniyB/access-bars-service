@@ -55,20 +55,38 @@ const Massage = () => {
       }}>
       {/* Header */}
       <header className="absolute top-0 left-0 right-0 z-50 p-4 md:p-6">
-        <div className="flex justify-between items-center max-w-6xl mx-auto">
-          <div className="font-montserrat font-bold text-xl md:text-2xl text-gold-400">
-            Гармония энергий
+        <div className="max-w-6xl mx-auto">
+          {/* Mobile Layout */}
+          <div className="block md:hidden">
+            <div className="text-center mb-3">
+              <div className="font-montserrat font-bold text-xl text-gold-400">
+                Гармония энергий
+              </div>
+            </div>
+            <nav className="flex justify-center gap-4 text-xs">
+              <a href="/access-bars" className="text-emerald-100 hover:text-gold-400 transition-colors">Access Bars</a>
+              <a href="/training" className="text-emerald-100 hover:text-gold-400 transition-colors">Обучение</a>
+              <a href="/massage" className="text-gold-400 font-medium">Массаж</a>
+              <a href="/healing" className="text-emerald-100 hover:text-gold-400 transition-colors">Целительство</a>
+            </nav>
           </div>
-          <nav className="flex space-x-4 md:space-x-8">
-            <a href="/" className="text-emerald-100 hover:text-gold-400 transition-colors font-medium text-sm md:text-base">Главная</a>
-            <a href="/healing" className="text-emerald-100 hover:text-gold-400 transition-colors font-medium text-sm md:text-base">Целительство</a>
-            <a href="/access-bars" className="text-emerald-100 hover:text-gold-400 transition-colors font-medium text-sm md:text-base hidden sm:block">Access Bars</a>
-          </nav>
+          
+          {/* Desktop Layout */}
+          <div className="hidden md:flex justify-between items-center">
+            <div className="font-montserrat font-bold text-xl md:text-2xl text-gold-400">
+              Гармония энергий
+            </div>
+            <nav className="flex space-x-4 md:space-x-8">
+              <a href="/" className="text-emerald-100 hover:text-gold-400 transition-colors font-medium text-sm md:text-base">Главная</a>
+              <a href="/healing" className="text-emerald-100 hover:text-gold-400 transition-colors font-medium text-sm md:text-base">Целительство</a>
+              <a href="/access-bars" className="text-emerald-100 hover:text-gold-400 transition-colors font-medium text-sm md:text-base hidden sm:block">Access Bars</a>
+            </nav>
+          </div>
         </div>
       </header>
 
       {/* Navigation Menu */}
-      <div className="fixed top-16 md:top-20 left-2 md:left-4 z-40">
+      <div className="fixed bottom-4 left-4 md:top-16 md:bottom-auto md:left-2 md:right-auto z-40">
         <div className="group">
           <Button 
             className="bg-black/80 border-2 border-gold-400/50 text-gold-400 hover:bg-gold-400/10 shadow-xl text-xs md:text-sm"
