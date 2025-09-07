@@ -414,7 +414,7 @@ const Healing = () => {
             </div>
           </div>
           <div className="border-t border-emerald-700 mt-8 pt-8 text-center text-emerald-300">
-            <p>&copy; 2024 Гармония энергий. Все права защищены.</p>
+            <p>&copy; 2025 Гармония энергий. Все права защищены.</p>
           </div>
         </div>
       </footer>

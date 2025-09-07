@@ -482,7 +482,7 @@ const AccessBars = () => {
           </div>
           
           <div className="mt-8 pt-8 border-t border-emerald-700">
-            <p className="text-emerald-300">© 2024 Гармония энергий. Все права защищены.</p>
+            <p className="text-emerald-300">© 2025 Гармония энергий. Все права защищены.</p>
           </div>
         </div>
       </footer>
