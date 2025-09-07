@@ -151,6 +151,12 @@ const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose, preselectedS
     }
   }, [isServiceDropdownOpen]);
 
+  React.useEffect(() => {
+    if (preselectedService) {
+      setFormData(prev => ({ ...prev, service: preselectedService }));
+    }
+  }, [preselectedService]);
+
   const selectedService = SERVICES.find(s => s.id === formData.service);
 
   if (!isOpen) return null;

@@ -1,5 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Navigation from "@/components/Navigation";
+import BookingForm from "@/components/BookingForm";
 import AccessBarsHero from "@/components/AccessBars/AccessBarsHero";
 import AccessBarsAbout from "@/components/AccessBars/AccessBarsAbout";
 import AccessBarsBenefits from "@/components/AccessBars/AccessBarsBenefits";
@@ -9,6 +10,9 @@ import AccessBarsFAQ from "@/components/AccessBars/AccessBarsFAQ";
 import AccessBarsContact from "@/components/AccessBars/AccessBarsContact";
 
 const AccessBars = () => {
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [preselectedService, setPreselectedService] = useState<string>('');
+
   useEffect(() => {
     // Плавный скролл к якорю после загрузки страницы
     const hash = window.location.hash;
@@ -26,6 +30,14 @@ const AccessBars = () => {
           });
         }
       }, 500); // Увеличенная задержка для более заметного эффекта
+    }
+    
+    // Handle preselected service from URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    const service = urlParams.get('service');
+    if (service) {
+      setPreselectedService(service);
+      setIsBookingOpen(true);
     }
   }, []);
 
@@ -58,13 +70,23 @@ const AccessBars = () => {
       <AccessBarsBenefits />
 
       {/* Sessions Section */}
-      <AccessBarsSessions />
+      <AccessBarsSessions onBookingClick={(serviceId) => {
+        setPreselectedService(serviceId);
+        setIsBookingOpen(true);
+      }} />
 
       {/* FAQ Section */}
       <AccessBarsFAQ />
 
       {/* Contact Section & Footer */}
       <AccessBarsContact />
+      
+      {/* Booking Form Modal */}
+      <BookingForm 
+        isOpen={isBookingOpen} 
+        onClose={() => setIsBookingOpen(false)}
+        preselectedService={preselectedService}
+      />
     </div>
   );
 };

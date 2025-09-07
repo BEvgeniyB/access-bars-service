@@ -23,7 +23,11 @@ const sessions = [
   }
 ];
 
-const AccessBarsSessions = () => {
+interface AccessBarsSessionsProps {
+  onBookingClick: (serviceId: string) => void;
+}
+
+const AccessBarsSessions = ({ onBookingClick }: AccessBarsSessionsProps) => {
   return (
     <section id="sessions" className="py-20 relative" style={{backgroundImage: `url('https://cdn.poehali.dev/files/8257b36c-01da-4ea7-8a9a-76326d9b58b0.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center'}}>
       <div className="container mx-auto px-4">
@@ -62,7 +66,7 @@ const AccessBarsSessions = () => {
                     if (session.name.includes('Первая')) serviceId = 'access-bars-first';
                     else if (session.name.includes('Стандартная')) serviceId = 'access-bars-standard';  
                     else if (session.name.includes('Интенсивная')) serviceId = 'access-bars-intensive';
-                    window.location.href = `/?service=${serviceId}#contact`;
+                    onBookingClick(serviceId);
                   }}
                 >
                   <Icon name="Calendar" className="mr-2" size={16} />
