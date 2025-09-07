@@ -135,12 +135,17 @@ const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose }) => {
   };
 
   React.useEffect(() => {
-    const handleClickOutside = () => {
-      setIsServiceDropdownOpen(false);
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.service-dropdown')) {
+        setIsServiceDropdownOpen(false);
+      }
     };
     
     if (isServiceDropdownOpen) {
-      document.addEventListener('click', handleClickOutside);
+      setTimeout(() => {
+        document.addEventListener('click', handleClickOutside);
+      }, 0);
       return () => document.removeEventListener('click', handleClickOutside);
     }
   }, [isServiceDropdownOpen]);
@@ -221,7 +226,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose }) => {
                   <Icon name="Sparkles" size={16} className="inline mr-2" />
                   Выберите услугу *
                 </label>
-                <div className="relative">
+                <div className="relative service-dropdown">
                   <button
                     type="button"
                     onClick={() => setIsServiceDropdownOpen(!isServiceDropdownOpen)}
