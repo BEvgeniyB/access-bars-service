@@ -138,10 +138,10 @@ const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
       
-      <Card className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-emerald-950/95 border-2 border-gold-400/50">
+      <Card className="relative w-full max-w-lg sm:max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto bg-emerald-950/95 border-2 border-gold-400/50">
         <CardHeader className="relative">
           <button 
             onClick={onClose}
@@ -150,7 +150,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose }) => {
             <Icon name="X" size={24} />
           </button>
           
-          <CardTitle className="text-2xl font-montserrat text-gold-400">
+          <CardTitle className="text-xl sm:text-2xl font-montserrat text-gold-400 pr-12">
             📅 Записаться на сеанс
           </CardTitle>
           <CardDescription className="text-emerald-200">
@@ -212,17 +212,21 @@ const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose }) => {
                 <select
                   value={formData.service}
                   onChange={(e) => handleInputChange('service', e.target.value)}
-                  className={`w-full px-3 py-3 bg-emerald-900/50 border rounded-lg text-gold-100 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-gold-400 ${
+                  className={`w-full px-3 py-3 bg-emerald-900/50 border rounded-lg text-gold-100 text-sm focus:outline-none focus:ring-2 focus:ring-gold-400 ${
                     errors.service ? 'border-red-400' : 'border-gold-400/30'
                   }`}
-                  style={{ fontSize: window.innerWidth < 768 ? '16px' : '14px' }}
+                  style={{ 
+                    fontSize: '16px',
+                    maxHeight: '50vh',
+                    overflowY: 'auto'
+                  }}
                 >
                   <option value="">Выберите услугу</option>
                   {['Access Bars', 'Массаж', 'Целительство', 'Обучение'].map(category => (
-                    <optgroup key={category} label={`${category}:`} className="text-gold-200 font-bold">
+                    <optgroup key={category} label={category}>
                       {SERVICES.filter(s => s.category === category).map(service => (
-                        <option key={service.id} value={service.id} className="py-1">
-                          {service.name}・{service.duration}・{service.price}
+                        <option key={service.id} value={service.id}>
+                          {service.name} {service.duration} {service.price}
                         </option>
                       ))}
                     </optgroup>
