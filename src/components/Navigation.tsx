@@ -53,7 +53,6 @@ const Navigation = ({ variant = 'secondary', className = '' }: NavigationProps) 
             </Link>
           ))}
           <a href="#about" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base hidden sm:block">Обо мне</a>
-          <a href="#contact" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base hidden sm:block">Контакты</a>
         </div>
       </nav>
     );
