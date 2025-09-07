@@ -31,7 +31,7 @@ const MassageWebsite = () => {
       duration: "От 4 часов", 
       price: "от 29 000 ₽",
       description: "Курсы по энергетическим практикам, массажу и целительству для начинающих и практикующих",
-      link: "/training"
+      link: "/training#courses"
     }
   ];
 

@@ -1,8 +1,28 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
+import { useEffect } from "react";
 
 const Training = () => {
+  useEffect(() => {
+    // Плавный скролл к якорю после загрузки страницы
+    const hash = window.location.hash;
+    if (hash) {
+      // Сначала прокручиваем в начало страницы
+      window.scrollTo(0, 0);
+      
+      // Затем медленно прокручиваем к целевому разделу
+      setTimeout(() => {
+        const element = document.querySelector(hash);
+        if (element) {
+          element.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      }, 500); // Увеличенная задержка для более заметного эффекта
+    }
+  }, []);
   const courses = [
     {
       title: "Access Bars Practitioner",

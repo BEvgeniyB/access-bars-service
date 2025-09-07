@@ -8,6 +8,10 @@ const Healing = () => {
     // Плавный скролл к якорю после загрузки страницы
     const hash = window.location.hash;
     if (hash) {
+      // Сначала прокручиваем в начало страницы
+      window.scrollTo(0, 0);
+      
+      // Затем медленно прокручиваем к целевому разделу
       setTimeout(() => {
         const element = document.querySelector(hash);
         if (element) {
@@ -16,7 +20,7 @@ const Healing = () => {
             block: 'start'
           });
         }
-      }, 100);
+      }, 500); // Увеличенная задержка для более заметного эффекта
     }
   }, []);
   const services = [
