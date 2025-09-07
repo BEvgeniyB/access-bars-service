@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 import { useEffect } from "react";
+import Navigation from "@/components/Navigation";
 
 const Healing = () => {
   useEffect(() => {
@@ -96,29 +97,7 @@ const Healing = () => {
       {/* Header */}
       <header className="shadow-lg sticky top-0 z-50 border-b border-gold-400/30 relative" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
         <div className="container mx-auto px-4 py-2 md:py-4 relative">
-          {/* Mobile Layout */}
-          <div className="block md:hidden">
-            <div className="text-center mb-3">
-              <h1 className="font-montserrat font-bold text-xl text-gold-400">Гармония энергий</h1>
-            </div>
-            <nav className="flex justify-center gap-4 text-xs">
-              <a href="/" className="text-gold-200 hover:text-gold-400 transition-colors">Главная</a>
-              <a href="/access-bars" className="text-gold-200 hover:text-gold-400 transition-colors">Access Bars</a>
-              <a href="/training" className="text-gold-200 hover:text-gold-400 transition-colors">Обучение</a>
-              <a href="/massage" className="text-gold-200 hover:text-gold-400 transition-colors">Массаж</a>
-            </nav>
-          </div>
-          
-          {/* Desktop Layout */}
-          <nav className="hidden md:flex justify-between items-center">
-            <h1 className="font-montserrat font-bold text-xl md:text-2xl text-gold-400">Гармония энергий</h1>
-            <div className="flex gap-2 sm:gap-4 md:gap-6 items-center">
-              <a href="/" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base">Главная</a>
-              <a href="/massage" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base">Массаж</a>
-              <a href="/access-bars" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base hidden sm:block">Access Bars</a>
-              <Button className="bg-gold-500 hover:bg-gold-600 text-emerald-900 font-bold border-2 border-gold-400 shadow-lg text-xs sm:text-sm px-2 sm:px-4">Записаться</Button>
-            </div>
-          </nav>
+          <Navigation variant="secondary" />
         </div>
       </header>
 
