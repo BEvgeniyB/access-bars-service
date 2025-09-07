@@ -10,7 +10,7 @@ const MassageWebsite = () => {
       duration: "90 мин",
       price: "от 8 000 ₽",
       description: "Энергетическая техника для освобождения от ментальных блоков и глубокой трансформации сознания",
-      link: "/access-bars"
+      link: "/access-bars#sessions"
     },
     {
       name: "Целительство",
