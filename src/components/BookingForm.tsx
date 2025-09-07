@@ -33,7 +33,7 @@ const SERVICES = [
   // Massage
   { id: 'classic-massage', name: 'Классический', duration: '60 мин', price: '6 000 ₽', category: 'Массаж' },
   { id: 'aromatherapy', name: 'Ароматерапия', duration: '60 мин', price: '5 000 ₽', category: 'Массаж' },
-  { id: 'complex-massage', name: 'Комплексная программа', duration: '90 мин', price: '8 000 ₽', category: 'Массаж' },
+  { id: 'complex-massage', name: 'Комплексная', duration: '90 мин', price: '8 000 ₽', category: 'Массаж' },
   
   // Healing
   { id: 'energy-healing', name: 'Энергетическое', duration: '60 мин', price: '7 000 ₽', category: 'Целительство' },
@@ -225,7 +225,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose }) => {
                     <optgroup key={category} label={category}>
                       {SERVICES.filter(s => s.category === category).map(service => (
                         <option key={service.id} value={service.id}>
-                          {service.name} {service.duration} {service.price}
+                          {service.name} {service.price}
                         </option>
                       ))}
                     </optgroup>
