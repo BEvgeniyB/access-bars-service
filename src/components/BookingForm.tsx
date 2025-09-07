@@ -216,7 +216,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose }) => {
                     errors.service ? 'border-red-400' : 'border-gold-400/30'
                   }`}
                   style={{ 
-                    maxHeight: '50vh',
+                    maxHeight: '30vh',
                     overflowY: 'auto'
                   }}
                 >
