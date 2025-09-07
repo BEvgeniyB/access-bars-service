@@ -1,10 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Navigation from "@/components/Navigation";
+import TrainingBookingForm from "@/components/TrainingBookingForm";
 
 const Training = () => {
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [preselectedService, setPreselectedService] = useState<string>('');
+
   useEffect(() => {
     // Плавный скролл к якорю после загрузки страницы
     const hash = window.location.hash;
@@ -22,6 +26,14 @@ const Training = () => {
           });
         }
       }, 500); // Увеличенная задержка для более заметного эффекта
+    }
+    
+    // Handle preselected service from URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    const service = urlParams.get('service');
+    if (service) {
+      setPreselectedService(service);
+      setIsBookingOpen(true);
     }
   }, []);
   const courses = [
@@ -213,7 +225,16 @@ const Training = () => {
               для себя и помощи другим
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Button size="lg" className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold">Записаться на курс</Button>
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold"
+                onClick={() => {
+                  setPreselectedService('training-basic');
+                  setIsBookingOpen(true);
+                }}
+              >
+                Записаться на курс
+              </Button>
               <Button variant="outline" size="lg" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold backdrop-blur-sm">+7(918) 414-1221</Button>
             </div>
           </div>
@@ -279,7 +300,13 @@ const Training = () => {
                       </ul>
                     </div>
                     
-                    <Button className="w-full mt-6 bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold transition-colors">
+                    <Button 
+                      className="w-full mt-6 bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold transition-colors"
+                      onClick={() => {
+                        setPreselectedService('training-basic');
+                        setIsBookingOpen(true);
+                      }}
+                    >
                       Записаться на курс
                     </Button>
                   </div>
@@ -482,6 +509,13 @@ const Training = () => {
           </div>
         </div>
       </footer>
+      
+      {/* Training Booking Form Modal */}
+      <TrainingBookingForm 
+        isOpen={isBookingOpen} 
+        onClose={() => setIsBookingOpen(false)}
+        preselectedService={preselectedService}
+      />
     </div>
   );
 };
