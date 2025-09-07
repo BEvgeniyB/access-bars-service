@@ -374,7 +374,16 @@ const AccessBars = () => {
                   <CardDescription className="text-emerald-200 leading-relaxed mb-6">
                     {session.description}
                   </CardDescription>
-                  <Button className="w-full bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold">
+                  <Button 
+                    className="w-full bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold"
+                    onClick={() => {
+                      let serviceId = '';
+                      if (session.name.includes('Первая')) serviceId = 'access-bars-first';
+                      else if (session.name.includes('Стандартная')) serviceId = 'access-bars-standard';  
+                      else if (session.name.includes('Интенсивная')) serviceId = 'access-bars-intensive';
+                      window.location.href = `/?service=${serviceId}#contact`;
+                    }}
+                  >
                     <Icon name="Calendar" className="mr-2" size={16} />
                     Записаться
                   </Button>

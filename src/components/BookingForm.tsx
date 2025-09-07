@@ -6,6 +6,7 @@ import Icon from "@/components/ui/icon";
 interface BookingFormProps {
   isOpen: boolean;
   onClose: () => void;
+  preselectedService?: string;
 }
 
 interface FormData {
@@ -49,11 +50,11 @@ const TIME_SLOTS = [
   '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'
 ];
 
-const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose }) => {
+const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose, preselectedService }) => {
   const [formData, setFormData] = useState<FormData>({
     name: '',
     phone: '',
-    service: '',
+    service: preselectedService || '',
     date: '',
     time: ''
   });

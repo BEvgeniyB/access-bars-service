@@ -9,6 +9,7 @@ import BookingForm from "@/components/BookingForm";
 
 const MassageWebsite = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [preselectedService, setPreselectedService] = useState<string>('');
 
   // Handle hash navigation on page load
   useEffect(() => {
@@ -19,6 +20,14 @@ const MassageWebsite = () => {
           element.scrollIntoView({ behavior: 'smooth' });
         }, 100);
       }
+    }
+    
+    // Handle preselected service from URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    const service = urlParams.get('service');
+    if (service) {
+      setPreselectedService(service);
+      setIsBookingOpen(true);
     }
   }, []);
 
@@ -456,7 +465,8 @@ const MassageWebsite = () => {
       {/* Booking Form Modal */}
       <BookingForm 
         isOpen={isBookingOpen} 
-        onClose={() => setIsBookingOpen(false)} 
+        onClose={() => setIsBookingOpen(false)}
+        preselectedService={preselectedService}
       />
     </div>
   );
