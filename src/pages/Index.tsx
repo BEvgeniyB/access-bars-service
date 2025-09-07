@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 import { Link } from "react-router-dom";
+import Navigation from "@/components/Navigation";
+import Breadcrumbs from "@/components/ui/breadcrumbs";
 
 const MassageWebsite = () => {
   const services = [
@@ -66,20 +68,12 @@ const MassageWebsite = () => {
             <h1 className="font-montserrat font-bold text-xl sm:text-2xl md:text-3xl text-gold-400">Гармония энергий</h1>
           </div>
           {/* Navigation */}
-          <nav className="flex justify-center items-center py-2 md:py-4">
-            <div className="flex gap-2 sm:gap-4 md:gap-8 items-center flex-wrap justify-center">
-              <a href="/access-bars" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base">Access Bars</a>
-              <a href="/training" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base">Обучение</a>
-              <a href="/massage" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base">Массаж</a>
-              <a href="/healing" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base">Целительство</a>
-              <a href="#about" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base hidden sm:block">Обо мне</a>
-              <a href="#contact" className="text-gold-200 hover:text-gold-400 transition-colors font-medium text-xs sm:text-sm md:text-base hidden sm:block">Контакты</a>
-            </div>
-          </nav>
+          <Navigation variant="main" />
         </div>
       </header>
 
-
+      {/* Breadcrumbs */}
+      <Breadcrumbs />
 
       {/* Navigation Menu */}
       <div className="fixed top-28 sm:top-32 md:top-36 left-2 md:left-4 z-40">
