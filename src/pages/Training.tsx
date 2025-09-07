@@ -182,7 +182,12 @@ const Training = () => {
       </div>
 
       {/* Hero Section */}
-      <section id="hero" className="py-20 text-center relative z-10">
+      <section id="hero" className="py-20 text-center relative z-10" style={{
+        backgroundImage: `url('https://cdn.poehali.dev/files/84b00c22-64c5-4a5c-b7ca-de55c4dac19d.jpg')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}>
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <h2 className="font-montserrat font-bold text-4xl md:text-5xl text-gold-100 mb-6">
