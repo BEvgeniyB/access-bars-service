@@ -1,10 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Navigation from "@/components/Navigation";
+import BookingForm from "@/components/BookingForm";
 
 const Massage = () => {
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [preselectedService, setPreselectedService] = useState<string>('');
+
   useEffect(() => {
     // Плавный скролл к якорю после загрузки страницы
     const hash = window.location.hash;
@@ -22,6 +26,14 @@ const Massage = () => {
           });
         }
       }, 500); // Увеличенная задержка для более заметного эффекта
+    }
+    
+    // Handle preselected service from URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    const service = urlParams.get('service');
+    if (service) {
+      setPreselectedService(service);
+      setIsBookingOpen(true);
     }
   }, []);
   const services = [
@@ -253,7 +265,17 @@ const Massage = () => {
                     ))}
                   </div>
                   
-                  <Button className="w-full mt-6 bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold">
+                  <Button 
+                    className="w-full mt-6 bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold"
+                    onClick={() => {
+                      let serviceId = '';
+                      if (service.title.includes('Классический')) serviceId = 'classic-massage';
+                      else if (service.title.includes('Ароматерапия')) serviceId = 'aromatherapy';
+                      else if (service.title.includes('Комплексная')) serviceId = 'complex-massage';
+                      setPreselectedService(serviceId);
+                      setIsBookingOpen(true);
+                    }}
+                  >
                     <Icon name="Calendar" className="mr-2" size={16} />
                     Записаться
                   </Button>
@@ -319,6 +341,13 @@ const Massage = () => {
         </div>
       </section>
       </main>
+      
+      {/* Booking Form Modal */}
+      <BookingForm 
+        isOpen={isBookingOpen} 
+        onClose={() => setIsBookingOpen(false)}
+        preselectedService={preselectedService}
+      />
     </div>
   );
 };
