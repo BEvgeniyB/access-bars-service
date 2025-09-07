@@ -61,6 +61,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose }) => {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isServiceDropdownOpen, setIsServiceDropdownOpen] = useState(false);
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -132,6 +133,17 @@ const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose }) => {
     tomorrow.setDate(tomorrow.getDate() + 1);
     return tomorrow.toISOString().split('T')[0];
   };
+
+  React.useEffect(() => {
+    const handleClickOutside = () => {
+      setIsServiceDropdownOpen(false);
+    };
+    
+    if (isServiceDropdownOpen) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [isServiceDropdownOpen]);
 
   const selectedService = SERVICES.find(s => s.id === formData.service);
 
@@ -209,28 +221,48 @@ const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose }) => {
                   <Icon name="Sparkles" size={16} className="inline mr-2" />
                   Выберите услугу *
                 </label>
-                <select
-                  value={formData.service}
-                  onChange={(e) => handleInputChange('service', e.target.value)}
-                  className={`w-full px-3 py-3 bg-emerald-900/50 border rounded-lg text-gold-100 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-gold-400 ${
-                    errors.service ? 'border-red-400' : 'border-gold-400/30'
-                  }`}
-                  style={{ 
-                    maxHeight: '30vh',
-                    overflowY: 'auto'
-                  }}
-                >
-                  <option value="">Выберите услугу</option>
-                  {['Access Bars', 'Массаж', 'Целительство', 'Обучение'].map(category => (
-                    <optgroup key={category} label={category}>
-                      {SERVICES.filter(s => s.category === category).map(service => (
-                        <option key={service.id} value={service.id}>
-                          {service.name} {service.price}
-                        </option>
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setIsServiceDropdownOpen(!isServiceDropdownOpen)}
+                    className={`w-full px-3 py-3 bg-emerald-900/50 border rounded-lg text-gold-100 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-gold-400 flex justify-between items-center ${
+                      errors.service ? 'border-red-400' : 'border-gold-400/30'
+                    }`}
+                  >
+                    <span className="truncate">
+                      {formData.service 
+                        ? `${SERVICES.find(s => s.id === formData.service)?.name} ${SERVICES.find(s => s.id === formData.service)?.price}`
+                        : 'Выберите услугу'
+                      }
+                    </span>
+                    <Icon name={isServiceDropdownOpen ? "ChevronUp" : "ChevronDown"} size={16} />
+                  </button>
+                  
+                  {isServiceDropdownOpen && (
+                    <div className="absolute z-10 w-full mt-1 bg-emerald-900 border border-gold-400/30 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                      {['Access Bars', 'Массаж', 'Целительство', 'Обучение'].map(category => (
+                        <div key={category}>
+                          <div className="px-3 py-2 text-xs font-bold text-gold-200 bg-emerald-800/50">
+                            {category}
+                          </div>
+                          {SERVICES.filter(s => s.category === category).map(service => (
+                            <button
+                              key={service.id}
+                              type="button"
+                              onClick={() => {
+                                handleInputChange('service', service.id);
+                                setIsServiceDropdownOpen(false);
+                              }}
+                              className="w-full px-3 py-2 text-left text-xs sm:text-sm text-gold-100 hover:bg-emerald-700/50 focus:bg-emerald-700/50 focus:outline-none"
+                            >
+                              {service.name} {service.price}
+                            </button>
+                          ))}
+                        </div>
                       ))}
-                    </optgroup>
-                  ))}
-                </select>
+                    </div>
+                  )}
+                </div>
                 {errors.service && <p className="mt-1 text-red-400 text-sm">{errors.service}</p>}
               </div>
 
