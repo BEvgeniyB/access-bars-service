@@ -89,7 +89,11 @@ const Training = () => {
       {/* Overlay for readability */}
       <div className="absolute inset-0 bg-emerald-900/70"></div>
       {/* Header */}
-      <header className="bg-emerald-900/95 backdrop-blur-sm shadow-lg sticky top-0 z-50 border-b border-gold-400/30 relative">
+      <header className="backdrop-blur-sm shadow-lg sticky top-0 z-50 border-b border-gold-400/30 relative" style={{
+        backgroundImage: `url('https://cdn.poehali.dev/files/3326a30b-5e86-4559-b6e7-959af5d7d04a.png')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}>
         <div className="container mx-auto px-4 py-2 md:py-4 relative">
           <Navigation variant="secondary" />
         </div>
