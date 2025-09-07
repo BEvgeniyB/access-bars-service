@@ -3,9 +3,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import Icon from "@/components/ui/icon";
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
+import { useEffect } from "react";
 
 
 const MassageWebsite = () => {
+  // Handle hash navigation on page load
+  useEffect(() => {
+    if (window.location.hash) {
+      const element = document.querySelector(window.location.hash);
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    }
+  }, []);
+
   const services = [
     {
       name: "Access Bars",
