@@ -202,10 +202,7 @@ const Training = () => {
               для себя и помощи другим
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Button size="lg" className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold">
-                <Icon name="Calendar" className="mr-2" size={20} />
-                Выбрать курс
-              </Button>
+              <Button size="lg" className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold">Записаться на курс</Button>
               <Button variant="outline" size="lg" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold backdrop-blur-sm">+7(918) 414-1221</Button>
             </div>
           </div>
