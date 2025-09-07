@@ -17,7 +17,7 @@ const MassageWebsite = () => {
       duration: "60-120 мин",
       price: "от 7 000 ₽",
       description: "Энергетическое исцеление, работа с чакрами, аурой и восстановление баланса жизненных сил",
-      link: "/healing"
+      link: "/healing#services"
     },
     {
       name: "Массаж",
