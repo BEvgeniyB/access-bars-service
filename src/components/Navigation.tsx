@@ -42,7 +42,7 @@ const Navigation = ({ variant = 'secondary', className = '' }: NavigationProps) 
     return (
       <nav className={`flex justify-center items-center py-2 md:py-4 ${className}`}>
         <div className="flex gap-2 sm:gap-4 md:gap-8 items-center flex-wrap justify-center">
-          {navigationItems.slice(1).map((item) => ( // Skip home on main page
+          {navigationItems.map((item) => ( // Include all items including home
             <Link
               key={item.path}
               to={item.path}
