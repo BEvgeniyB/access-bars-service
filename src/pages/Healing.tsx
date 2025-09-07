@@ -225,10 +225,12 @@ const Healing = () => {
 Помогает при очень большом перечне заболеваний и дисфункций тела. Противопоказаний нет!
 Можно детям, беременным и инвалидам.</p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Button size="lg" className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold">
-                <Icon name="Calendar" className="mr-2" size={20} />
-                Записаться на сеанс
-              </Button>
+              <a href="#services">
+                <Button size="lg" className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold">
+                  <Icon name="Calendar" className="mr-2" size={20} />
+                  Записаться на сеанс
+                </Button>
+              </a>
               <Button variant="outline" size="lg" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
                 <Icon name="Phone" className="mr-2" size={20} />
                 Консультация
