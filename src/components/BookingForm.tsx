@@ -26,23 +26,23 @@ interface FormErrors {
 
 const SERVICES = [
   // Access Bars
-  { id: 'access-bars-first', name: 'Первая сессия Access Bars', duration: '90 мин', price: '8 000 ₽', category: 'Access Bars' },
-  { id: 'access-bars-standard', name: 'Стандартная сессия Access Bars', duration: '60 мин', price: '8 000 ₽', category: 'Access Bars' },
-  { id: 'access-bars-intensive', name: 'Интенсивная программа Access Bars', duration: '3 сессии', price: '21 000 ₽', category: 'Access Bars' },
+  { id: 'access-bars-first', name: 'Первая сессия', duration: '90 мин', price: '8 000 ₽', category: 'Access Bars' },
+  { id: 'access-bars-standard', name: 'Стандартная сессия', duration: '60 мин', price: '8 000 ₽', category: 'Access Bars' },
+  { id: 'access-bars-intensive', name: 'Интенсивный курс', duration: '3 сессии', price: '21 000 ₽', category: 'Access Bars' },
   
   // Massage
-  { id: 'classic-massage', name: 'Классический массаж', duration: '60 мин', price: '6 000 ₽', category: 'Массаж' },
+  { id: 'classic-massage', name: 'Классический', duration: '60 мин', price: '6 000 ₽', category: 'Массаж' },
   { id: 'aromatherapy', name: 'Ароматерапия', duration: '60 мин', price: '5 000 ₽', category: 'Массаж' },
-  { id: 'complex-massage', name: 'Комплексная программа массажа', duration: '90 мин', price: '8 000 ₽', category: 'Массаж' },
+  { id: 'complex-massage', name: 'Комплексная программа', duration: '90 мин', price: '8 000 ₽', category: 'Массаж' },
   
   // Healing
-  { id: 'energy-healing', name: 'Энергетическое исцеление', duration: '60 мин', price: '7 000 ₽', category: 'Целительство' },
-  { id: 'remote-healing', name: 'Дистанционное исцеление', duration: '60 мин', price: '6 000 ₽', category: 'Целительство' },
+  { id: 'energy-healing', name: 'Энергетическое', duration: '60 мин', price: '7 000 ₽', category: 'Целительство' },
+  { id: 'remote-healing', name: 'Дистанционное', duration: '60 мин', price: '6 000 ₽', category: 'Целительство' },
   
   // Training
-  { id: 'training-basic', name: 'Access Bars Practitioner - Базовый', duration: '8 часов', price: '29 000 ₽', category: 'Обучение' },
-  { id: 'training-repeat', name: 'Access Bars Practitioner - Повторный', duration: '8 часов', price: '14 500 ₽', category: 'Обучение' },
-  { id: 'training-teen', name: 'Access Bars Practitioner - Подростки', duration: '8 часов', price: '14 500 ₽', category: 'Обучение' },
+  { id: 'training-basic', name: 'Базовый курс', duration: '8ч', price: '29 000 ₽', category: 'Обучение' },
+  { id: 'training-repeat', name: 'Повторное обучение', duration: '8ч', price: '14 500 ₽', category: 'Обучение' },
+  { id: 'training-teen', name: 'Для подростков', duration: '8ч', price: '14 500 ₽', category: 'Обучение' },
 ];
 
 const TIME_SLOTS = [
@@ -212,16 +212,17 @@ const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose }) => {
                 <select
                   value={formData.service}
                   onChange={(e) => handleInputChange('service', e.target.value)}
-                  className={`w-full px-4 py-3 bg-emerald-900/50 border rounded-lg text-gold-100 focus:outline-none focus:ring-2 focus:ring-gold-400 ${
+                  className={`w-full px-3 py-3 bg-emerald-900/50 border rounded-lg text-gold-100 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-gold-400 ${
                     errors.service ? 'border-red-400' : 'border-gold-400/30'
                   }`}
+                  style={{ fontSize: window.innerWidth < 768 ? '16px' : '14px' }}
                 >
                   <option value="">Выберите услугу</option>
                   {['Access Bars', 'Массаж', 'Целительство', 'Обучение'].map(category => (
-                    <optgroup key={category} label={category}>
+                    <optgroup key={category} label={`${category}:`} className="text-gold-200 font-bold">
                       {SERVICES.filter(s => s.category === category).map(service => (
-                        <option key={service.id} value={service.id}>
-                          {service.name} ({service.duration}) - {service.price}
+                        <option key={service.id} value={service.id} className="py-1">
+                          {service.name}・{service.duration}・{service.price}
                         </option>
                       ))}
                     </optgroup>
