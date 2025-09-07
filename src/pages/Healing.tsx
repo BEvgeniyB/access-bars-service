@@ -1,10 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Navigation from "@/components/Navigation";
+import BookingForm from "@/components/BookingForm";
 
 const Healing = () => {
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [preselectedService, setPreselectedService] = useState<string>('');
+
   useEffect(() => {
     // Плавный скролл к якорю после загрузки страницы
     const hash = window.location.hash;
@@ -22,6 +26,14 @@ const Healing = () => {
           });
         }
       }, 500); // Увеличенная задержка для более заметного эффекта
+    }
+    
+    // Handle preselected service from URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    const service = urlParams.get('service');
+    if (service) {
+      setPreselectedService(service);
+      setIsBookingOpen(true);
     }
   }, []);
   const services = [
@@ -269,7 +281,16 @@ const Healing = () => {
                       </ul>
                     </div>
                     
-                    <Button className="w-full mt-6 bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold transition-colors">
+                    <Button 
+                      className="w-full mt-6 bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold transition-colors"
+                      onClick={() => {
+                        let serviceId = '';
+                        if (service.title.includes('Энергетическое')) serviceId = 'energy-healing';
+                        else if (service.title.includes('Дистанционное')) serviceId = 'remote-healing';
+                        setPreselectedService(serviceId);
+                        setIsBookingOpen(true);
+                      }}
+                    >
                       Записаться
                     </Button>
                   </div>
@@ -418,6 +439,13 @@ const Healing = () => {
           </div>
         </div>
       </footer>
+      
+      {/* Booking Form Modal */}
+      <BookingForm 
+        isOpen={isBookingOpen} 
+        onClose={() => setIsBookingOpen(false)}
+        preselectedService={preselectedService}
+      />
     </div>
   );
 };
