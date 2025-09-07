@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import Icon from "@/components/ui/icon";
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
-import Breadcrumbs from "@/components/ui/breadcrumbs";
+
 
 const MassageWebsite = () => {
   const services = [
@@ -72,8 +72,7 @@ const MassageWebsite = () => {
         </div>
       </header>
 
-      {/* Breadcrumbs */}
-      <Breadcrumbs />
+
 
       {/* Navigation Menu */}
       <div className="fixed top-28 sm:top-32 md:top-36 left-2 md:left-4 z-40">

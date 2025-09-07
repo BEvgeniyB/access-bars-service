@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import Icon from "@/components/ui/icon";
 import { useEffect } from "react";
 import Navigation from "@/components/Navigation";
-import Breadcrumbs from "@/components/ui/breadcrumbs";
+
 
 const AccessBars = () => {
   useEffect(() => {
@@ -90,8 +90,7 @@ const AccessBars = () => {
         </div>
       </header>
 
-      {/* Breadcrumbs */}
-      <Breadcrumbs />
+
 
       {/* Navigation Menu */}
       <div className="fixed bottom-4 left-4 md:top-16 md:bottom-auto md:left-2 md:right-auto z-40">
