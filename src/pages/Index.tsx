@@ -24,7 +24,7 @@ const MassageWebsite = () => {
       duration: "60-90 мин",
       price: "от 6 000 ₽", 
       description: "Широкий спектр массажных техник: классический, ароматерапия, горячими камнями и другие виды",
-      link: "/massage"
+      link: "/massage#services"
     },
     {
       name: "Обучение",
