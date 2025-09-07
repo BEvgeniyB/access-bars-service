@@ -212,11 +212,10 @@ const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose }) => {
                 <select
                   value={formData.service}
                   onChange={(e) => handleInputChange('service', e.target.value)}
-                  className={`w-full px-3 py-3 bg-emerald-900/50 border rounded-lg text-gold-100 text-sm focus:outline-none focus:ring-2 focus:ring-gold-400 ${
+                  className={`w-full px-3 py-3 bg-emerald-900/50 border rounded-lg text-gold-100 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-gold-400 ${
                     errors.service ? 'border-red-400' : 'border-gold-400/30'
                   }`}
                   style={{ 
-                    fontSize: '16px',
                     maxHeight: '50vh',
                     overflowY: 'auto'
                   }}
