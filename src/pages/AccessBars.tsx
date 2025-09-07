@@ -123,6 +123,17 @@ const AccessBars = () => {
                 Главная
               </a>
               
+              <a 
+                href="/#about"
+                className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3 block"
+                onClick={() => {
+                  document.getElementById('section-menu')?.classList.add('hidden');
+                }}
+              >
+                <Icon name="User" size={16} />
+                Обо мне
+              </a>
+              
               <button 
                 className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
                 onClick={() => {
