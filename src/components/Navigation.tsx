@@ -47,6 +47,11 @@ const Navigation = ({ variant = 'secondary', className = '' }: NavigationProps) 
               key={item.path}
               to={item.path}
               className={getNavItemClassName(item.path)}
+              onClick={() => {
+                if (item.path !== '/') {
+                  window.scrollTo({ top: 0 });
+                }
+              }}
             >
               {item.label}
             </Link>
