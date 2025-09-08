@@ -322,7 +322,11 @@ const Massage = () => {
               вашего здоровья и гармонии
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <Button size="lg" className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold px-10 py-4 text-lg shadow-xl">
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold px-10 py-4 text-lg shadow-xl"
+                onClick={() => setIsBookingOpen(true)}
+              >
                 <Icon name="Heart" className="mr-3" size={20} />
                 Записаться на массаж
               </Button>
