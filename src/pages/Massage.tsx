@@ -94,7 +94,7 @@ const Massage = () => {
       </header>
 
       {/* Navigation Menu */}
-      <div className="fixed bottom-4 left-4 md:top-16 md:bottom-auto md:left-2 md:right-auto z-40">
+      <div className="fixed bottom-4 right-4 md:top-16 md:bottom-auto md:right-2 md:left-auto z-40">
         <div className="group">
           <Button 
             className="bg-black/80 border-2 border-gold-400/50 text-gold-400 hover:bg-gold-400/10 shadow-xl text-xs md:text-sm"
@@ -107,7 +107,7 @@ const Massage = () => {
             <span className="ml-1 md:ml-2 hidden sm:inline">Разделы</span>
           </Button>
           
-          <div id="section-menu" className="hidden absolute bottom-12 md:top-12 md:bottom-auto left-0 w-56 md:w-64 bg-black/90 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden">
+          <div id="section-menu" className="hidden absolute bottom-12 md:top-12 md:bottom-auto right-0 w-56 md:w-64 bg-black/90 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden">
             <div className="p-2 space-y-1">
               <a 
                 href="/"

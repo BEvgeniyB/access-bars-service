@@ -100,7 +100,7 @@ const MassageWebsite = () => {
 
 
       {/* Navigation Menu */}
-      <div className="fixed top-28 sm:top-32 md:top-36 left-2 md:left-4 z-40">
+      <div className="fixed top-28 sm:top-32 md:top-36 right-2 md:right-4 z-40">
         <div className="group">
           <Button 
             className="bg-black/80 border-2 border-gold-400/50 text-gold-400 hover:bg-gold-400/10 shadow-xl text-xs md:text-sm"
@@ -113,7 +113,7 @@ const MassageWebsite = () => {
             <span className="ml-1 md:ml-2 hidden sm:inline">Разделы</span>
           </Button>
           
-          <div id="section-menu" className="hidden absolute top-12 left-0 w-64 bg-black/95 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden z-50">
+          <div id="section-menu" className="hidden absolute top-12 right-0 w-64 bg-black/95 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden z-50">
             <div className="p-2 space-y-1">
               <button 
                 className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
