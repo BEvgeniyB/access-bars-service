@@ -8,8 +8,8 @@ interface TrainingCoursesProps {
 
 const courses = [
   {
-    title: "Повторное обучение",
-    level: "Практика",
+    title: "Обучение технике Access Bars. Доступно всем",
+    level: "",
     description: "Углубите знания и получите дополнительную практику с опытным инструктором",
     duration: "8 часов",
     includes: [
