@@ -119,7 +119,7 @@ const TrainingCourses = ({ onBookingClick }: TrainingCoursesProps) => {
           <Card className="relative overflow-hidden hover:shadow-xl transition-all duration-300 group bg-emerald-800/30 backdrop-blur-sm">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold-400 to-gold-500"></div>
             <CardHeader>
-              <CardTitle className="text-xl font-montserrat text-gold-200">О технике Access Bars</CardTitle>
+              <CardTitle className="text-xl font-montserrat text-gold-200">Как проходит обучение Access Bars?</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-emerald-100 text-sm leading-relaxed space-y-3">
