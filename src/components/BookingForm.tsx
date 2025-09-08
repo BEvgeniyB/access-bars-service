@@ -27,18 +27,18 @@ interface FormErrors {
 
 const SERVICES = [
   // Access Bars
-  { id: 'access-bars-first', name: 'Первая сессия', duration: '90 мин', price: '8 000 ₽', category: 'Access Bars' },
-  { id: 'access-bars-standard', name: 'Стандартная сессия', duration: '60 мин', price: '8 000 ₽', category: 'Access Bars' },
-  { id: 'access-bars-intensive', name: 'Интенсивный курс', duration: '3 сессии', price: '21 000 ₽', category: 'Access Bars' },
+  { id: 'access-bars-first', name: 'Первая сессия', duration: '90 мин', price: '7 000 ₽', category: 'Access Bars' },
+  { id: 'access-bars-standard', name: 'Стандартная сессия', duration: '60 мин', price: '7 000 ₽', category: 'Access Bars' },
+  { id: 'access-bars-intensive', name: 'Интенсивная программа', duration: '3 сессии', price: '18 000 ₽', category: 'Access Bars' },
   
   // Massage
-  { id: 'classic-massage', name: 'Классический', duration: '60 мин', price: '6 000 ₽', category: 'Массаж' },
-  { id: 'aromatherapy', name: 'Ароматерапия', duration: '60 мин', price: '5 000 ₽', category: 'Массаж' },
-  { id: 'complex-massage', name: 'Комплексная', duration: '90 мин', price: '8 000 ₽', category: 'Массаж' },
+  { id: 'classic-massage', name: 'Классический массаж', duration: '60 мин', price: '6 000 ₽', category: 'Массаж' },
+  { id: 'complex-massage', name: 'Комплексная программа', duration: '90 мин', price: '7 000 ₽', category: 'Массаж' },
   
   // Healing
-  { id: 'energy-healing', name: 'Энергетическое', duration: '60 мин', price: '7 000 ₽', category: 'Целительство' },
-  { id: 'remote-healing', name: 'Дистанционное', duration: '60 мин', price: '6 000 ₽', category: 'Целительство' },
+  { id: 'body-healing', name: 'Телесное исцеление', duration: '60 мин', price: '8 000 ₽', category: 'Целительство' },
+  { id: 'body-healing-package', name: 'Телесное исцеление пакет 3 сеанса', duration: '3 сеанса', price: '21 000 ₽', category: 'Целительство' },
+  { id: 'remote-healing', name: 'Дистанционное исцеление', duration: '60 мин', price: '7 000 ₽', category: 'Целительство' },
   
   // Training
   { id: 'training-basic', name: 'Базовый курс', duration: '8ч', price: '29 000 ₽', category: 'Обучение' },
