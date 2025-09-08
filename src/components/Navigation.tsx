@@ -71,6 +71,11 @@ const Navigation = ({ variant = 'secondary', className = '' }: NavigationProps) 
               key={item.path}
               to={item.path}
               className={getNavItemClassName(item.path)}
+              onClick={() => {
+                if (item.path !== '/') {
+                  setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+                }
+              }}
             >
               {item.label}
             </Link>
@@ -89,6 +94,11 @@ const Navigation = ({ variant = 'secondary', className = '' }: NavigationProps) 
               className={`${getNavItemClassName(item.path)} ${
                 item.path !== '/' && item.path !== '/contacts' ? '' : 'hidden sm:block'
               }`}
+              onClick={() => {
+                if (item.path !== '/') {
+                  setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+                }
+              }}
             >
               {item.label}
             </Link>
