@@ -6,13 +6,13 @@ const sessions = [
   {
     name: "Первая сессия Access Bars",
     duration: "90 мин",
-    price: "8 000 ₽",
+    price: "7 000 ₽",
     description: "Знакомство с методикой, полная диагностика и первый сеанс"
   },
   {
     name: "Стандартная сессия", 
     duration: "60 мин",
-    price: "8 000 ₽",
+    price: "7 000 ₽",
     description: "Классический сеанс Access Bars для регулярной практики"
   },
   {
