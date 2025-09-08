@@ -113,7 +113,7 @@ const Massage = () => {
               <button 
                 className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
                 onClick={() => {
-                  document.querySelector('header')?.scrollIntoView({ behavior: 'smooth' });
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
                   closeMenu();
                 }}
               >
