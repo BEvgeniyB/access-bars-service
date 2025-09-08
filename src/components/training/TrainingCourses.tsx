@@ -69,9 +69,7 @@ const TrainingCourses = ({ onBookingClick }: TrainingCoursesProps) => {
                   <Button 
                     className="w-full mt-6 bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold transition-colors"
                     onClick={onBookingClick}
-                  >
-                    Записаться на курс
-                  </Button>
+                  >Записаться</Button>
                 </div>
               </CardContent>
             </Card>
