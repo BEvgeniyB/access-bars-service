@@ -48,9 +48,7 @@ const Navigation = ({ variant = 'secondary', className = '' }: NavigationProps) 
               to={item.path}
               className={getNavItemClassName(item.path)}
               onClick={() => {
-                if (item.path !== '/') {
-                  window.scrollTo({ top: 0 });
-                }
+                window.scrollTo({ top: 0 });
               }}
             >
               {item.label}
@@ -77,9 +75,7 @@ const Navigation = ({ variant = 'secondary', className = '' }: NavigationProps) 
               to={item.path}
               className={getNavItemClassName(item.path)}
               onClick={() => {
-                if (item.path !== '/') {
-                  window.scrollTo({ top: 0 });
-                }
+                window.scrollTo({ top: 0 });
               }}
             >
               {item.label}
@@ -100,9 +96,7 @@ const Navigation = ({ variant = 'secondary', className = '' }: NavigationProps) 
                 item.path !== '/' && item.path !== '/contacts' ? '' : 'hidden sm:block'
               }`}
               onClick={() => {
-                if (item.path !== '/') {
-                  window.scrollTo({ top: 0 });
-                }
+                window.scrollTo({ top: 0 });
               }}
             >
               {item.label}
