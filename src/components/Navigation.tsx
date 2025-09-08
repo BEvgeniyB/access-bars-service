@@ -73,7 +73,7 @@ const Navigation = ({ variant = 'secondary', className = '' }: NavigationProps) 
               className={getNavItemClassName(item.path)}
               onClick={() => {
                 if (item.path !== '/') {
-                  setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+                  window.scrollTo({ top: 0 });
                 }
               }}
             >
@@ -96,7 +96,7 @@ const Navigation = ({ variant = 'secondary', className = '' }: NavigationProps) 
               }`}
               onClick={() => {
                 if (item.path !== '/') {
-                  setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+                  window.scrollTo({ top: 0 });
                 }
               }}
             >
