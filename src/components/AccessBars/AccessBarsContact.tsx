@@ -38,12 +38,8 @@ const AccessBarsContact = () => {
           
           <div className="flex justify-center gap-6">
             <div className="flex items-center gap-2">
-              <Icon name="Instagram" size={20} />
-              <span>@spa_harmony</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Icon name="Mail" size={20} />
-              <span>info@spaharmony.ru</span>
+              <Icon name="Phone" size={20} />
+              <span>+7(918) 414-1221</span>
             </div>
           </div>
           
