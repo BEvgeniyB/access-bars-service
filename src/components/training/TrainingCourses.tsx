@@ -123,7 +123,7 @@ const TrainingCourses = ({ onBookingClick }: TrainingCoursesProps) => {
             </CardHeader>
             <CardContent>
               <div className="text-emerald-100 text-sm leading-relaxed space-y-3">
-                <p className="font-semibold text-gold-200">Приглашаю вас на обучение Access Bars💆‍♀️</p>
+                <p className="font-semibold text-gold-200">Приглашаю вас на обучение Access Bars💫</p>
                 <p className="font-bold">Всего 1 день!</p>
                 <p>Чтобы владеть простой в применении, но мощной по своему воздействию энергетической техникой.</p>
                 
