@@ -339,7 +339,7 @@ const MassageWebsite = () => {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20 relative" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
+      <section id="contact" className="py-20 relative">
         <div className="container mx-auto px-4 text-center">
           <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-8">Записаться на сеанс</h2>
           <p className="text-xl text-emerald-100 mb-8 max-w-2xl mx-auto">
