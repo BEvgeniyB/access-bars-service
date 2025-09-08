@@ -407,37 +407,32 @@ const Healing = () => {
       </section>
 
       {/* Footer */}
-      <footer className="text-white py-12" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div>
-              <h4 className="font-montserrat font-bold text-xl mb-4 text-gold-200">Гармония энергий</h4>
-              <p className="text-emerald-200 mb-4">
-                Центр энергетического исцеления и духовного развития
-              </p>
+      <footer className="bg-emerald-950/90 backdrop-blur-sm text-white py-12">
+        <div className="container mx-auto px-4 text-center">
+          <h3 className="font-montserrat font-bold text-2xl mb-4 text-gold-200">Гармония энергий</h3>
+          <p className="text-emerald-200 mb-6">Перцептивные технологии</p>
+          
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6">
+            <div className="flex items-center gap-2">
+              <Icon name="Phone" size={20} />
+              <span>+7(918) 414-1221</span>
             </div>
-            <div>
-              <h4 className="font-semibold text-lg mb-4 text-gold-200">Контакты</h4>
-              <div className="space-y-2 text-emerald-200">
-                <p>+7(918) 414-1221</p>
-                <p>healing@harmony-energy.ru</p>
-                <p>Москва, ул. Примерная, 123</p>
-              </div>
-            </div>
-            <div>
-              <h4 className="font-semibold text-lg mb-4 text-gold-200">Следите за нами</h4>
-              <div className="flex gap-4">
-                <Button variant="ghost" size="sm" className="text-emerald-200 hover:text-gold-400 p-2">
-                  <Icon name="Instagram" size={20} />
-                </Button>
-                <Button variant="ghost" size="sm" className="text-emerald-200 hover:text-gold-400 p-2">
-                  <Icon name="MessageCircle" size={20} />
-                </Button>
-              </div>
-            </div>
+            <a href="https://t.me/velikaya_nataliya" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold-300 transition-colors">
+              <Icon name="Send" size={20} />
+              <span>@velikaya_nataliya</span>
+            </a>
+            <a href="https://t.me/NewWorld7d" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold-300 transition-colors">
+              <Icon name="Send" size={20} />
+              <span>NewWorld7d</span>
+            </a>
+            <a href="https://youtube.com/channel/UCZ_Ukxv92QcpaTUzIKKS4VA" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold-300 transition-colors">
+              <Icon name="Youtube" size={20} />
+              <span>YouTube канал</span>
+            </a>
           </div>
-          <div className="border-t border-emerald-700 mt-8 pt-8 text-center text-emerald-300">
-            <p>&copy; 2025 Гармония энергий. Все права защищены.</p>
+          
+          <div className="mt-8 pt-8 border-t border-emerald-700">
+            <p className="text-emerald-300">© 2025 Гармония энергий. Все права защищены.</p>
           </div>
         </div>
       </footer>

@@ -10,23 +10,24 @@ const TrainingFooter = () => {
             <h4 className="font-montserrat font-bold text-xl mb-4 text-gold-200">Гармония энергий</h4>
             <p className="text-emerald-200 mb-4">Обучения и практики Access Bars в Москве</p>
           </div>
-          <div>
-            <h4 className="font-semibold text-lg mb-4 text-gold-200">Контакты</h4>
-            <div className="space-y-2 text-emerald-200">
-              <p>+7(918) 414-1221</p>
-              <p>info@harmony-energy.ru</p>
-              <p>Москва, ул. Примерная, 123</p>
-            </div>
-          </div>
-          <div>
-            <h4 className="font-semibold text-lg mb-4 text-gold-200">Следите за нами</h4>
-            <div className="flex gap-4">
-              <Button variant="ghost" size="sm" className="text-emerald-200 hover:text-gold-400 p-2">
-                <Icon name="Instagram" size={20} />
-              </Button>
-              <Button variant="ghost" size="sm" className="text-emerald-200 hover:text-gold-400 p-2">
-                <Icon name="MessageCircle" size={20} />
-              </Button>
+          <div className="col-span-2">
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6">
+              <div className="flex items-center gap-2">
+                <Icon name="Phone" size={20} />
+                <span>+7(918) 414-1221</span>
+              </div>
+              <a href="https://t.me/velikaya_nataliya" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold-300 transition-colors">
+                <Icon name="Send" size={20} />
+                <span>@velikaya_nataliya</span>
+              </a>
+              <a href="https://t.me/NewWorld7d" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold-300 transition-colors">
+                <Icon name="Send" size={20} />
+                <span>NewWorld7d</span>
+              </a>
+              <a href="https://youtube.com/channel/UCZ_Ukxv92QcpaTUzIKKS4VA" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold-300 transition-colors">
+                <Icon name="Youtube" size={20} />
+                <span>YouTube канал</span>
+              </a>
             </div>
           </div>
         </div>
