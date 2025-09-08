@@ -1,38 +1,61 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <defs>
     <linearGradient id="starGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
-      <stop offset="50%" style="stop-color:#FFA500;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#FF6347;stop-opacity:1" />
+      <stop offset="0%" style="stop-color:#FFE135;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FFB347;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF8C42;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="trailGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFE135;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#FFB347;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#FF8C42;stop-opacity:0.1" />
     </linearGradient>
   </defs>
   
-  <!-- Main star shape -->
-  <path d="M50 10 L55 35 L80 35 L60 55 L65 80 L50 65 L35 80 L40 55 L20 35 L45 35 Z" 
+  <!-- Comet trail -->
+  <path d="M15 15 Q35 25 50 45 Q65 55 85 75" 
+        stroke="url(#trailGradient)" 
+        stroke-width="8" 
+        fill="none" 
+        stroke-linecap="round"
+        opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0.8;0.6" dur="2s" repeatCount="indefinite"/>
+  </path>
+  
+  <!-- Additional trail sparkles -->
+  <circle cx="25" cy="20" r="1.5" fill="#FFE135" opacity="0.7">
+    <animate attributeName="opacity" values="0.7;1;0.7" dur="1.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="40" cy="30" r="1" fill="#FFB347" opacity="0.5">
+    <animate attributeName="opacity" values="0.5;0.9;0.5" dur="2.2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="65" cy="50" r="1.2" fill="#FF8C42" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;1;0.6" dur="1.8s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Main star -->
+  <path d="M60 45 L64 58 L77 58 L67 67 L71 80 L60 74 L49 80 L53 67 L43 58 L56 58 Z" 
         fill="url(#starGradient)" 
         stroke="#FFD700" 
-        stroke-width="1"/>
-  
-  <!-- Sparkle effects -->
-  <circle cx="25" cy="25" r="2" fill="#FFD700" opacity="0.8">
-    <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite"/>
-  </circle>
-  
-  <circle cx="75" cy="25" r="1.5" fill="#FFA500" opacity="0.6">
-    <animate attributeName="opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite"/>
-  </circle>
-  
-  <circle cx="75" cy="75" r="2.5" fill="#FFD700" opacity="0.7">
-    <animate attributeName="opacity" values="0.7;1;0.7" dur="2.5s" repeatCount="indefinite"/>
-  </circle>
-  
-  <circle cx="25" cy="75" r="1" fill="#FF6347" opacity="0.9">
-    <animate attributeName="opacity" values="0.9;1;0.9" dur="1.8s" repeatCount="indefinite"/>
-  </circle>
+        stroke-width="1">
+    <animateTransform attributeName="transform" 
+                     type="rotate" 
+                     values="0 60 62;360 60 62" 
+                     dur="8s" 
+                     repeatCount="indefinite"/>
+  </path>
   
   <!-- Center glow -->
-  <circle cx="50" cy="50" r="8" fill="#FFD700" opacity="0.3">
-    <animate attributeName="r" values="8;12;8" dur="3s" repeatCount="indefinite"/>
-    <animate attributeName="opacity" values="0.3;0.1;0.3" dur="3s" repeatCount="indefinite"/>
+  <circle cx="60" cy="62" r="6" fill="#FFE135" opacity="0.4">
+    <animate attributeName="r" values="6;10;6" dur="2.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.4;0.2;0.4" dur="2.5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Outer sparkles -->
+  <circle cx="75" cy="35" r="1.8" fill="#FFE135" opacity="0.8">
+    <animate attributeName="opacity" values="0.8;1;0.8" dur="2.3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="85" cy="65" r="1.3" fill="#FFB347" opacity="0.7">
+    <animate attributeName="opacity" values="0.7;1;0.7" dur="1.7s" repeatCount="indefinite"/>
   </circle>
 </svg>
