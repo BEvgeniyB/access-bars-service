@@ -160,7 +160,8 @@ const MassageWebsite = () => {
 
       {/* Hero Section */}
       <main>
-      <section id="hero" className="pt-16 pb-16 md:py-24 px-4 text-center relative overflow-hidden">
+      <div id="hero" className="scroll-target"></div>
+      <section className="pt-16 pb-16 md:py-24 px-4 text-center relative overflow-hidden">
         <div className="container mx-auto relative z-10">
           {/* Watermark N in Hero Section */}
           <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-5">
@@ -223,8 +224,8 @@ const MassageWebsite = () => {
       </section>
 
       {/* Services Section */}
-      <section id="services" 
-        className="py-20 relative"
+      <div id="services" className="scroll-target"></div>
+      <section className="py-20 relative"
         style={{
           background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`,
           backgroundAttachment: 'fixed'
@@ -268,8 +269,8 @@ const MassageWebsite = () => {
       </section>
 
       {/* About Section */}
-      <section id="about" 
-        className="py-20 relative"
+      <div id="about" className="scroll-target"></div>
+      <section className="py-20 relative"
         style={{
           background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`,
           backgroundAttachment: 'fixed'
@@ -357,7 +358,8 @@ const MassageWebsite = () => {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20 relative">
+      <div id="contact" className="scroll-target"></div>
+      <section className="py-20 relative">
         <div className="container mx-auto px-4 text-center">
           <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-8">Записаться на сеанс</h2>
           <p className="text-xl text-emerald-100 mb-8 max-w-2xl mx-auto">
