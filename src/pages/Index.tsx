@@ -329,11 +329,11 @@ const MassageWebsite = () => {
               </div>
               <div className="p-6 rounded-2xl shadow-lg flex items-center gap-4" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
                 <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
-                  <Icon name="Leaf" className="text-gold-400" size={24} />
+                  <Icon name="Heart" className="text-gold-400" size={24} />
                 </div>
                 <div>
-                  <h3 className="font-montserrat font-semibold text-lg text-gold-200">100% натуральные компоненты</h3>
-                  <p className="text-emerald-200">Только органические масла и экстракты</p>
+                  <h3 className="font-montserrat font-semibold text-lg text-gold-200">Индивидуальный подход</h3>
+                  <p className="text-emerald-200">Персональные программы для каждого клиента</p>
                 </div>
               </div>
               
@@ -349,11 +349,11 @@ const MassageWebsite = () => {
               
               <div className="p-6 rounded-2xl shadow-lg flex items-center gap-4" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
                 <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
-                  <Icon name="Heart" className="text-gold-400" size={24} />
+                  <Icon name="Leaf" className="text-gold-400" size={24} />
                 </div>
                 <div>
-                  <h3 className="font-montserrat font-semibold text-lg text-gold-200">Индивидуальный подход</h3>
-                  <p className="text-emerald-200">Персональные программы для каждого клиента</p>
+                  <h3 className="font-montserrat font-semibold text-lg text-gold-200">100% натуральные компоненты</h3>
+                  <p className="text-emerald-200">Только органические масла и экстракты</p>
                 </div>
               </div>
             </div>
