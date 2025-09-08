@@ -390,6 +390,10 @@ const MassageWebsite = () => {
               <Icon name="Instagram" size={20} />
               <span>@velikaya_nataliya</span>
             </a>
+            <a href="https://vk.com/id71840974" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold-300 transition-colors">
+              <Icon name="Users" size={20} />
+              <span>VK</span>
+            </a>
             <a href="https://youtube.com/channel/UCZ_Ukxv92QcpaTUzIKKS4VA" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold-300 transition-colors">
               <Icon name="Youtube" size={20} />
               <span>Великая Наталья</span>
