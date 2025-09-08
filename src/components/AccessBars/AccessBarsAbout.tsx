@@ -68,6 +68,6 @@ const AccessBarsAbout = () => {
       </div>
     </section>
     </>
-};
+  );
 
 export default AccessBarsAbout;

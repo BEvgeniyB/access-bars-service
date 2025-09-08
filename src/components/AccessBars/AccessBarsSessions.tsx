@@ -81,6 +81,6 @@ const AccessBarsSessions = ({ onBookingClick }: AccessBarsSessionsProps) => {
       </div>
     </section>
     </>
-};
+  );
 
 export default AccessBarsSessions;

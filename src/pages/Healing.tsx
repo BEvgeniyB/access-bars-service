@@ -287,7 +287,7 @@ const Healing = () => {
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
             {services.map((service, index) => (
-              <Card key={index} className="relative overflow-hidden hover:shadow-xl transition-all duration-300 group h-full" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}} style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
+              <Card key={index} className="relative overflow-hidden hover:shadow-xl transition-all duration-300 group h-full" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold-400 to-gold-500"></div>
                 <CardHeader className="pb-4">
                   <div className="flex items-start justify-between mb-3">
