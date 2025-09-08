@@ -6,6 +6,7 @@ import TrainingCourses from "@/components/training/TrainingCourses";
 import TrainingBenefits from "@/components/training/TrainingBenefits";
 import TrainingTestimonials from "@/components/training/TrainingTestimonials";
 import TrainingFooter from "@/components/training/TrainingFooter";
+import TrainingNavigation from "@/components/training/TrainingNavigation";
 
 const Training = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
@@ -95,6 +96,8 @@ const Training = () => {
       <TrainingTestimonials />
       
       <TrainingFooter />
+      
+      <TrainingNavigation />
       
       <TrainingBookingForm 
         isOpen={isBookingOpen} 
