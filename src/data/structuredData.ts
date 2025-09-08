@@ -4,10 +4,10 @@ export const businessStructuredData = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   "name": "Гармония энергий",
-  "description": "Профессиональные услуги массажа, энергетического целительства и Access Bars в Краснодаре",
+  "description": "Профессиональные услуги массажа, энергетического целительства и Access Bars в Москве",
   "address": {
     "@type": "PostalAddress",
-    "addressLocality": "Краснодар", 
+    "addressLocality": "Москва", 
     "addressCountry": "RU"
   },
   "telephone": "+7(918) 414-1221",
@@ -15,7 +15,7 @@ export const businessStructuredData = {
   "priceRange": "6000-29000 RUB",
   "serviceArea": {
     "@type": "City",
-    "name": "Краснодар"
+    "name": "Москва"
   },
   "openingHours": "Mo-Su 12:00-22:00",
   "founder": {
@@ -89,7 +89,7 @@ export const personStructuredData = {
   "telephone": "+7(918) 414-1221",
   "address": {
     "@type": "PostalAddress",
-    "addressLocality": "Краснодар",
+    "addressLocality": "Москва",
     "addressCountry": "RU"
   },
   "sameAs": [

@@ -11,9 +11,9 @@ interface SEOHeadProps {
 }
 
 const SEOHead = ({
-  title = "Гармония энергий - Массаж, Access Bars, Целительство в Краснодаре",
-  description = "Профессиональные услуги массажа, Access Bars, энергетического целительства и обучения в Краснодаре. Наталья Великая - сертифицированный специалист. Записаться: +7(918) 414-1221",
-  keywords = "массаж Краснодар, Access Bars, энергетическое целительство, духовные практики, массаж спины, расслабляющий массаж, Наталья Великая",
+  title = "Гармония энергий - Массаж, Access Bars, Целительство в Москве",
+  description = "Профессиональные услуги массажа, Access Bars, энергетического целительства и обучения в Москве. Наталья Великая - сертифицированный специалист. Записаться: +7(918) 414-1221",
+  keywords = "массаж Москва, Access Bars, энергетическое целительство, духовные практики, массаж спины, расслабляющий массаж, Наталья Великая",
   image = "https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg",
   url = "https://harmony-energies.ru",
   type = "website",
@@ -48,10 +48,10 @@ const SEOHead = ({
       <meta name="twitter:image" content={image} />
 
       {/* Дополнительные SEO теги */}
-      <meta name="geo.region" content="RU-KDA" />
-      <meta name="geo.placename" content="Краснодар" />
-      <meta name="geo.position" content="45.035470;38.975313" />
-      <meta name="ICBM" content="45.035470, 38.975313" />
+      <meta name="geo.region" content="RU-MOW" />
+      <meta name="geo.placename" content="Москва" />
+      <meta name="geo.position" content="55.755826;37.617300" />
+      <meta name="ICBM" content="55.755826, 37.617300" />
 
       {/* Структурированные данные */}
       {structuredData && (
