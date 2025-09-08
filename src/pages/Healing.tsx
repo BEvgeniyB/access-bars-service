@@ -10,6 +10,9 @@ import { breadcrumbStructuredData } from "@/data/structuredData";
 const Healing = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [preselectedService, setPreselectedService] = useState<string>('');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const closeMenu = () => setIsMenuOpen(false);
 
   useEffect(() => {
     // Плавный скролл к якорю после загрузки страницы
@@ -146,23 +149,18 @@ const Healing = () => {
         <div className="group">
           <Button 
             className="bg-black/80 border-2 border-gold-400/50 text-gold-400 hover:bg-gold-400/10 shadow-xl text-xs md:text-sm"
-            onClick={() => {
-              const menu = document.getElementById('section-menu');
-              menu?.classList.toggle('hidden');
-            }}
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             <Icon name="Menu" size={16} />
             <span className="ml-1 md:ml-2 hidden sm:inline">Разделы</span>
           </Button>
           
-          <div id="section-menu" className="hidden absolute bottom-12 md:top-12 md:bottom-auto right-0 w-64 bg-black/90 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden">
+          <div className={`${isMenuOpen ? 'block' : 'hidden'} absolute bottom-12 md:top-12 md:bottom-auto right-0 w-64 bg-black/90 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden z-50`}>
             <div className="p-2 space-y-1">
               <a 
                 href="/"
                 className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3 block"
-                onClick={() => {
-                  document.getElementById('section-menu')?.classList.add('hidden');
-                }}
+                onClick={closeMenu}
               >
                 <Icon name="Home" size={16} />
                 Главная
@@ -171,9 +169,7 @@ const Healing = () => {
               <a 
                 href="/#about"
                 className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3 block"
-                onClick={() => {
-                  document.getElementById('section-menu')?.classList.add('hidden');
-                }}
+                onClick={closeMenu}
               >
                 <Icon name="User" size={16} />
                 Обо мне
@@ -183,7 +179,7 @@ const Healing = () => {
                 className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
                 onClick={() => {
                   document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' });
-                  document.getElementById('section-menu')?.classList.add('hidden');
+                  closeMenu();
                 }}
               >
                 <Icon name="ArrowUp" size={16} />
@@ -194,7 +190,7 @@ const Healing = () => {
                 className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
                 onClick={() => {
                   document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
-                  document.getElementById('section-menu')?.classList.add('hidden');
+                  closeMenu();
                 }}
               >
                 <Icon name="Sparkles" size={16} />
@@ -205,7 +201,7 @@ const Healing = () => {
                 className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
                 onClick={() => {
                   document.getElementById('results')?.scrollIntoView({ behavior: 'smooth' });
-                  document.getElementById('section-menu')?.classList.add('hidden');
+                  closeMenu();
                 }}
               >
                 <Icon name="Target" size={16} />
@@ -216,7 +212,7 @@ const Healing = () => {
                 className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
                 onClick={() => {
                   document.getElementById('process')?.scrollIntoView({ behavior: 'smooth' });
-                  document.getElementById('section-menu')?.classList.add('hidden');
+                  closeMenu();
                 }}
               >
                 <Icon name="Settings" size={16} />
@@ -227,7 +223,7 @@ const Healing = () => {
                 className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
                 onClick={() => {
                   document.getElementById('cta')?.scrollIntoView({ behavior: 'smooth' });
-                  document.getElementById('section-menu')?.classList.add('hidden');
+                  closeMenu();
                 }}
               >
                 <Icon name="Phone" size={16} />
@@ -238,7 +234,7 @@ const Healing = () => {
                 className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
                 onClick={() => {
                   document.querySelector('footer')?.scrollIntoView({ behavior: 'smooth' });
-                  document.getElementById('section-menu')?.classList.add('hidden');
+                  closeMenu();
                 }}
               >
                 <Icon name="MessageCircle" size={16} />

@@ -12,6 +12,9 @@ import { businessStructuredData, servicesStructuredData, personStructuredData } 
 const MassageWebsite = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [preselectedService, setPreselectedService] = useState<string>('');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const closeMenu = () => setIsMenuOpen(false);
 
   // Handle hash navigation on page load
   useEffect(() => {
@@ -99,22 +102,19 @@ const MassageWebsite = () => {
         <div className="group">
           <Button 
             className="bg-black/80 border-2 border-gold-400/50 text-gold-400 hover:bg-gold-400/10 shadow-xl text-xs md:text-sm"
-            onClick={() => {
-              const menu = document.getElementById('section-menu');
-              menu?.classList.toggle('hidden');
-            }}
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             <Icon name="Menu" size={16} />
             <span className="ml-1 md:ml-2 hidden sm:inline">Разделы</span>
           </Button>
           
-          <div id="section-menu" className="hidden absolute top-12 right-0 w-64 bg-black/95 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden z-50">
+          <div className={`${isMenuOpen ? 'block' : 'hidden'} absolute top-12 right-0 w-64 bg-black/95 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden z-50`}>
             <div className="p-2 space-y-1">
               <button 
                 className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
                 onClick={() => {
                   document.querySelector('header')?.scrollIntoView({ behavior: 'smooth' });
-                  document.getElementById('section-menu')?.classList.add('hidden');
+                  closeMenu();
                 }}
               >
                 <Icon name="Home" size={16} />
@@ -125,7 +125,7 @@ const MassageWebsite = () => {
                 className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
                 onClick={() => {
                   document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
-                  document.getElementById('section-menu')?.classList.add('hidden');
+                  closeMenu();
                 }}
               >
                 <Icon name="Sparkles" size={16} />
@@ -136,7 +136,7 @@ const MassageWebsite = () => {
                 className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
                 onClick={() => {
                   document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
-                  document.getElementById('section-menu')?.classList.add('hidden');
+                  closeMenu();
                 }}
               >
                 <Icon name="User" size={16} />
@@ -147,7 +147,7 @@ const MassageWebsite = () => {
                 className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
                 onClick={() => {
                   document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-                  document.getElementById('section-menu')?.classList.add('hidden');
+                  closeMenu();
                 }}
               >
                 <Icon name="Phone" size={16} />
