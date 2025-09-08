@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 import { useEffect, useState } from "react";
-import Navigation from "@/components/Navigation";
+import Header from "@/components/Header";
 import BookingForm from "@/components/BookingForm";
 
 const Healing = () => {
@@ -124,11 +124,7 @@ const Healing = () => {
       <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full blur-3xl" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}></div>
       {/* Header */}
-      <header className="shadow-lg sticky top-0 z-50 border-b border-gold-400/30 relative" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
-        <div className="container mx-auto px-4 py-2 md:py-4 relative">
-          <Navigation variant="secondary" />
-        </div>
-      </header>
+      <Header backgroundImage="https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg" />
 
       {/* Navigation Menu */}
       <div className="fixed bottom-4 right-4 md:top-16 md:bottom-auto md:right-2 md:left-auto z-40">

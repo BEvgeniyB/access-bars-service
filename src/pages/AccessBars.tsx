@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Navigation from "@/components/Navigation";
+import Header from "@/components/Header";
 import BookingForm from "@/components/BookingForm";
 import AccessBarsHero from "@/components/AccessBars/AccessBarsHero";
 import AccessBarsAbout from "@/components/AccessBars/AccessBarsAbout";
@@ -47,15 +47,7 @@ const AccessBars = () => {
       <div className="absolute inset-0 bg-emerald-900/80"></div>
       
       {/* Header */}
-      <header className="backdrop-blur-sm shadow-lg sticky top-0 z-50 border-b border-gold-400/30 relative" style={{
-        backgroundImage: `url('https://cdn.poehali.dev/files/4e95d530-7f57-4257-9e14-933aa912aea1.png')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center'
-      }}>
-        <div className="container mx-auto px-4 py-2 md:py-4 relative">
-          <Navigation variant="secondary" />
-        </div>
-      </header>
+      <Header backgroundImage="https://cdn.poehali.dev/files/4e95d530-7f57-4257-9e14-933aa912aea1.png" />
 
       {/* Navigation Menu */}
       <AccessBarsNavigation />

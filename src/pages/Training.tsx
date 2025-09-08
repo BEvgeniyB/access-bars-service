@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Navigation from "@/components/Navigation";
+import Header from "@/components/Header";
 import TrainingBookingForm from "@/components/TrainingBookingForm";
 import TrainingHero from "@/components/training/TrainingHero";
 import TrainingCourses from "@/components/training/TrainingCourses";
@@ -85,7 +85,7 @@ const Training = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-950 via-emerald-900 to-emerald-950">
-      <Navigation />
+      <Header />
       
       <TrainingHero onBookingClick={handleBookingClick} />
       

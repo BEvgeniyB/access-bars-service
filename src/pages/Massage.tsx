@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 import { useEffect, useState } from "react";
-import Navigation from "@/components/Navigation";
+import Header from "@/components/Header";
 import BookingForm from "@/components/BookingForm";
 
 const Massage = () => {
@@ -74,11 +74,7 @@ const Massage = () => {
         backgroundAttachment: 'fixed'
       }}>
       {/* Header */}
-      <header className="absolute top-0 left-0 right-0 z-50 p-4 md:p-6">
-        <div className="max-w-6xl mx-auto">
-          <Navigation variant="secondary" />
-        </div>
-      </header>
+      <Header />
 
       {/* Navigation Menu */}
       <div className="fixed bottom-4 right-4 md:top-16 md:bottom-auto md:right-2 md:left-auto z-40">
