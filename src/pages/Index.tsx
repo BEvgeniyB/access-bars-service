@@ -238,9 +238,7 @@ const MassageWebsite = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 animate-fade-in">
             <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-4">Наши услуги</h2>
-            <p className="text-xl text-emerald-100 max-w-2xl mx-auto">
-              Широкий спектр массажных техник для вашего здоровья и красоты
-            </p>
+            <p className="text-xl text-emerald-100 max-w-2xl mx-auto">Широкий спектр телесных техник для вашего здоровья и красоты</p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
