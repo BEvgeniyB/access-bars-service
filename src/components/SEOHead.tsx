@@ -15,7 +15,7 @@ const SEOHead = ({
   description = "Профессиональные услуги массажа, Access Bars, энергетического целительства и обучения в Москве. Наталья Великая - сертифицированный специалист. Записаться: +7(918) 414-1221",
   keywords = "массаж Москва, Access Bars, энергетическое целительство, духовные практики, массаж спины, расслабляющий массаж, Наталья Великая",
   image = "https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg",
-  url = "https://harmony-energies.ru",
+  url = "https://velikaya-nataliya.ru",
   type = "website",
   structuredData
 }: SEOHeadProps) => {

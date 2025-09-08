@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://access-bars-service.poehali.dev/sitemap.xml
+Sitemap: https://velikaya-nataliya.ru/sitemap.xml

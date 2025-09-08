@@ -11,7 +11,7 @@ export const businessStructuredData = {
     "addressCountry": "RU"
   },
   "telephone": "+7(918) 414-1221",
-  "url": "https://harmony-energies.ru",
+  "url": "https://velikaya-nataliya.ru",
   "priceRange": "6000-29000 RUB",
   "serviceArea": {
     "@type": "City",
