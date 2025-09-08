@@ -391,10 +391,10 @@ const MassageWebsite = () => {
       </main>
 
       {/* Footer */}
-      <footer className="text-white py-12" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
+      <footer className="bg-emerald-950/90 backdrop-blur-sm text-white py-12">
         <div className="container mx-auto px-4 text-center">
           <h3 className="font-montserrat font-bold text-2xl mb-4 text-gold-200">Гармония энергий</h3>
-          <p className="text-emerald-200 mb-6">Ваш путь к внутренней гармонии и красоте</p>
+          <p className="text-emerald-200 mb-6">Ваш путь к внутренней гармонии и осознанности</p>
           
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6">
             <a href="tel:+79184141221" className="flex items-center gap-2 hover:text-gold-300 transition-colors">
