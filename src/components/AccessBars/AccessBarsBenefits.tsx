@@ -36,7 +36,7 @@ const benefits = [
 
 const AccessBarsBenefits = () => {
   return (
-    <section id="benefits" className="py-20 bg-gradient-to-r from-emerald-700/10 to-emerald-600/10 backdrop-blur-sm relative">
+    <section id="benefits" className="py-20 relative">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-4">Польза Access Bars</h2>
