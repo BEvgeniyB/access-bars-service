@@ -39,7 +39,7 @@ const TrainingCourses = ({ onBookingClick }: TrainingCoursesProps) => {
           </p>
         </div>
         
-        <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
           {courses.map((course, index) => (
             <Card key={index} className="relative overflow-hidden hover:shadow-xl transition-all duration-300 group bg-emerald-800/30 backdrop-blur-sm">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold-400 to-gold-500"></div>
