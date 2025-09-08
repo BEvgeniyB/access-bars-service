@@ -246,7 +246,8 @@ const Healing = () => {
       </div>
 
       {/* Hero Section */}
-      <section id="hero" className="pt-24 pb-16 text-center relative z-10">
+      <div id="hero" className="scroll-target"></div>
+      <section className="pt-24 pb-16 text-center relative z-10">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <h2 className="font-montserrat font-bold text-4xl md:text-5xl text-gold-100 mb-6">
@@ -276,7 +277,8 @@ const Healing = () => {
       </section>
 
       {/* Services */}
-      <section id="services" className="py-16 relative" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
+      <div id="services" className="scroll-target"></div>
+      <section className="py-16 relative" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Услуги целительства</h3>
@@ -368,7 +370,8 @@ const Healing = () => {
       </section>
 
       {/* Results */}
-      <section id="results" className="py-16 relative" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
+      <div id="results" className="scroll-target"></div>
+      <section className="py-16 relative" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Результаты работы</h3>
@@ -394,7 +397,8 @@ const Healing = () => {
       </section>
 
       {/* Process */}
-      <section id="process" className="py-16 bg-emerald-800/20  relative">
+      <div id="process" className="scroll-target"></div>
+      <section className="py-16 bg-emerald-800/20  relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Как проходит сеанс</h3>
@@ -422,7 +426,8 @@ const Healing = () => {
       </section>
 
       {/* CTA */}
-      <section id="cta" className="py-20 relative" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
+      <div id="cta" className="scroll-target"></div>
+      <section className="py-20 relative" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
         <div className="container mx-auto px-4 text-center">
           <h3 className="font-montserrat font-bold text-3xl mb-6 text-gold-100">Готовы к исцелению?</h3>
           <p className="text-xl mb-8 max-w-2xl mx-auto text-emerald-100">
