@@ -47,7 +47,7 @@ const AccessBarsContact = () => {
             </a>
             <a href="https://t.me/NewWorld7d" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold-300 transition-colors">
               <Icon name="Send" size={20} />
-              <span>NewWorld7d</span>
+              <span>Новый Мир 🌍</span>
             </a>
             <a href="https://youtube.com/channel/UCZ_Ukxv92QcpaTUzIKKS4VA" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold-300 transition-colors">
               <Icon name="Youtube" size={20} />
