@@ -26,7 +26,9 @@ const testimonials = [
 
 const TrainingTestimonials = () => {
   return (
-    <section className="py-16 bg-gradient-to-b from-emerald-950/90 to-emerald-900/90">
+    <>
+      <div id="testimonials" className="scroll-target"></div>
+      <section className="py-16 bg-gradient-to-b from-emerald-950/90 to-emerald-900/90">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Отзывы учеников</h3>
@@ -59,6 +61,7 @@ const TrainingTestimonials = () => {
         </div>
       </div>
     </section>
+    </>
   );
 };
 

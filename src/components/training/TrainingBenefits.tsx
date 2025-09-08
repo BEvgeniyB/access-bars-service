@@ -36,7 +36,9 @@ const benefits = [
 
 const TrainingBenefits = () => {
   return (
-    <section className="py-16 relative" style={{
+    <>
+      <div id="benefits" className="scroll-target"></div>
+      <section className="py-16 relative" style={{
       backgroundImage: `url('https://cdn.poehali.dev/files/0b3a5d2b-a1b4-4b32-b456-f4e6b3c8a9d0.jpg')`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
@@ -70,6 +72,7 @@ const TrainingBenefits = () => {
         </div>
       </div>
     </section>
+    </>
   );
 };
 

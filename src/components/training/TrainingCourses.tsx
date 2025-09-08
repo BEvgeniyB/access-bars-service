@@ -18,7 +18,9 @@ const courses = [
 
 const TrainingCourses = ({ onBookingClick }: TrainingCoursesProps) => {
   return (
-    <section id="courses" className="py-16 relative" style={{
+    <>
+      <div id="courses" className="scroll-target"></div>
+      <section className="py-16 relative" style={{
       backgroundImage: `url('https://cdn.poehali.dev/files/fd60c33c-3948-432b-92ba-2955cd2ace49.jpg')`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
@@ -131,6 +133,7 @@ const TrainingCourses = ({ onBookingClick }: TrainingCoursesProps) => {
         </div>
       </div>
     </section>
+    </>
   );
 };
 

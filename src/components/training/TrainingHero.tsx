@@ -6,7 +6,9 @@ interface TrainingHeroProps {
 
 const TrainingHero = ({ onBookingClick }: TrainingHeroProps) => {
   return (
-    <section id="hero" className="pt-24 pb-12 text-center relative z-10" style={{
+    <>
+      <div id="hero" className="scroll-target"></div>
+      <section className="pt-24 pb-12 text-center relative z-10" style={{
       backgroundImage: `url('https://cdn.poehali.dev/files/84b00c22-64c5-4a5c-b7ca-de55c4dac19d.jpg')`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
@@ -34,6 +36,7 @@ const TrainingHero = ({ onBookingClick }: TrainingHeroProps) => {
         </div>
       </div>
     </section>
+    </>
   );
 };
 
