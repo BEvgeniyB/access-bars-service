@@ -171,7 +171,8 @@ const Massage = () => {
 
       {/* Hero Section */}
       <main>
-      <section id="hero" className="pt-24 pb-16 md:py-32 px-4 text-center relative overflow-hidden" itemScope itemType="https://schema.org/Service">
+      <div id="hero" className="scroll-target"></div>
+      <section className="pt-24 pb-16 md:py-32 px-4 text-center relative overflow-hidden" itemScope itemType="https://schema.org/Service">
         <div className="container mx-auto relative z-10">
           <div className="animate-fade-in">
             <div className="inline-flex items-center gap-2 bg-emerald-800/30 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-gold-400/20">
@@ -214,7 +215,8 @@ const Massage = () => {
       </section>
 
       {/* Services Section */}
-      <section id="services" className="py-20 relative">
+      <div id="services" className="scroll-target"></div>
+      <section className="py-20 relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 animate-fade-in">
             <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-4">Услуги массажа</h2>
@@ -277,7 +279,8 @@ const Massage = () => {
       </section>
 
       {/* Benefits Section */}
-      <section id="benefits" className="py-20 relative">
+      <div id="benefits" className="scroll-target"></div>
+      <section className="py-20 relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 animate-fade-in">
             <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-4">Преимущества массажа</h2>
@@ -306,7 +309,8 @@ const Massage = () => {
       </section>
 
       {/* CTA Section */}
-      <section id="contact" className="py-20">
+      <div id="contact" className="scroll-target"></div>
+      <section className="py-20">
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-4xl mx-auto bg-emerald-800/30 backdrop-blur-sm rounded-3xl p-12 text-center border-2 border-gold-400/30 shadow-2xl animate-fade-in">
             <div className="w-20 h-20 bg-gold-400/20 rounded-full flex items-center justify-center mx-auto mb-6">
