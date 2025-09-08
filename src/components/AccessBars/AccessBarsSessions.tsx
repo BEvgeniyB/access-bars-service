@@ -29,7 +29,9 @@ interface AccessBarsSessionsProps {
 
 const AccessBarsSessions = ({ onBookingClick }: AccessBarsSessionsProps) => {
   return (
-    <section id="sessions" className="py-20 relative" style={{backgroundImage: `url('https://cdn.poehali.dev/files/8257b36c-01da-4ea7-8a9a-76326d9b58b0.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center'}}>
+    <>
+      <div id="sessions" className="scroll-target"></div>
+      <section className="py-20 relative" style={{backgroundImage: `url('https://cdn.poehali.dev/files/8257b36c-01da-4ea7-8a9a-76326d9b58b0.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center'}}>
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-4">Варианты сессий</h2>
@@ -78,7 +80,7 @@ const AccessBarsSessions = ({ onBookingClick }: AccessBarsSessionsProps) => {
         </div>
       </div>
     </section>
-  );
+    </>
 };
 
 export default AccessBarsSessions;

@@ -36,7 +36,9 @@ const benefits = [
 
 const AccessBarsBenefits = () => {
   return (
-    <section id="benefits" className="py-20 relative" style={{backgroundImage: `url('https://cdn.poehali.dev/files/4e668bb9-7ccd-46e9-9329-0f7414a65ea0.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>
+    <>
+      <div id="benefits" className="scroll-target"></div>
+      <section className="py-20 relative" style={{backgroundImage: `url('https://cdn.poehali.dev/files/4e668bb9-7ccd-46e9-9329-0f7414a65ea0.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-4">Польза Access Bars</h2>
@@ -66,7 +68,7 @@ const AccessBarsBenefits = () => {
         </div>
       </div>
     </section>
-  );
+    </>
 };
 
 export default AccessBarsBenefits;

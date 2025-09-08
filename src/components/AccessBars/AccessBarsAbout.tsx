@@ -2,7 +2,9 @@ import Icon from "@/components/ui/icon";
 
 const AccessBarsAbout = () => {
   return (
-    <section id="about" className="py-20 relative" style={{backgroundImage: `url('https://cdn.poehali.dev/files/4e668bb9-7ccd-46e9-9329-0f7414a65ea0.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>
+    <>
+      <div id="about" className="scroll-target"></div>
+      <section className="py-20 relative" style={{backgroundImage: `url('https://cdn.poehali.dev/files/4e668bb9-7ccd-46e9-9329-0f7414a65ea0.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -65,7 +67,7 @@ const AccessBarsAbout = () => {
         </div>
       </div>
     </section>
-  );
+    </>
 };
 
 export default AccessBarsAbout;
