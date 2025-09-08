@@ -34,7 +34,7 @@ const AccessBarsContact = () => {
       <footer className="bg-emerald-950/90 backdrop-blur-sm text-white py-12">
         <div className="container mx-auto px-4 text-center">
           <h3 className="font-montserrat font-bold text-2xl mb-4 text-gold-200">Гармония энергий</h3>
-          <p className="text-emerald-200 mb-6">Access Bars и классический массаж для вашего благополучия</p>
+          <p className="text-emerald-200 mb-6">Access Bars энергия осознанности</p>
           
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6">
             <div className="flex items-center gap-2">
