@@ -57,7 +57,7 @@ const MassageWebsite = () => {
       name: "Обучение",
       duration: "От 4 часов", 
       price: "29 000 ₽",
-      description: "Курсы по энергетическим практикам, массажу и целительству для начинающих и практикующих",
+      description: "Обучение технике Access Bars",
       link: "/training#courses"
     }
   ];
