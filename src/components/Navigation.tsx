@@ -40,7 +40,7 @@ const Navigation = ({ variant = 'secondary', className = '' }: NavigationProps) 
   if (variant === 'main') {
     // Navigation for main page
     return (
-      <nav className={`flex justify-center items-center py-2 md:py-4 ${className}`}>
+      <nav className={`flex justify-center items-center py-1 md:py-2 ${className}`}>
         <div className="flex gap-2 sm:gap-4 md:gap-8 items-center flex-wrap justify-center">
           {navigationItems.map((item) => ( // Include all items including home
             <Link

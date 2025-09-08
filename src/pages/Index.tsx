@@ -98,7 +98,7 @@ const MassageWebsite = () => {
 
 
       {/* Navigation Menu */}
-      <div className="fixed top-28 sm:top-32 md:top-36 right-2 md:right-4 z-40">
+      <div className="fixed top-20 sm:top-22 md:top-24 right-2 md:right-4 z-40">
         <div className="group">
           <Button 
             className="bg-black/80 border-2 border-gold-400/50 text-gold-400 hover:bg-gold-400/10 shadow-xl text-xs md:text-sm"
@@ -160,7 +160,7 @@ const MassageWebsite = () => {
 
       {/* Hero Section */}
       <main>
-      <section id="hero" className="pt-24 pb-16 md:py-32 px-4 text-center relative overflow-hidden">
+      <section id="hero" className="pt-16 pb-16 md:py-24 px-4 text-center relative overflow-hidden">
         <div className="container mx-auto relative z-10">
           {/* Watermark N in Hero Section */}
           <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-5">
