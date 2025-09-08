@@ -64,17 +64,7 @@ const TrainingCourses = ({ onBookingClick }: TrainingCoursesProps) => {
                     </div>
                   </div>
                   
-                  <div className="space-y-3">
-                    <h4 className="font-semibold text-gold-200">Включено в курс:</h4>
-                    <ul className="space-y-2">
-                      {course.includes.map((item, idx) => (
-                        <li key={idx} className="flex items-start gap-2">
-                          <Icon name="Check" className="text-gold-400 mt-0.5 flex-shrink-0" size={16} />
-                          <span className="text-sm text-emerald-200">{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+
                   
                   <Button 
                     className="w-full mt-6 bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold transition-colors"
