@@ -397,19 +397,19 @@ const MassageWebsite = () => {
           <p className="text-emerald-200 mb-6">Ваш путь к внутренней гармонии и красоте</p>
           
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6">
-            <a href="tel:+79184141221" className="flex items-center gap-2 hover:text-gold-300 transition-all duration-300 hover:scale-105">
+            <a href="tel:+79184141221" className="flex items-center gap-2 hover:text-gold-300 transition-colors">
               <Icon name="Phone" size={20} />
               <span>+7(918) 414-1221</span>
             </a>
-            <a href="https://t.me/velikaya_nataliya" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold-300 transition-all duration-300 hover:scale-105">
+            <a href="https://t.me/velikaya_nataliya" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold-300 transition-colors">
               <Icon name="Send" size={20} />
               <span>@velikaya_nataliya</span>
             </a>
-            <a href="https://t.me/NewWorld7d" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold-300 transition-all duration-300 hover:scale-105">
+            <a href="https://t.me/NewWorld7d" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold-300 transition-colors">
               <Icon name="Send" size={20} />
-              <span>NewWorld7d</span>
+              <span>Новый Мир 🌍</span>
             </a>
-            <a href="https://www.youtube.com/@NewWorld7d" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold-300 transition-all duration-300 hover:scale-105">
+            <a href="https://youtube.com/channel/UCZ_Ukxv92QcpaTUzIKKS4VA" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold-300 transition-colors">
               <Icon name="Youtube" size={20} />
               <span>YouTube канал</span>
             </a>
