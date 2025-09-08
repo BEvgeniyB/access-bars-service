@@ -69,5 +69,6 @@ const AccessBarsAbout = () => {
     </section>
     </>
   );
+};
 
 export default AccessBarsAbout;

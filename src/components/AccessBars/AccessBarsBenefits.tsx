@@ -70,5 +70,6 @@ const AccessBarsBenefits = () => {
     </section>
     </>
   );
+};
 
 export default AccessBarsBenefits;
