@@ -3,8 +3,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import Icon from "@/components/ui/icon";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
+import SEOHead from "@/components/SEOHead";
 import { useEffect, useState } from "react";
 import BookingForm from "@/components/BookingForm";
+import { businessStructuredData, servicesStructuredData, personStructuredData } from "@/data/structuredData";
 
 
 const MassageWebsite = () => {
@@ -62,13 +64,29 @@ const MassageWebsite = () => {
     }
   ];
 
+  const combinedStructuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      businessStructuredData,
+      servicesStructuredData,
+      personStructuredData
+    ]
+  };
+
   return (
-    <div 
-      className="min-h-screen font-openSans relative overflow-hidden"
-      style={{
-        background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover no-repeat fixed`,
-      }}
-    >
+    <>
+      <SEOHead 
+        title="Гармония энергий - Массаж, Access Bars, Целительство в Краснодаре"
+        description="Профессиональные услуги массажа, Access Bars, энергетического целительства и обучения в Краснодаре. Наталья Великая - сертифицированный специалист. Записаться: +7(918) 414-1221"
+        keywords="массаж Краснодар, Access Bars, энергетическое целительство, духовные практики, массаж спины, расслабляющий массаж, Наталья Великая"
+        structuredData={combinedStructuredData}
+      />
+      <div 
+        className="min-h-screen font-openSans relative overflow-hidden"
+        style={{
+          background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover no-repeat fixed`,
+        }}
+      >
       {/* Dark overlay for text readability */}
       <div className="absolute inset-0 opacity-0"></div>
       {/* Header */}
@@ -412,7 +430,8 @@ const MassageWebsite = () => {
         onClose={() => setIsBookingOpen(false)}
         preselectedService={preselectedService}
       />
-    </div>
+      </div>
+    </>
   );
 };
 

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
+import SEOHead from "@/components/SEOHead";
 import BookingForm from "@/components/BookingForm";
+import { breadcrumbStructuredData } from "@/data/structuredData";
 import AccessBarsHero from "@/components/AccessBars/AccessBarsHero";
 import AccessBarsAbout from "@/components/AccessBars/AccessBarsAbout";
 import AccessBarsBenefits from "@/components/AccessBars/AccessBarsBenefits";
@@ -41,8 +43,21 @@ const AccessBars = () => {
     }
   }, []);
 
+  const breadcrumbData = breadcrumbStructuredData([
+    { name: "Главная", url: "https://harmony-energies.ru/" },
+    { name: "Access Bars", url: "https://harmony-energies.ru/access-bars" }
+  ]);
+
   return (
-    <div className="min-h-screen font-openSans relative overflow-hidden" style={{backgroundImage: `url('https://cdn.poehali.dev/files/58c024e8-2d2e-49a9-ac0e-19692c531870.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>
+    <>
+      <SEOHead 
+        title="Access Bars в Краснодаре - Энергетическая терапия | Гармония энергий"
+        description="Профессиональные сеансы Access Bars в Краснодаре. Телесная техника для освобождения от ментальных блоков. Опытный специалист Наталья Великая. Цена от 7000 ₽."
+        keywords="Access Bars Краснодар, энергетическая терапия, телесные практики, ментальные блоки, трансформация сознания"
+        url="https://harmony-energies.ru/access-bars"
+        structuredData={breadcrumbData}
+      />
+      <div className="min-h-screen font-openSans relative overflow-hidden" style={{backgroundImage: `url('https://cdn.poehali.dev/files/58c024e8-2d2e-49a9-ac0e-19692c531870.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>
       {/* Background Overlay */}
       <div className="absolute inset-0 bg-emerald-900/80"></div>
       
@@ -79,7 +94,8 @@ const AccessBars = () => {
         onClose={() => setIsBookingOpen(false)}
         preselectedService={preselectedService}
       />
-    </div>
+      </div>
+    </>
   );
 };
 

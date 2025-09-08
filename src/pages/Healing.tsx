@@ -3,7 +3,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import Icon from "@/components/ui/icon";
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
+import SEOHead from "@/components/SEOHead";
 import BookingForm from "@/components/BookingForm";
+import { breadcrumbStructuredData } from "@/data/structuredData";
 
 const Healing = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
@@ -117,8 +119,21 @@ const Healing = () => {
     }
   ];
 
+  const breadcrumbData = breadcrumbStructuredData([
+    { name: "Главная", url: "https://harmony-energies.ru/" },
+    { name: "Целительство", url: "https://harmony-energies.ru/healing" }
+  ]);
+
   return (
-    <div className="min-h-screen relative overflow-hidden" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover no-repeat fixed`}}>
+    <>
+      <SEOHead 
+        title="Энергетическое целительство в Краснодаре | Гармония энергий"
+        description="Профессиональное энергетическое целительство в Краснодаре. Работа с чакрами, аурой, восстановление баланса жизненных сил. Опытный целитель Наталья Великая. Цена от 7000 ₽."
+        keywords="энергетическое целительство Краснодар, работа с чакрами, аура, энергетическое исцеление, духовные практики"
+        url="https://harmony-energies.ru/healing"
+        structuredData={breadcrumbData}
+      />
+      <div className="min-h-screen relative overflow-hidden" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover no-repeat fixed`}}>
       {/* Luxury Background Elements */}
       <div className="absolute inset-0 opacity-0"></div>
       <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}></div>
@@ -469,7 +484,8 @@ const Healing = () => {
         onClose={() => setIsBookingOpen(false)}
         preselectedService={preselectedService}
       />
-    </div>
+      </div>
+    </>
   );
 };
 
