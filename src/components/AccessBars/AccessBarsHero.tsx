@@ -3,7 +3,7 @@ import Icon from "@/components/ui/icon";
 
 const AccessBarsHero = () => {
   return (
-    <section className="pt-16 pb-16 md:py-20 px-4 text-center relative overflow-hidden" style={{backgroundImage: `url('https://cdn.poehali.dev/files/12b737b3-bf4d-499d-8f9a-ff594a4f705f.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center'}}>
+    <section className="pt-24 pb-16 md:pt-28 md:pb-20 px-4 text-center relative overflow-hidden" style={{backgroundImage: `url('https://cdn.poehali.dev/files/12b737b3-bf4d-499d-8f9a-ff594a4f705f.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center'}}>
       <div className="container mx-auto relative z-10">
         <div className="animate-fade-in">
           <h2 className="font-montserrat font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-gold-100 mb-6 leading-tight drop-shadow-2xl">

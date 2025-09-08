@@ -145,7 +145,7 @@ const Healing = () => {
       <Header backgroundImage="https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg" />
 
       {/* Navigation Menu */}
-      <div className="fixed bottom-4 right-4 md:top-16 md:bottom-auto md:right-2 md:left-auto z-40">
+      <div className="fixed bottom-4 right-4 md:top-24 md:bottom-auto md:right-2 md:left-auto z-40">
         <div className="group">
           <Button 
             className="bg-black/80 border-2 border-gold-400/50 text-gold-400 hover:bg-gold-400/10 shadow-xl text-xs md:text-sm"
@@ -246,7 +246,7 @@ const Healing = () => {
       </div>
 
       {/* Hero Section */}
-      <section id="hero" className="py-20 text-center relative z-10">
+      <section id="hero" className="pt-24 pb-16 text-center relative z-10">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <h2 className="font-montserrat font-bold text-4xl md:text-5xl text-gold-100 mb-6">
