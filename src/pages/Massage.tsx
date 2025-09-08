@@ -80,7 +80,7 @@ const Massage = () => {
       <Header />
 
       {/* Navigation Menu */}
-      <div className="fixed bottom-4 right-4 md:top-12 md:bottom-auto md:right-2 md:left-auto z-40">
+      <div className="fixed bottom-4 right-4 md:top-16 md:bottom-auto md:right-2 md:left-auto z-40">
         <div className="group">
           <Button 
             className="bg-black/80 border-2 border-gold-400/50 text-gold-400 hover:bg-gold-400/10 shadow-xl text-xs md:text-sm"
@@ -171,7 +171,7 @@ const Massage = () => {
 
       {/* Hero Section */}
       <main>
-      <section id="hero" className="pt-16 pb-12 md:py-20 px-4 text-center relative overflow-hidden" itemScope itemType="https://schema.org/Service">
+      <section id="hero" className="pt-24 pb-16 md:py-32 px-4 text-center relative overflow-hidden" itemScope itemType="https://schema.org/Service">
         <div className="container mx-auto relative z-10">
           <div className="animate-fade-in">
             <div className="inline-flex items-center gap-2 bg-emerald-800/30 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-gold-400/20">
