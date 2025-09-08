@@ -9,7 +9,7 @@ const Header = ({ backgroundImage }: HeaderProps) => {
   
   return (
     <header 
-      className="shadow-lg sticky top-0 z-50 border-b border-gold-400/30 relative" 
+      className="shadow-lg fixed top-0 left-0 right-0 z-50 border-b border-gold-400/30" 
       style={{background: `url('${backgroundImage || defaultBg}') center/cover`}}
     >
       <div className="container mx-auto px-4 relative">
