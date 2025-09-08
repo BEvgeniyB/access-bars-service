@@ -26,9 +26,7 @@ const TrainingHero = ({ onBookingClick }: TrainingHeroProps) => {
               size="lg" 
               className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold"
               onClick={onBookingClick}
-            >
-              Записаться на курс
-            </Button>
+            >Записаться</Button>
             <a href="tel:+79184141221">
               <Button variant="outline" size="lg" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold backdrop-blur-sm">+7(918) 414-1221</Button>
             </a>
