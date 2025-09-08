@@ -165,7 +165,7 @@ const MassageWebsite = () => {
           {/* Watermark N in Hero Section */}
           <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-5">
             <div 
-              className="text-[36rem] select-none bg-gradient-to-r from-gold-300 to-gold-500 bg-clip-text text-transparent opacity-30"
+              className="text-[24rem] sm:text-[28rem] md:text-[32rem] select-none bg-gradient-to-r from-gold-300 to-gold-500 bg-clip-text text-transparent opacity-30"
               style={{
                 fontFamily: 'Dancing Script, cursive', 
                 fontWeight: 700,
