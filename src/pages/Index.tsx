@@ -388,7 +388,7 @@ const MassageWebsite = () => {
             </a>
             <a href="https://youtube.com/channel/UCZ_Ukxv92QcpaTUzIKKS4VA" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold-300 transition-colors">
               <Icon name="Youtube" size={20} />
-              <span>YouTube канал</span>
+              <span>Великая Наталья</span>
             </a>
           </div>
           
