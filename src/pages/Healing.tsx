@@ -13,12 +13,15 @@ const Healing = () => {
     // Плавный скролл к якорю после загрузки страницы
     const hash = window.location.hash;
     if (hash) {
+      // Очищаем хэш от параметров запроса
+      const cleanHash = hash.split('?')[0];
+      
       // Сначала прокручиваем в начало страницы
       window.scrollTo(0, 0);
       
       // Затем медленно прокручиваем к целевому разделу
       setTimeout(() => {
-        const element = document.querySelector(hash);
+        const element = document.querySelector(cleanHash);
         if (element) {
           element.scrollIntoView({ 
             behavior: 'smooth',
