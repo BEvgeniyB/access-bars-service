@@ -103,8 +103,28 @@ const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose, preselectedS
     setIsSubmitting(true);
     
     try {
-      // Имитация отправки формы
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const selectedServiceInfo = SERVICES.find(s => s.id === formData.service);
+      const serviceName = selectedServiceInfo?.name || 'Не выбрана';
+      const servicePrice = selectedServiceInfo?.price || '';
+      const serviceDuration = selectedServiceInfo?.duration || '';
+      
+      const emailSubject = `Заявка на запись - ${serviceName}`;
+      const emailBody = `Заявка на запись на сеанс
+
+Имя: ${formData.name}
+Телефон: ${formData.phone}
+Услуга: ${serviceName} ${servicePrice}
+Продолжительность: ${serviceDuration}
+Дата: ${formData.date}
+Время: ${formData.time}
+
+Пожалуйста, подтвердите запись.
+
+С уважением,
+${formData.name}`;
+
+      const mailtoLink = `mailto:record@velikaya-nataliya.ru?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+      window.location.href = mailtoLink;
       
       setShowSuccess(true);
       setFormData({ name: '', phone: '+7(', service: '', date: '', time: '' });
