@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
+import PhoneCallButton from "@/components/ui/phone-call-button";
+import PhoneLink from "@/components/ui/phone-link";
 
 const AccessBarsContact = () => {
   return (
@@ -23,12 +25,12 @@ const AccessBarsContact = () => {
             </div>
           </div>
           
-          <a href="tel:+79184141221">
-            <Button size="lg" className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-medium px-12 py-4 text-lg">
-              <Icon name="Phone" className="mr-2" size={20} />
-              Позвонить: +7(918) 414-1221
-            </Button>
-          </a>
+          <PhoneCallButton 
+            size="lg" 
+            className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-medium px-12 py-4 text-lg"
+          >
+            Позвонить: +7(918) 414-1221
+          </PhoneCallButton>
         </div>
       </section>
 
@@ -39,10 +41,10 @@ const AccessBarsContact = () => {
           <p className="text-emerald-200 mb-6">Access Bars энергия осознанности</p>
           
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6">
-            <a href="tel:+79184141221" className="flex items-center gap-2 hover:text-gold-300 transition-colors">
+            <PhoneLink className="flex items-center gap-2 hover:text-gold-300 transition-colors">
               <Icon name="Phone" size={20} />
               <span>+7(918) 414-1221</span>
-            </a>
+            </PhoneLink>
             <a href="https://t.me/velikaya_nataliya" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold-300 transition-colors">
               <Icon name="Send" size={20} />
               <span>@velikaya_nataliya</span>
