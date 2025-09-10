@@ -38,7 +38,7 @@ const TIME_SLOTS = [
 const TrainingBookingForm: React.FC<TrainingBookingFormProps> = ({ isOpen, onClose, preselectedService }) => {
   const [formData, setFormData] = useState<FormData>({
     name: '',
-    phone: '',
+    phone: '+7(',
     service: preselectedService || '',
     date: '',
     time: ''
@@ -92,7 +92,7 @@ const TrainingBookingForm: React.FC<TrainingBookingFormProps> = ({ isOpen, onClo
         onClose();
         setFormData({
           name: '',
-          phone: '',
+          phone: '+7(',
           service: preselectedService || '',
           date: '',
           time: ''
@@ -100,6 +100,43 @@ const TrainingBookingForm: React.FC<TrainingBookingFormProps> = ({ isOpen, onClo
         setErrors({});
       }, 3000);
     }, 1000);
+  };
+
+  const formatPhoneNumber = (value: string) => {
+    const digitsOnly = value.replace(/\D/g, '');
+    
+    let formatted = digitsOnly;
+    if (digitsOnly.length === 0) {
+      formatted = '7';
+    } else if (digitsOnly[0] !== '7') {
+      formatted = '7' + digitsOnly;
+    }
+    
+    formatted = formatted.slice(0, 11);
+    
+    let result = '+7';
+    if (formatted.length > 1) {
+      result += '(' + formatted.slice(1, 4);
+      if (formatted.length > 4) {
+        result += ') ' + formatted.slice(4, 7);
+        if (formatted.length > 7) {
+          result += '-' + formatted.slice(7, 9);
+          if (formatted.length > 9) {
+            result += '-' + formatted.slice(9, 11);
+          }
+        }
+      }
+    }
+    
+    return result;
+  };
+
+  const handlePhoneChange = (value: string) => {
+    const formatted = formatPhoneNumber(value);
+    setFormData(prev => ({ ...prev, phone: formatted }));
+    if (errors.phone) {
+      setErrors(prev => ({ ...prev, phone: undefined }));
+    }
   };
 
   const getMinDate = () => {
@@ -193,9 +230,9 @@ const TrainingBookingForm: React.FC<TrainingBookingFormProps> = ({ isOpen, onClo
                 <input
                   type="tel"
                   value={formData.phone}
-                  onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                  onChange={(e) => handlePhoneChange(e.target.value)}
                   className="w-full px-4 py-3 bg-emerald-800/50 border border-gold-400/30 rounded-lg text-gold-100 placeholder-emerald-300 focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-transparent"
-                  placeholder="+7 (999) 123-45-67"
+                  placeholder="+7 (___) ___-__-__"
                 />
                 {errors.phone && (
                   <p className="mt-1 text-sm text-red-400">{errors.phone}</p>

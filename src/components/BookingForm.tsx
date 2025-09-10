@@ -53,7 +53,7 @@ const TIME_SLOTS = [
 const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose, preselectedService }) => {
   const [formData, setFormData] = useState<FormData>({
     name: '',
-    phone: '',
+    phone: '+7(',
     service: preselectedService || '',
     date: '',
     time: ''
@@ -107,7 +107,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose, preselectedS
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       setShowSuccess(true);
-      setFormData({ name: '', phone: '', service: '', date: '', time: '' });
+      setFormData({ name: '', phone: '+7(', service: '', date: '', time: '' });
       setErrors({});
       
       setTimeout(() => {
@@ -122,7 +122,44 @@ const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose, preselectedS
     }
   };
 
+  const formatPhoneNumber = (value: string) => {
+    // Удаляем все символы кроме цифр
+    const digitsOnly = value.replace(/\D/g, '');
+    
+    // Если первая цифра не 7, добавляем 7
+    let formatted = digitsOnly;
+    if (digitsOnly.length === 0) {
+      formatted = '7';
+    } else if (digitsOnly[0] !== '7') {
+      formatted = '7' + digitsOnly;
+    }
+    
+    // Ограничиваем до 11 цифр (7 + 10)
+    formatted = formatted.slice(0, 11);
+    
+    // Применяем маску +7(___) ___-__-__
+    let result = '+7';
+    if (formatted.length > 1) {
+      result += '(' + formatted.slice(1, 4);
+      if (formatted.length > 4) {
+        result += ') ' + formatted.slice(4, 7);
+        if (formatted.length > 7) {
+          result += '-' + formatted.slice(7, 9);
+          if (formatted.length > 9) {
+            result += '-' + formatted.slice(9, 11);
+          }
+        }
+      }
+    }
+    
+    return result;
+  };
+
   const handleInputChange = (field: keyof FormData, value: string) => {
+    if (field === 'phone') {
+      value = formatPhoneNumber(value);
+    }
+    
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: undefined }));
