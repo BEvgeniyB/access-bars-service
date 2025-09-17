@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import PhoneLink from "@/components/ui/phone-link";
 
 interface TrainingHeroProps {
   onBookingClick: () => void;
@@ -29,9 +30,9 @@ const TrainingHero = ({ onBookingClick }: TrainingHeroProps) => {
               className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold"
               onClick={onBookingClick}
             >Записаться</Button>
-            <a href="tel:+79184141221">
+            <PhoneLink>
               <Button variant="outline" size="lg" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold backdrop-blur-sm">+7(918) 414-1221</Button>
-            </a>
+            </PhoneLink>
           </div>
         </div>
       </div>
