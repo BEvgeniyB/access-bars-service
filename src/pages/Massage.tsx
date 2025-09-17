@@ -191,20 +191,32 @@ const Massage = () => {
               и целебной силы натуральных эфирных масел
             </p>
 
-            {/* Мастер инфо */}
-            <div className="bg-emerald-800/30 backdrop-blur-sm rounded-2xl p-6 max-w-md mx-auto mb-8 border border-gold-400/20 shadow-lg">
-              <div className="flex items-center justify-center gap-3 mb-4">
-                <div className="text-right">
-                  <h3 className="font-montserrat font-semibold text-lg text-gold-200">Сертифицированный мастер</h3>
-                  <p className="text-sm text-emerald-200">6 лет профессионального опыта</p>
-                </div>
-                <div className="w-12 h-12 bg-gold-400/20 rounded-full flex items-center justify-center">
-                  <Icon name="Award" className="text-gold-400" size={20} />
-                </div>
+            {/* CTA Block - moved up */}
+            <div className="max-w-4xl mx-auto bg-emerald-800/30 backdrop-blur-sm rounded-3xl p-12 text-center border-2 border-gold-400/30 shadow-2xl animate-fade-in mb-8">
+              <div className="w-20 h-20 bg-gold-400/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Icon name="Calendar" className="text-gold-400" size={32} />
               </div>
-              <p className="text-sm text-emerald-200">
-                Профессиональное образование и многолетний опыт для вашего здоровья
+              <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-6">Запишитесь на сеанс</h2>
+              <p className="text-xl text-emerald-100 mb-8 max-w-2xl mx-auto leading-relaxed">
+                Доверьтесь опытному мастеру с 6-летним стажем для восстановления 
+                вашего здоровья и гармонии
               </p>
+              <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                <Button 
+                  size="lg" 
+                  className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold px-10 py-4 text-lg shadow-xl"
+                  onClick={() => setIsBookingOpen(true)}
+                >
+                  <Icon name="Heart" className="mr-3" size={20} />
+                  Записаться на массаж
+                </Button>
+                <PhoneLink>
+                  <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold px-10 py-4 text-lg backdrop-blur-sm">
+                    <Icon name="Phone" className="mr-2" size={18} />
+                    +7(918) 414-1221
+                  </Button>
+                </PhoneLink>
+              </div>
             </div>
           </div>
         </div>
@@ -309,35 +321,23 @@ const Massage = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* Master Info Section - moved down */}
       <div id="contact" className="scroll-target"></div>
       <section className="py-20">
         <div className="container mx-auto px-4 text-center">
-          <div className="max-w-4xl mx-auto bg-emerald-800/30 backdrop-blur-sm rounded-3xl p-12 text-center border-2 border-gold-400/30 shadow-2xl animate-fade-in">
-            <div className="w-20 h-20 bg-gold-400/20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Icon name="Calendar" className="text-gold-400" size={32} />
+          <div className="bg-emerald-800/30 backdrop-blur-sm rounded-2xl p-6 max-w-md mx-auto border border-gold-400/20 shadow-lg">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <div className="text-right">
+                <h3 className="font-montserrat font-semibold text-lg text-gold-200">Сертифицированный мастер</h3>
+                <p className="text-sm text-emerald-200">6 лет профессионального опыта</p>
+              </div>
+              <div className="w-12 h-12 bg-gold-400/20 rounded-full flex items-center justify-center">
+                <Icon name="Award" className="text-gold-400" size={20} />
+              </div>
             </div>
-            <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-6">Запишитесь на сеанс</h2>
-            <p className="text-xl text-emerald-100 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Доверьтесь опытному мастеру с 6-летним стажем для восстановления 
-              вашего здоровья и гармонии
+            <p className="text-sm text-emerald-200">
+              Профессиональное образование и многолетний опыт для вашего здоровья
             </p>
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <Button 
-                size="lg" 
-                className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold px-10 py-4 text-lg shadow-xl"
-                onClick={() => setIsBookingOpen(true)}
-              >
-                <Icon name="Heart" className="mr-3" size={20} />
-                Записаться на массаж
-              </Button>
-              <PhoneLink>
-                <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold px-10 py-4 text-lg backdrop-blur-sm">
-                  <Icon name="Phone" className="mr-2" size={18} />
-                  +7(918) 414-1221
-                </Button>
-              </PhoneLink>
-            </div>
           </div>
         </div>
       </section>
