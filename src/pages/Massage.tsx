@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
+import PhoneLink from "@/components/ui/phone-link";
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import BookingForm from "@/components/BookingForm";
@@ -330,12 +331,12 @@ const Massage = () => {
                 <Icon name="Heart" className="mr-3" size={20} />
                 Записаться на массаж
               </Button>
-              <a href="tel:+79184141221">
+              <PhoneLink>
                 <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold px-10 py-4 text-lg backdrop-blur-sm">
                   <Icon name="Phone" className="mr-2" size={18} />
                   +7(918) 414-1221
                 </Button>
-              </a>
+              </PhoneLink>
             </div>
           </div>
         </div>
