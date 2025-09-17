@@ -378,12 +378,12 @@ const MassageWebsite = () => {
             </div>
           </div>
           
-          <a href="tel:+79184141221">
+          <PhoneLink>
             <Button size="lg" className="mt-8 bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-medium px-12 py-4 text-lg hover:scale-105 transition-all duration-300">
               <Icon name="Phone" className="mr-2" size={20} />
               Позвонить: +7(918) 414-1221
             </Button>
-          </a>
+          </PhoneLink>
         </div>
       </section>
       </main>
