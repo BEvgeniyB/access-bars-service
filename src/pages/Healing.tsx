@@ -268,10 +268,12 @@ const Healing = () => {
                   Записаться на сеанс
                 </Button>
               </a>
-              <Button variant="outline" size="lg" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
-                <Icon name="Phone" className="mr-2" size={20} />
-                Консультация
-              </Button>
+              <PhoneLink>
+                <Button variant="outline" size="lg" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}>
+                  <Icon name="Phone" className="mr-2" size={20} />
+                  Консультация
+                </Button>
+              </PhoneLink>
             </div>
           </div>
         </div>
