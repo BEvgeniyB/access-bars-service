@@ -50,8 +50,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         user_agent = headers.get('user-agent', headers.get('User-Agent', ''))
         referrer = headers.get('referer', headers.get('Referer', ''))
         
-        # Get visitor IP from request context
-        visitor_ip = request_context.get('identity', {}).get('sourceIp', 'unknown')
+        # Get visitor IP from headers (real client IP)
+        visitor_ip = (
+            headers.get('x-real-ip') or 
+            headers.get('X-Real-Ip') or
+            headers.get('x-original-forwarded-for', '').split(',')[0].strip() or
+            headers.get('X-Original-Forwarded-For', '').split(',')[0].strip() or
+            request_context.get('identity', {}).get('sourceIp', 'unknown')
+        )
         
         print(f"DEBUG: Extracted data - page={page_url}, ip={visitor_ip}, ua={user_agent[:50] if user_agent else 'None'}")
         
