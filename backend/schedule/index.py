@@ -35,7 +35,13 @@ def handler(event, context):
         if method == 'GET':
             return get_schedule(cursor, event)
         elif method == 'POST':
-            return create_booking(cursor, conn, event)
+            body = json.loads(event.get('body', '{}'))
+            action = body.get('action', 'create_booking')
+            
+            if action == 'update_booking_status':
+                return update_booking_status(cursor, conn, body)
+            else:
+                return create_booking(cursor, conn, event)
         elif method == 'PUT':
             return update_booking(cursor, conn, event)
         elif method == 'DELETE':
@@ -71,6 +77,13 @@ def success_response(data, status_code=200):
 
 def get_schedule(cursor, event):
     params = event.get('queryStringParameters') or {}
+    action = params.get('action', 'get_schedule')
+    
+    if action == 'get_bookings':
+        return get_bookings(cursor, params)
+    elif action == 'get_schedule':
+        return get_weekly_schedule(cursor, params)
+    
     date_str = params.get('date')
     service_id = params.get('service_id')
     
@@ -307,3 +320,86 @@ def delete_booking(cursor, conn, event):
     except Exception as e:
         conn.rollback()
         return error_response(f'Failed to delete booking: {str(e)}', 400)
+
+def get_bookings(cursor, params):
+    """Получение записей для конкретной даты (для админ-панели)"""
+    date_str = params.get('date')
+    if not date_str:
+        return error_response('Date is required', 400)
+    
+    cursor.execute("""
+        SELECT 
+            b.id,
+            b.client_name,
+            b.client_phone,
+            b.service_id,
+            b.booking_date as appointment_date,
+            b.start_time as appointment_time,
+            b.status,
+            b.created_at,
+            s.name as service_name
+        FROM t_p89870318_access_bars_service.bookings b
+        LEFT JOIN t_p89870318_access_bars_service.services s ON b.service_id = s.id
+        WHERE b.booking_date = %s
+        ORDER BY b.start_time
+    """, (date_str,))
+    
+    bookings = cursor.fetchall()
+    
+    return success_response({
+        'bookings': [dict(booking) for booking in bookings]
+    })
+
+def get_weekly_schedule(cursor, params):
+    """Получение недельного расписания (для админ-панели)"""
+    cursor.execute("""
+        SELECT 
+            id,
+            day_of_week,
+            start_time,
+            end_time,
+            break_start_time as break_start,
+            break_end_time as break_end,
+            is_working
+        FROM t_p89870318_access_bars_service.weekly_schedule
+        ORDER BY day_of_week
+    """)
+    
+    schedule = cursor.fetchall()
+    
+    return success_response({
+        'schedule': [dict(day) for day in schedule]
+    })
+
+def update_booking_status(cursor, conn, body):
+    """Обновление статуса записи (для админ-панели)"""
+    try:
+        booking_id = body.get('booking_id')
+        status = body.get('status')
+        
+        if not booking_id or not status:
+            return error_response('Booking ID and status are required', 400)
+        
+        if status not in ['pending', 'confirmed', 'cancelled', 'completed']:
+            return error_response('Invalid status', 400)
+        
+        cursor.execute("""
+            UPDATE t_p89870318_access_bars_service.bookings 
+            SET status = %s, updated_at = CURRENT_TIMESTAMP
+            WHERE id = %s
+            RETURNING id
+        """, (status, booking_id))
+        
+        if cursor.rowcount == 0:
+            return error_response('Booking not found', 404)
+        
+        conn.commit()
+        
+        return success_response({
+            'success': True,
+            'message': f'Booking status updated to {status}'
+        })
+        
+    except Exception as e:
+        conn.rollback()
+        return error_response(f'Failed to update booking status: {str(e)}', 400)

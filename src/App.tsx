@@ -10,6 +10,7 @@ import Training from "./pages/Training";
 import Healing from "./pages/Healing";
 import Massage from "./pages/Massage";
 import Analytics from "./pages/Analytics";
+import AdminPanel from "./components/admin/AdminPanel";
 
 import NotFound from "./pages/NotFound";
 
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/healing" element={<Healing />} />
           <Route path="/massage" element={<Massage />} />
           <Route path="/analytics" element={<Analytics />} />
+          <Route path="/admin" element={<AdminPanel />} />
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
