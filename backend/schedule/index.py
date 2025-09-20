@@ -159,7 +159,9 @@ def calculate_slots(day_schedule, service_duration_minutes):
     slot_duration = timedelta(minutes=service_duration_minutes)
     step = timedelta(minutes=30)
     
-    while current_time + slot_duration <= end_time:
+    # Разрешаем слоты, которые могут закончиться на 30 минут позже рабочего времени
+    extended_end_time = end_time + timedelta(minutes=30)
+    while current_time + slot_duration <= extended_end_time:
         slot_end = current_time + slot_duration
         
         if break_start and break_end:
