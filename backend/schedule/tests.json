@@ -1,0 +1,35 @@
+{
+  "tests": [
+    {
+      "name": "Get schedule",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": [
+        {
+          "date": "string",
+          "available_slots": "array"
+        }
+      ],
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Create booking",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "service_id": 1,
+        "booking_date": "2025-09-22",
+        "start_time": "10:00",
+        "client_name": "Тестовый клиент",
+        "client_phone": "+7900123456"
+      },
+      "expectedStatus": 201,
+      "expectedBody": {
+        "success": true,
+        "booking_id": "number"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
