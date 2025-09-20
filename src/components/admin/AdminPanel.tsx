@@ -74,8 +74,10 @@ export default function AdminPanel() {
           const response = await fetch(`${SCHEDULE_API_URL}?action=get_bookings&date=${dateStr}`);
           if (response.ok) {
             const data = await response.json();
+            console.log(`Booking data for ${dateStr}:`, data.bookings);
             bookingsData[dateStr] = data.bookings || [];
           } else {
+            console.error(`Failed to load bookings for ${dateStr}:`, response.status);
             bookingsData[dateStr] = [];
           }
         } catch (error) {

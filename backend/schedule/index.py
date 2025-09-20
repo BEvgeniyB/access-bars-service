@@ -348,9 +348,11 @@ def get_bookings(cursor, params):
             b.id,
             b.client_name,
             b.client_phone,
+            b.client_email,
             b.service_id,
             b.booking_date as appointment_date,
             b.start_time as appointment_time,
+            b.end_time,
             b.status,
             b.created_at,
             s.name as service_name
@@ -401,7 +403,7 @@ def update_booking_status(cursor, conn, body):
         
         cursor.execute("""
             UPDATE t_p89870318_access_bars_service.bookings 
-            SET status = %s, updated_at = CURRENT_TIMESTAMP
+            SET status = %s
             WHERE id = %s
             RETURNING id
         """, (status, booking_id))
