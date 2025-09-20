@@ -74,7 +74,9 @@ const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose, preselectedS
       });
 
       if (!response.ok) {
-        // Если API недоступен, используем fallback на email
+        // Логируем ошибку для отладки
+        const errorText = await response.text();
+        console.error('Backend error:', response.status, errorText);
         console.warn('API недоступен, используем email fallback');
         createEmailFallback(formData);
       } else {
