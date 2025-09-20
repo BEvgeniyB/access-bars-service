@@ -51,6 +51,25 @@ const BookingContactFields: React.FC<BookingContactFieldsProps> = ({
         />
         {errors.phone && <p className="mt-1 text-red-400 text-sm">{errors.phone}</p>}
       </div>
+
+      {/* Email */}
+      <div>
+        <label className="block text-gold-300 font-medium mb-2">
+          <Icon name="Mail" size={16} className="inline mr-2" />
+          Email
+        </label>
+        <input
+          type="email"
+          value={formData.email}
+          onChange={(e) => onInputChange('email', e.target.value)}
+          className={`w-full px-4 py-3 bg-emerald-900/50 border rounded-lg text-gold-100 placeholder-emerald-400 focus:outline-none focus:ring-2 focus:ring-gold-400 ${
+            errors.email ? 'border-red-400' : 'border-gold-400/30'
+          }`}
+          placeholder="ваш@email.ru (необязательно)"
+        />
+        {errors.email && <p className="mt-1 text-red-400 text-sm">{errors.email}</p>}
+        <p className="mt-1 text-emerald-400 text-sm">Для получения уведомлений о статусе записи</p>
+      </div>
     </>
   );
 };

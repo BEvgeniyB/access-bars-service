@@ -28,6 +28,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose, preselectedS
   const [formData, setFormData] = useState<FormData>({
     name: '',
     phone: '+7(',
+    email: '',
     service: preselectedService || '',
     date: '',
     time: ''
@@ -69,6 +70,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose, preselectedS
           start_time: formData.time,
           client_name: formData.name,
           client_phone: formData.phone,
+          client_email: formData.email || null,
           notes: `Заявка через сайт: ${selectedServiceInfo.name} ${selectedServiceInfo.price}`
         })
       });

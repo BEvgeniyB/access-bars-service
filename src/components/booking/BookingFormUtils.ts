@@ -46,6 +46,11 @@ export const validateForm = (formData: FormData): FormErrors => {
     newErrors.phone = 'Введите корректный номер телефона';
   }
   
+  // Email необязательный, но если введен - должен быть валидным
+  if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    newErrors.email = 'Введите корректный email адрес';
+  }
+  
   if (!formData.service) {
     newErrors.service = 'Пожалуйста, выберите услугу';
   }
@@ -102,7 +107,7 @@ export const createEmailFallback = (formData: FormData): void => {
     const emailBody = `Заявка на запись на сеанс
 
 Имя: ${formData.name}
-Телефон: ${formData.phone}
+Телефон: ${formData.phone}${formData.email ? `\nEmail: ${formData.email}` : ''}
 Услуга: ${serviceName} ${servicePrice}
 Продолжительность: ${serviceDuration}
 Дата: ${formData.date}

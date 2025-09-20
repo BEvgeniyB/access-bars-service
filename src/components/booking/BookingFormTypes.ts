@@ -1,6 +1,7 @@
 export interface FormData {
   name: string;
   phone: string;
+  email: string;
   service: string;
   date: string;
   time: string;
@@ -9,6 +10,7 @@ export interface FormData {
 export interface FormErrors {
   name?: string;
   phone?: string;
+  email?: string;
   service?: string;
   date?: string;
   time?: string;
