@@ -87,7 +87,7 @@ const BookingDateTimeFields: React.FC<BookingDateTimeFieldsProps> = ({
             </button>
             
             {isTimeDropdownOpen && availableSlots.length > 0 && (
-              <div className="absolute z-10 w-full mt-1 bg-emerald-900 border border-gold-400/30 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+              <div className="absolute z-10 w-full bottom-full mb-1 bg-emerald-900 border border-gold-400/30 rounded-lg shadow-lg max-h-48 overflow-y-auto">
                 {availableSlots.map(time => (
                   <button
                     key={time}
