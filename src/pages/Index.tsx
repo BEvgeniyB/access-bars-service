@@ -8,6 +8,7 @@ import SEOHead from "@/components/SEOHead";
 import { useEffect, useState } from "react";
 import BookingForm from "@/components/BookingForm";
 import { businessStructuredData, servicesStructuredData, personStructuredData } from "@/data/structuredData";
+import { trackPageVisit } from "@/utils/analytics";
 
 
 const MassageWebsite = () => {
@@ -17,8 +18,11 @@ const MassageWebsite = () => {
 
   const closeMenu = () => setIsMenuOpen(false);
 
-  // Handle hash navigation on page load
+  // Handle hash navigation on page load and track page visit
   useEffect(() => {
+    // Track page visit for analytics
+    trackPageVisit(window.location.pathname);
+    
     if (window.location.hash) {
       const element = document.querySelector(window.location.hash);
       if (element) {

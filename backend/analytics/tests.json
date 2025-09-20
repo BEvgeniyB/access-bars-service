@@ -1,0 +1,25 @@
+{
+  "tests": [{
+    "name": "Record page visit",
+    "method": "POST",
+    "path": "/",
+    "body": {
+      "page_url": "/massage-services",
+      "referrer": "https://google.com",
+      "session_id": "test-session-123"
+    },
+    "expectedStatus": 200,
+    "expectedBody": {
+      "success": true,
+      "message": "string"
+    },
+    "bodyMatcher": "partial"
+  }, {
+    "name": "Handle CORS OPTIONS",
+    "method": "OPTIONS",
+    "path": "/",
+    "expectedStatus": 200,
+    "expectedBody": "",
+    "bodyMatcher": "exact"
+  }]
+}
