@@ -1,41 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SERVICES, SCHEDULE_API_URL } from '@/components/booking/BookingFormTypes';
 
 interface Booking {
   id: number;
   client_name: string;
   client_phone: string;
+  client_email?: string;
   service_id: number;
   appointment_date: string;
   appointment_time: string;
+  end_time?: string;
   status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
   created_at: string;
 }
 
-interface Schedule {
-  id: number;
-  day_of_week: number;
-  start_time: string;
-  end_time: string;
-  break_start?: string;
-  break_end?: string;
-  is_working: boolean;
-}
 
-const DAYS_OF_WEEK = [
-  'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'
-];
 
 const STATUS_COLORS = {
-  pending: 'bg-yellow-100 text-yellow-800',
-  confirmed: 'bg-green-100 text-green-800', 
-  completed: 'bg-blue-100 text-blue-800',
-  cancelled: 'bg-red-100 text-red-800'
+  pending: 'bg-yellow-100 text-yellow-800 border-yellow-300',
+  confirmed: 'bg-green-100 text-green-800 border-green-300', 
+  completed: 'bg-blue-100 text-blue-800 border-blue-300',
+  cancelled: 'bg-red-100 text-red-800 border-red-300'
 };
 
 const STATUS_LABELS = {
@@ -46,39 +36,59 @@ const STATUS_LABELS = {
 };
 
 export default function AdminPanel() {
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [schedule, setSchedule] = useState<Schedule[]>([]);
+  const [weekBookings, setWeekBookings] = useState<{[key: string]: Booking[]}>({});
   const [loading, setLoading] = useState(true);
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [weekDates, setWeekDates] = useState<string[]>([]);
 
   useEffect(() => {
-    loadBookings();
-    loadSchedule();
-  }, [selectedDate]);
+    generateWeekDates();
+    loadWeekBookings();
+  }, []);
 
-  const loadBookings = async () => {
+  const generateWeekDates = () => {
+    const dates = [];
+    const today = new Date();
+    
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      dates.push(date.toISOString().split('T')[0]);
+    }
+    
+    setWeekDates(dates);
+  };
+
+  const loadWeekBookings = async () => {
+    setLoading(true);
+    const bookingsData: {[key: string]: Booking[]} = {};
+    
     try {
-      const response = await fetch(`${SCHEDULE_API_URL}?action=get_bookings&date=${selectedDate}`);
-      if (response.ok) {
-        const data = await response.json();
-        setBookings(data.bookings || []);
+      // Загружаем записи для каждого дня недели
+      const today = new Date();
+      for (let i = 0; i < 7; i++) {
+        const date = new Date(today);
+        date.setDate(today.getDate() + i);
+        const dateStr = date.toISOString().split('T')[0];
+        
+        try {
+          const response = await fetch(`${SCHEDULE_API_URL}?action=get_bookings&date=${dateStr}`);
+          if (response.ok) {
+            const data = await response.json();
+            bookingsData[dateStr] = data.bookings || [];
+          } else {
+            bookingsData[dateStr] = [];
+          }
+        } catch (error) {
+          console.error(`Ошибка загрузки записей для ${dateStr}:`, error);
+          bookingsData[dateStr] = [];
+        }
       }
+      
+      setWeekBookings(bookingsData);
     } catch (error) {
       console.error('Ошибка загрузки записей:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const loadSchedule = async () => {
-    try {
-      const response = await fetch(`${SCHEDULE_API_URL}?action=get_schedule`);
-      if (response.ok) {
-        const data = await response.json();
-        setSchedule(data.schedule || []);
-      }
-    } catch (error) {
-      console.error('Ошибка загрузки расписания:', error);
     }
   };
 
@@ -95,7 +105,9 @@ export default function AdminPanel() {
       });
 
       if (response.ok) {
-        loadBookings();
+        loadWeekBookings(); // Перезагружаем данные
+      } else {
+        console.error('Ошибка обновления статуса');
       }
     } catch (error) {
       console.error('Ошибка обновления статуса:', error);
@@ -107,188 +119,160 @@ export default function AdminPanel() {
     return service ? service.name : 'Неизвестная услуга';
   };
 
+  const getServiceDuration = (serviceId: number) => {
+    const service = SERVICES.find(s => s.apiId === serviceId);
+    return service ? service.duration : '1ч';
+  };
+
+  const calculateEndTime = (startTime: string, serviceId: number) => {
+    const service = SERVICES.find(s => s.apiId === serviceId);
+    if (!service) return startTime;
+    
+    const [hours, minutes] = startTime.split(':').map(Number);
+    const durationMinutes = service.duration === '1.5ч' ? 90 : 60; // примерный расчет
+    
+    const endDate = new Date();
+    endDate.setHours(hours, minutes + durationMinutes);
+    
+    return endDate.toTimeString().slice(0, 5);
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    
+    if (dateString === today.toISOString().split('T')[0]) {
+      return 'Сегодня';
+    } else if (dateString === tomorrow.toISOString().split('T')[0]) {
+      return 'Завтра';
+    } else {
+      return date.toLocaleDateString('ru-RU', {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short'
+      });
+    }
+  };
+
   const formatTime = (timeString: string) => {
     return timeString.slice(0, 5);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ru-RU', {
-      day: 'numeric',
-      month: 'long'
-    });
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Icon name="Loader2" size={32} className="animate-spin text-blue-500" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Админ-панель</h1>
-          <p className="text-gray-600">Управление записями и расписанием</p>
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-6">
+          <div className="flex items-center justify-between">
+            <h1 className="text-3xl font-bold text-gray-900">Записи на неделю</h1>
+            <Button onClick={loadWeekBookings} variant="outline" size="sm">
+              <Icon name="RefreshCw" size={16} />
+              Обновить
+            </Button>
+          </div>
         </div>
 
-        <Tabs defaultValue="bookings" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="bookings" className="flex items-center gap-2">
-              <Icon name="Calendar" size={16} />
-              Записи
-            </TabsTrigger>
-            <TabsTrigger value="schedule" className="flex items-center gap-2">
-              <Icon name="Clock" size={16} />
-              Расписание
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="bookings" className="space-y-6">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Icon name="CalendarDays" size={20} />
-                <label htmlFor="date" className="font-medium">Дата:</label>
-              </div>
-              <input
-                type="date"
-                id="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <Button onClick={loadBookings} variant="outline" size="sm">
-                <Icon name="RefreshCw" size={16} />
-                Обновить
-              </Button>
-            </div>
-
-            {loading ? (
-              <div className="flex items-center justify-center py-12">
-                <Icon name="Loader2" size={32} className="animate-spin text-blue-500" />
-              </div>
-            ) : (
-              <div className="grid gap-4">
-                {bookings.length === 0 ? (
-                  <Card>
-                    <CardContent className="py-12 text-center">
-                      <Icon name="Calendar" size={48} className="mx-auto text-gray-400 mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">Нет записей</h3>
-                      <p className="text-gray-600">На выбранную дату записей не найдено</p>
-                    </CardContent>
-                  </Card>
-                ) : (
-                  bookings.map((booking) => (
-                    <Card key={booking.id}>
-                      <CardHeader className="pb-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <Icon name="User" size={20} className="text-gray-600" />
-                            <div>
-                              <CardTitle className="text-lg">{booking.client_name}</CardTitle>
-                              <CardDescription>{booking.client_phone}</CardDescription>
+        <div className="grid grid-cols-1 lg:grid-cols-7 gap-4">
+          {weekDates.map((date) => {
+            const dayBookings = weekBookings[date] || [];
+            const isToday = date === new Date().toISOString().split('T')[0];
+            
+            return (
+              <Card key={date} className={`${isToday ? 'ring-2 ring-blue-500' : ''}`}>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg text-center">
+                    {formatDate(date)}
+                    {isToday && <span className="ml-2 text-blue-500">●</span>}
+                  </CardTitle>
+                  <div className="text-center text-sm text-gray-600">
+                    {dayBookings.length} записей
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {dayBookings.length === 0 ? (
+                    <div className="text-center py-4 text-gray-500">
+                      <Icon name="Calendar" size={24} className="mx-auto mb-2 opacity-50" />
+                      <p className="text-sm">Нет записей</p>
+                    </div>
+                  ) : (
+                    dayBookings
+                      .sort((a, b) => a.appointment_time.localeCompare(b.appointment_time))
+                      .map((booking) => (
+                        <div key={booking.id} className="border rounded-lg p-3 bg-white shadow-sm">
+                          {/* Время и статус */}
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="font-medium text-sm">
+                              {formatTime(booking.appointment_time)} - {calculateEndTime(booking.appointment_time, booking.service_id)}
                             </div>
-                          </div>
-                          <Badge className={STATUS_COLORS[booking.status]}>
-                            {STATUS_LABELS[booking.status]}
-                          </Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div className="flex items-center gap-2">
-                            <Icon name="Scissors" size={16} className="text-gray-600" />
-                            <span className="font-medium">{getServiceName(booking.service_id)}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Icon name="Calendar" size={16} className="text-gray-600" />
-                            <span>{formatDate(booking.appointment_date)}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Icon name="Clock" size={16} className="text-gray-600" />
-                            <span>{formatTime(booking.appointment_time)}</span>
-                          </div>
-                        </div>
-                        
-                        {booking.status === 'pending' && (
-                          <div className="flex gap-2">
-                            <Button 
-                              onClick={() => updateBookingStatus(booking.id, 'confirmed')}
-                              size="sm"
-                              className="bg-green-600 hover:bg-green-700"
+                            <Select
+                              value={booking.status}
+                              onValueChange={(newStatus) => updateBookingStatus(booking.id, newStatus)}
                             >
-                              <Icon name="Check" size={16} />
-                              Подтвердить
-                            </Button>
-                            <Button 
-                              onClick={() => updateBookingStatus(booking.id, 'cancelled')}
-                              size="sm"
-                              variant="outline"
-                              className="text-red-600 border-red-600 hover:bg-red-50"
-                            >
-                              <Icon name="X" size={16} />
-                              Отменить
-                            </Button>
+                              <SelectTrigger className="w-auto h-6 text-xs">
+                                <Badge className={`text-xs ${STATUS_COLORS[booking.status]}`}>
+                                  {STATUS_LABELS[booking.status]}
+                                </Badge>
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="pending">Ожидает</SelectItem>
+                                <SelectItem value="confirmed">Подтверждена</SelectItem>
+                                <SelectItem value="completed">Завершена</SelectItem>
+                                <SelectItem value="cancelled">Отменена</SelectItem>
+                              </SelectContent>
+                            </Select>
                           </div>
-                        )}
-                        
-                        {booking.status === 'confirmed' && (
-                          <Button 
-                            onClick={() => updateBookingStatus(booking.id, 'completed')}
-                            size="sm"
-                            className="bg-blue-600 hover:bg-blue-700"
-                          >
-                            <Icon name="CheckCircle" size={16} />
-                            Завершить
-                          </Button>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))
-                )}
-              </div>
-            )}
-          </TabsContent>
 
-          <TabsContent value="schedule" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Рабочее расписание</CardTitle>
-                <CardDescription>
-                  Настройка рабочих дней и времени
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {DAYS_OF_WEEK.map((dayName, index) => {
-                    const daySchedule = schedule.find(s => s.day_of_week === index + 1);
-                    return (
-                      <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <span className="font-medium w-24">{dayName}</span>
-                          {daySchedule?.is_working ? (
-                            <Badge className="bg-green-100 text-green-800">Рабочий</Badge>
-                          ) : (
-                            <Badge className="bg-gray-100 text-gray-800">Выходной</Badge>
-                          )}
-                        </div>
-                        
-                        {daySchedule?.is_working && (
-                          <div className="flex items-center gap-4 text-sm text-gray-600">
-                            <div className="flex items-center gap-1">
-                              <Icon name="Clock" size={14} />
-                              <span>{formatTime(daySchedule.start_time)} - {formatTime(daySchedule.end_time)}</span>
+                          {/* Клиент */}
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-1 text-sm">
+                              <Icon name="User" size={12} />
+                              <span className="font-medium">{booking.client_name}</span>
                             </div>
-                            {daySchedule.break_start && daySchedule.break_end && (
-                              <div className="flex items-center gap-1">
-                                <Icon name="Coffee" size={14} />
-                                <span>Перерыв: {formatTime(daySchedule.break_start)} - {formatTime(daySchedule.break_end)}</span>
+                            
+                            <div className="flex items-center gap-1 text-xs text-gray-600">
+                              <Icon name="Phone" size={10} />
+                              <a href={`tel:${booking.client_phone}`} className="hover:text-blue-600">
+                                {booking.client_phone}
+                              </a>
+                            </div>
+                            
+                            {booking.client_email && (
+                              <div className="flex items-center gap-1 text-xs text-gray-600">
+                                <Icon name="Mail" size={10} />
+                                <a href={`mailto:${booking.client_email}`} className="hover:text-blue-600 truncate">
+                                  {booking.client_email}
+                                </a>
                               </div>
                             )}
                           </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+
+                          {/* Услуга */}
+                          <div className="mt-2 pt-2 border-t border-gray-100">
+                            <div className="flex items-center gap-1 text-xs text-gray-700">
+                              <Icon name="Scissors" size={10} />
+                              <span className="truncate">{getServiceName(booking.service_id)}</span>
+                            </div>
+                            <div className="text-xs text-gray-500 mt-1">
+                              {getServiceDuration(booking.service_id)}
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
