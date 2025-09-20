@@ -51,10 +51,11 @@ const BookingDateTimeFields: React.FC<BookingDateTimeFieldsProps> = ({
           <select
             value={formData.time}
             onChange={(e) => onInputChange('time', e.target.value)}
-            className={`w-full px-4 py-3 bg-emerald-900/50 border rounded-lg text-gold-100 focus:outline-none focus:ring-2 focus:ring-gold-400 ${
+            className={`w-full px-4 py-3 bg-emerald-900/50 border rounded-lg text-gold-100 focus:outline-none focus:ring-2 focus:ring-gold-400 max-h-32 overflow-y-auto ${
               errors.time ? 'border-red-400' : 'border-gold-400/30'
             }`}
             disabled={!formData.date || !formData.service}
+            size={6}
           >
             <option value="">
               {!formData.date || !formData.service 
