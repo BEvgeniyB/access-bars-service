@@ -3,6 +3,7 @@ import os
 from datetime import datetime, timedelta
 import psycopg2
 from psycopg2.extras import RealDictCursor
+import requests
 
 def handler(event, context):
     """
@@ -248,6 +249,20 @@ def create_booking(cursor, conn, event):
         booking_id = cursor.fetchone()['id']
         conn.commit()
         
+        # Отправляем уведомление о новой записи
+        try:
+            send_new_booking_notification({
+                'client_name': body['client_name'],
+                'client_phone': body['client_phone'],
+                'client_email': body.get('client_email', ''),
+                'service_name': service['name'],
+                'booking_date': body['booking_date'],
+                'booking_time': body['start_time'],
+                'notes': body.get('notes', '')
+            })
+        except Exception as e:
+            print(f"Failed to send notification: {str(e)}")
+        
         return success_response({
             'success': True,
             'booking_id': booking_id,
@@ -395,6 +410,29 @@ def update_booking_status(cursor, conn, body):
         
         conn.commit()
         
+        # Отправляем уведомление клиенту об изменении статуса
+        try:
+            # Получаем данные записи для уведомления
+            cursor.execute("""
+                SELECT b.client_name, b.client_email, b.booking_date, b.start_time, s.name as service_name
+                FROM t_p89870318_access_bars_service.bookings b
+                LEFT JOIN t_p89870318_access_bars_service.services s ON b.service_id = s.id
+                WHERE b.id = %s
+            """, (booking_id,))
+            booking_data = cursor.fetchone()
+            
+            if booking_data and booking_data['client_email']:
+                send_status_update_notification({
+                    'client_name': booking_data['client_name'],
+                    'client_email': booking_data['client_email'],
+                    'service_name': booking_data['service_name'],
+                    'booking_date': booking_data['booking_date'].strftime('%Y-%m-%d'),
+                    'booking_time': booking_data['start_time'].strftime('%H:%M'),
+                    'status': status
+                })
+        except Exception as e:
+            print(f"Failed to send status notification: {str(e)}")
+        
         return success_response({
             'success': True,
             'message': f'Booking status updated to {status}'
@@ -403,3 +441,53 @@ def update_booking_status(cursor, conn, body):
     except Exception as e:
         conn.rollback()
         return error_response(f'Failed to update booking status: {str(e)}', 400)
+
+def send_new_booking_notification(booking_data):
+    """Отправляет уведомление о новой записи"""
+    try:
+        notifications_url = 'https://functions.poehali.dev/271b12ed-66af-4af4-bd63-b0794c0dbf1f'
+        
+        payload = {
+            'type': 'new_booking',
+            **booking_data
+        }
+        
+        response = requests.post(
+            notifications_url,
+            json=payload,
+            headers={'Content-Type': 'application/json'},
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            print("New booking notification sent successfully")
+        else:
+            print(f"Failed to send notification: {response.status_code}")
+            
+    except Exception as e:
+        print(f"Error sending notification: {str(e)}")
+
+def send_status_update_notification(booking_data):
+    """Отправляет уведомление об изменении статуса"""
+    try:
+        notifications_url = 'https://functions.poehali.dev/271b12ed-66af-4af4-bd63-b0794c0dbf1f'
+        
+        payload = {
+            'type': 'status_update',
+            **booking_data
+        }
+        
+        response = requests.post(
+            notifications_url,
+            json=payload,
+            headers={'Content-Type': 'application/json'},
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            print("Status update notification sent successfully")
+        else:
+            print(f"Failed to send status notification: {response.status_code}")
+            
+    except Exception as e:
+        print(f"Error sending status notification: {str(e)}")

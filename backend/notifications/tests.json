@@ -1,0 +1,28 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS request",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Send new booking notification",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "type": "new_booking",
+        "client_name": "Тест Клиент",
+        "client_phone": "+7900123456",
+        "service_name": "Access Bars",
+        "booking_date": "2025-09-22",
+        "booking_time": "14:00"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
