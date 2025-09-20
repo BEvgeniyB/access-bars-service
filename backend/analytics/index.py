@@ -2,16 +2,15 @@ import json
 import os
 import psycopg2
 from datetime import datetime, timedelta
-from typing import Dict, Any
 
-def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
+def handler(event, context):
     '''
     Business: Get website analytics data for specified period
     Args: event - dict with httpMethod, queryStringParameters
           context - object with attributes: request_id, function_name, function_version, memory_limit_in_mb
     Returns: HTTP response with analytics data
     '''
-    method: str = event.get('httpMethod', 'GET')
+    method = event.get('httpMethod', 'GET')
     
     # Handle CORS OPTIONS request
     if method == 'OPTIONS':
@@ -23,6 +22,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'Access-Control-Allow-Headers': 'Content-Type, Authorization',
                 'Access-Control-Max-Age': '86400'
             },
+            'isBase64Encoded': False,
             'body': ''
         }
     
@@ -30,6 +30,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         return {
             'statusCode': 405,
             'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+            'isBase64Encoded': False,
             'body': json.dumps({'error': 'Method not allowed'})
         }
     
@@ -43,6 +44,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         return {
             'statusCode': 500,
             'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+            'isBase64Encoded': False,
             'body': json.dumps({'error': 'DATABASE_URL not found'})
         }
     
@@ -55,8 +57,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         start_date = end_date - timedelta(days=period_days)
         start_date_str = start_date.strftime('%Y-%m-%d')
         end_date_str = end_date.strftime('%Y-%m-%d')
-        
-        print(f"DEBUG: Getting analytics for period {start_date_str} to {end_date_str}")
         
         # Total visits in period
         total_visits_query = f"""
@@ -129,17 +129,18 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
+            'isBase64Encoded': False,
             'body': json.dumps(analytics_data)
         }
         
     except Exception as e:
-        print(f"ERROR: {str(e)}")
         return {
             'statusCode': 500,
             'headers': {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
+            'isBase64Encoded': False,
             'body': json.dumps({
                 'error': str(e),
                 'period_days': period_days,

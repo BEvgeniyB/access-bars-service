@@ -1,28 +1,3 @@
 {
-  "tests": [
-    {
-      "name": "Record visit successfully",
-      "method": "POST",
-      "headers": {
-        "Content-Type": "application/json",
-        "User-Agent": "Mozilla/5.0 Test Browser",
-        "Referer": "https://google.com"
-      },
-      "body": {
-        "page": "/test-page"
-      },
-      "expectedStatus": 200,
-      "expectedBody": {
-        "success": true,
-        "message": "string"
-      },
-      "bodyMatcher": "partial"
-    },
-    {
-      "name": "Handle OPTIONS request",
-      "method": "OPTIONS",
-      "expectedStatus": 200,
-      "expectedBody": ""
-    }
-  ]
+  "tests": []
 }

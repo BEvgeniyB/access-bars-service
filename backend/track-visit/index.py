@@ -2,16 +2,15 @@ import json
 import os
 import psycopg2
 from datetime import datetime
-from typing import Dict, Any
 
-def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
+def handler(event, context):
     """
     Business: Records website visits for analytics tracking
     Args: event - dict with httpMethod, body, headers, requestContext
           context - object with request_id, function_name attributes
     Returns: HTTP response confirming visit recorded
     """
-    method: str = event.get('httpMethod', 'POST')
+    method = event.get('httpMethod', 'POST')
     
     # Handle CORS OPTIONS request
     if method == 'OPTIONS':
@@ -41,10 +40,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         headers = event.get('headers', {})
         request_context = event.get('requestContext', {})
         
-        print(f"DEBUG: body_data={body_data}")
-        print(f"DEBUG: headers={headers}")
-        print(f"DEBUG: request_context={request_context}")
-        
         # Extract visit data
         page_url = body_data.get('page', '/')
         user_agent = headers.get('user-agent', headers.get('User-Agent', ''))
@@ -58,8 +53,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             headers.get('X-Original-Forwarded-For', '').split(',')[0].strip() or
             request_context.get('identity', {}).get('sourceIp', 'unknown')
         )
-        
-        print(f"DEBUG: Extracted data - page={page_url}, ip={visitor_ip}, ua={user_agent[:50] if user_agent else 'None'}")
         
         # Connect to database
         database_url = os.environ.get('DATABASE_URL')
