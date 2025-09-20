@@ -12,13 +12,13 @@ export const trackPageVisit = async (pageUrl: string) => {
     const referrer = document.referrer || '';
 
     // Send analytics data
-    const response = await fetch('https://functions.poehali.dev/43a223b8-fdfa-4483-9a6f-a31c11205699', {
+    const response = await fetch('https://functions.poehali.dev/6a462c80-d75e-469f-833c-9e8502c34560', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        page_url: pageUrl,
+        page: pageUrl,
         referrer: referrer,
         session_id: sessionId
       })

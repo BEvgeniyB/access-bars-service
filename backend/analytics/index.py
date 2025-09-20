@@ -1,16 +1,15 @@
 import json
 import os
-from datetime import datetime
-from typing import Dict, Any, Optional
 import psycopg2
-from psycopg2.extras import RealDictCursor
+from datetime import datetime, timedelta
+from typing import Dict, Any
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     '''
-    Business: Record website page visits and views for analytics
-    Args: event - dict with httpMethod, body, queryStringParameters
+    Business: Get website analytics data for specified period
+    Args: event - dict with httpMethod, queryStringParameters
           context - object with attributes: request_id, function_name, function_version, memory_limit_in_mb
-    Returns: HTTP response dict
+    Returns: HTTP response with analytics data
     '''
     method: str = event.get('httpMethod', 'GET')
     
@@ -20,58 +19,134 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'statusCode': 200,
             'headers': {
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                'Access-Control-Allow-Methods': 'GET, OPTIONS',
                 'Access-Control-Allow-Headers': 'Content-Type, Authorization',
                 'Access-Control-Max-Age': '86400'
             },
             'body': ''
         }
     
-    if method == 'POST':
-        # Parse request data
-        body_data = json.loads(event.get('body', '{}'))
-        page_url = body_data.get('page_url', '/')
-        user_agent = event.get('headers', {}).get('User-Agent', '')
-        referrer = body_data.get('referrer', '')
-        session_id = body_data.get('session_id', '')
-        
-        # Get user IP from headers
-        headers = event.get('headers', {})
-        user_ip = headers.get('X-Forwarded-For', headers.get('X-Real-IP', 'unknown'))
-        
-        # Connect to database
-        db_url = os.environ.get('DATABASE_URL')
-        if not db_url:
-            return {
-                'statusCode': 500,
-                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                'body': json.dumps({'error': 'Database not configured'})
-            }
-        
-        try:
-            with psycopg2.connect(db_url) as conn:
-                with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                    # Insert visit record using simple query protocol
-                    clean_user_agent = user_agent.replace("'", "''")
-                    query = f"INSERT INTO page_visits (page_url, user_ip, user_agent, referrer, session_id) VALUES ('{page_url}', '{user_ip}', '{clean_user_agent}', '{referrer}', '{session_id}')"
-                    cur.execute(query)
-                    conn.commit()
-            
-            return {
-                'statusCode': 200,
-                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                'body': json.dumps({'success': True, 'message': 'Visit recorded'})
-            }
-            
-        except Exception as e:
-            return {
-                'statusCode': 500,
-                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                'body': json.dumps({'error': f'Database error: {str(e)}'})
-            }
+    if method != 'GET':
+        return {
+            'statusCode': 405,
+            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({'error': 'Method not allowed'})
+        }
     
-    return {
-        'statusCode': 405,
-        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-        'body': json.dumps({'error': 'Method not allowed'})
-    }
+    # Get period parameter
+    params = event.get('queryStringParameters', {}) or {}
+    period_days = int(params.get('days', 7))
+    
+    # Connect to database
+    database_url = os.environ.get('DATABASE_URL')
+    if not database_url:
+        return {
+            'statusCode': 500,
+            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({'error': 'DATABASE_URL not found'})
+        }
+    
+    try:
+        conn = psycopg2.connect(database_url)
+        cursor = conn.cursor()
+        
+        # Calculate date range
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=period_days)
+        start_date_str = start_date.strftime('%Y-%m-%d')
+        end_date_str = end_date.strftime('%Y-%m-%d')
+        
+        print(f"DEBUG: Getting analytics for period {start_date_str} to {end_date_str}")
+        
+        # Total visits in period
+        total_visits_query = f"""
+            SELECT COUNT(*) as total_visits
+            FROM t_p89870318_access_bars_service.page_visits 
+            WHERE visited_at >= '{start_date_str}' AND visited_at <= '{end_date_str}'
+        """
+        cursor.execute(total_visits_query)
+        total_visits = cursor.fetchone()[0]
+        
+        # Unique visitors (by IP)
+        unique_visitors_query = f"""
+            SELECT COUNT(DISTINCT user_ip) as unique_visitors
+            FROM t_p89870318_access_bars_service.page_visits 
+            WHERE visited_at >= '{start_date_str}' AND visited_at <= '{end_date_str}'
+        """
+        cursor.execute(unique_visitors_query)
+        unique_visitors = cursor.fetchone()[0]
+        
+        # Top pages
+        top_pages_query = f"""
+            SELECT page_url, COUNT(*) as visits
+            FROM t_p89870318_access_bars_service.page_visits 
+            WHERE visited_at >= '{start_date_str}' AND visited_at <= '{end_date_str}'
+            GROUP BY page_url 
+            ORDER BY visits DESC 
+            LIMIT 10
+        """
+        cursor.execute(top_pages_query)
+        top_pages = [{'page_url': row[0], 'visits': row[1]} for row in cursor.fetchall()]
+        
+        # Daily stats
+        daily_stats_query = f"""
+            SELECT DATE(visited_at) as visit_date, COUNT(*) as visits
+            FROM t_p89870318_access_bars_service.page_visits 
+            WHERE visited_at >= '{start_date_str}' AND visited_at <= '{end_date_str}'
+            GROUP BY DATE(visited_at) 
+            ORDER BY visit_date
+        """
+        cursor.execute(daily_stats_query)
+        daily_stats = [{'visit_date': str(row[0]), 'visits': row[1]} for row in cursor.fetchall()]
+        
+        # Top referrers
+        top_referrers_query = f"""
+            SELECT COALESCE(NULLIF(referrer, ''), 'Direct') as referrer, COUNT(*) as visits
+            FROM t_p89870318_access_bars_service.page_visits 
+            WHERE visited_at >= '{start_date_str}' AND visited_at <= '{end_date_str}'
+            GROUP BY COALESCE(NULLIF(referrer, ''), 'Direct')
+            ORDER BY visits DESC 
+            LIMIT 10
+        """
+        cursor.execute(top_referrers_query)
+        top_referrers = [{'referrer': row[0], 'visits': row[1]} for row in cursor.fetchall()]
+        
+        cursor.close()
+        conn.close()
+        
+        analytics_data = {
+            'period_days': period_days,
+            'total_visits': total_visits,
+            'unique_visitors': unique_visitors,
+            'top_pages': top_pages,
+            'daily_stats': daily_stats,
+            'top_referrers': top_referrers
+        }
+        
+        return {
+            'statusCode': 200,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            'body': json.dumps(analytics_data)
+        }
+        
+    except Exception as e:
+        print(f"ERROR: {str(e)}")
+        return {
+            'statusCode': 500,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            'body': json.dumps({
+                'error': str(e),
+                'period_days': period_days,
+                'total_visits': 0,
+                'unique_visitors': 0,
+                'top_pages': [],
+                'daily_stats': [],
+                'top_referrers': []
+            })
+        }
