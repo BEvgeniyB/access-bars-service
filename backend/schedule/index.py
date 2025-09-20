@@ -231,8 +231,8 @@ def create_booking(cursor, conn, event):
         
         cursor.execute("""
             INSERT INTO t_p89870318_access_bars_service.bookings 
-            (service_id, service_name, booking_date, start_time, end_time, client_name, client_phone, client_email, notes)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            (service_id, service_name, booking_date, start_time, end_time, client_name, client_phone, client_email, notes, status)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id
         """, (
             body['service_id'],
@@ -243,7 +243,8 @@ def create_booking(cursor, conn, event):
             body['client_name'],
             body['client_phone'],
             body.get('client_email'),
-            body.get('notes')
+            body.get('notes'),
+            'pending'
         ))
         
         booking_id = cursor.fetchone()['id']

@@ -170,7 +170,7 @@ export default function AdminPanel() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         <div className="mb-6">
           <div className="flex items-center justify-between">
             <h1 className="text-3xl font-bold text-gray-900">Записи на неделю</h1>
@@ -181,43 +181,80 @@ export default function AdminPanel() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-7 gap-4">
+        <div className="space-y-6">
           {weekDates.map((date) => {
             const dayBookings = weekBookings[date] || [];
             const isToday = date === new Date().toISOString().split('T')[0];
             
+            // Пропускаем дни без записей
+            if (dayBookings.length === 0) return null;
+            
             return (
-              <Card key={date} className={`${isToday ? 'ring-2 ring-blue-500' : ''}`}>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg text-center">
+              <div key={date}>
+                {/* Разделитель дня */}
+                <div className={`flex items-center gap-4 mb-4 ${isToday ? 'text-blue-600' : 'text-gray-700'}`}>
+                  <div className={`flex items-center gap-2 font-semibold text-lg ${isToday ? 'bg-blue-50 px-3 py-1 rounded-lg' : ''}`}>
+                    <Icon name="Calendar" size={20} />
                     {formatDate(date)}
-                    {isToday && <span className="ml-2 text-blue-500">●</span>}
-                  </CardTitle>
-                  <div className="text-center text-sm text-gray-600">
-                    {dayBookings.length} записей
+                    {isToday && <span className="text-blue-500">● Сегодня</span>}
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {dayBookings.length === 0 ? (
-                    <div className="text-center py-4 text-gray-500">
-                      <Icon name="Calendar" size={24} className="mx-auto mb-2 opacity-50" />
-                      <p className="text-sm">Нет записей</p>
-                    </div>
-                  ) : (
-                    dayBookings
-                      .sort((a, b) => a.appointment_time.localeCompare(b.appointment_time))
-                      .map((booking) => (
-                        <div key={booking.id} className="border rounded-lg p-3 bg-white shadow-sm">
-                          {/* Время и статус */}
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="font-medium text-sm">
-                              {formatTime(booking.appointment_time)} - {calculateEndTime(booking.appointment_time, booking.service_id)}
+                  <div className="flex-1 h-px bg-gray-300"></div>
+                  <span className="text-sm text-gray-500">{dayBookings.length} записей</span>
+                </div>
+
+                {/* Записи дня */}
+                <div className="space-y-3">
+                  {dayBookings
+                    .sort((a, b) => a.appointment_time.localeCompare(b.appointment_time))
+                    .map((booking) => (
+                      <Card key={booking.id} className="p-4">
+                        <div className="flex items-center justify-between">
+                          {/* Левая часть - основная информация */}
+                          <div className="flex-1">
+                            <div className="flex items-center gap-6">
+                              {/* Время */}
+                              <div className="flex items-center gap-2 font-medium text-lg">
+                                <Icon name="Clock" size={16} className="text-blue-600" />
+                                <span>{formatTime(booking.appointment_time)} - {calculateEndTime(booking.appointment_time, booking.service_id)}</span>
+                              </div>
+                              
+                              {/* Клиент */}
+                              <div className="flex items-center gap-2">
+                                <Icon name="User" size={16} className="text-gray-600" />
+                                <span className="font-medium">{booking.client_name}</span>
+                              </div>
+                              
+                              {/* Услуга */}
+                              <div className="flex items-center gap-2 text-gray-600">
+                                <Icon name="Scissors" size={16} />
+                                <span>{getServiceName(booking.service_id)}</span>
+                                <span className="text-sm">({getServiceDuration(booking.service_id)})</span>
+                              </div>
                             </div>
+                            
+                            {/* Контакты */}
+                            <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
+                              <a href={`tel:${booking.client_phone}`} className="flex items-center gap-1 hover:text-blue-600">
+                                <Icon name="Phone" size={14} />
+                                {booking.client_phone}
+                              </a>
+                              
+                              {booking.client_email && (
+                                <a href={`mailto:${booking.client_email}`} className="flex items-center gap-1 hover:text-blue-600">
+                                  <Icon name="Mail" size={14} />
+                                  {booking.client_email}
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                          
+                          {/* Правая часть - статус */}
+                          <div className="flex items-center gap-3">
                             <Select
                               value={booking.status}
                               onValueChange={(newStatus) => updateBookingStatus(booking.id, newStatus)}
                             >
-                              <SelectTrigger className="w-auto h-6 text-xs">
+                              <SelectTrigger className="w-32 h-8">
                                 <Badge className={`text-xs ${STATUS_COLORS[booking.status]}`}>
                                   {STATUS_LABELS[booking.status]}
                                 </Badge>
@@ -230,48 +267,22 @@ export default function AdminPanel() {
                               </SelectContent>
                             </Select>
                           </div>
-
-                          {/* Клиент */}
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-1 text-sm">
-                              <Icon name="User" size={12} />
-                              <span className="font-medium">{booking.client_name}</span>
-                            </div>
-                            
-                            <div className="flex items-center gap-1 text-xs text-gray-600">
-                              <Icon name="Phone" size={10} />
-                              <a href={`tel:${booking.client_phone}`} className="hover:text-blue-600">
-                                {booking.client_phone}
-                              </a>
-                            </div>
-                            
-                            {booking.client_email && (
-                              <div className="flex items-center gap-1 text-xs text-gray-600">
-                                <Icon name="Mail" size={10} />
-                                <a href={`mailto:${booking.client_email}`} className="hover:text-blue-600 truncate">
-                                  {booking.client_email}
-                                </a>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Услуга */}
-                          <div className="mt-2 pt-2 border-t border-gray-100">
-                            <div className="flex items-center gap-1 text-xs text-gray-700">
-                              <Icon name="Scissors" size={10} />
-                              <span className="truncate">{getServiceName(booking.service_id)}</span>
-                            </div>
-                            <div className="text-xs text-gray-500 mt-1">
-                              {getServiceDuration(booking.service_id)}
-                            </div>
-                          </div>
                         </div>
-                      ))
-                  )}
-                </CardContent>
-              </Card>
+                      </Card>
+                    ))}
+                </div>
+              </div>
             );
           })}
+          
+          {/* Если нет записей вообще */}
+          {weekDates.every(date => (weekBookings[date] || []).length === 0) && (
+            <Card className="p-12 text-center">
+              <Icon name="Calendar" size={48} className="mx-auto text-gray-400 mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Нет записей на эту неделю</h3>
+              <p className="text-gray-600">Записи появятся здесь, когда клиенты забронируют время</p>
+            </Card>
+          )}
         </div>
       </div>
     </div>
