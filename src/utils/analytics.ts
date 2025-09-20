@@ -12,7 +12,7 @@ export const trackPageVisit = async (pageUrl: string) => {
     const referrer = document.referrer || '';
 
     // Send analytics data
-    const response = await fetch('https://functions.poehali.dev/c514cfaf-cc1d-44e9-a375-d76cf065dd9e', {
+    const response = await fetch('https://functions.poehali.dev/43a223b8-fdfa-4483-9a6f-a31c11205699', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
