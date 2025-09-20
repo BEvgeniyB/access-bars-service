@@ -73,9 +73,13 @@ export const loadAvailableSlots = async (date: string, serviceId: number): Promi
     if (response.ok) {
       const data = await response.json();
       if (data && data.length > 0) {
-        return data[0].available_slots || [];
+        // Используем слоты из API, но если их нет - возвращаем наши статические
+        return data[0].available_slots && data[0].available_slots.length > 0 
+          ? data[0].available_slots 
+          : TIME_SLOTS;
       } else {
-        return [];
+        // Если нет данных от API - используем статические слоты
+        return TIME_SLOTS;
       }
     } else {
       // Fallback к статическим слотам
