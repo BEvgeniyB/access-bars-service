@@ -190,6 +190,9 @@ def create_booking(cursor, conn, event):
     try:
         body = json.loads(event.get('body', '{}'))
         
+        # Логируем полученные данные для отладки
+        print(f"Received booking data: {body}")
+        
         required_fields = ['service_id', 'booking_date', 'start_time', 'client_name', 'client_phone']
         for field in required_fields:
             if not body.get(field):
@@ -200,6 +203,9 @@ def create_booking(cursor, conn, event):
             WHERE id = %s AND is_active = true
         """, (body['service_id'],))
         service = cursor.fetchone()
+        
+        print(f"Searching for service_id: {body['service_id']} (type: {type(body['service_id'])})")
+        print(f"Found service: {service}")
         
         if not service:
             return error_response('Service not found', 404)
