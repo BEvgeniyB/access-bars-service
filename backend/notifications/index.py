@@ -83,8 +83,13 @@ def send_email(to_email: str, subject: str, html_content: str) -> bool:
         html_part = MIMEText(html_content, 'html', 'utf-8')
         msg.attach(html_part)
         
-        server = smtplib.SMTP(smtp_host, smtp_port)
-        server.starttls()
+        if smtp_port == 465:
+            # SSL подключение для порта 465
+            server = smtplib.SMTP_SSL(smtp_host, smtp_port)
+        else:
+            # TLS подключение для порта 587
+            server = smtplib.SMTP(smtp_host, smtp_port)
+            server.starttls()
         server.login(email_user, email_password)
         server.send_message(msg)
         server.quit()
@@ -193,7 +198,7 @@ def send_new_booking_notification(data: Dict[str, Any]) -> Dict[str, Any]:
                     </div>
                     
                     <p style="text-align: center; margin: 20px 0;">
-                        <a href="https://yourdomain.com/admin" 
+                        <a href="https://velikaya-nataliya.ru/admin" 
                            style="background: #D4A574; color: white; padding: 12px 24px; 
                                   text-decoration: none; border-radius: 6px; display: inline-block;">
                             🔗 Перейти в админ-панель
