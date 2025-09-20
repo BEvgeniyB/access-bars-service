@@ -199,7 +199,7 @@ def create_booking(cursor, conn, event):
                 return error_response(f'Missing required field: {field}', 400)
         
         cursor.execute("""
-            SELECT duration_minutes, price FROM t_p89870318_access_bars_service.services 
+            SELECT duration_minutes, price, name FROM t_p89870318_access_bars_service.services 
             WHERE id = %s AND is_active = true
         """, (body['service_id'],))
         service = cursor.fetchone()
@@ -213,21 +213,23 @@ def create_booking(cursor, conn, event):
         start_datetime = datetime.strptime(f"{body['booking_date']} {body['start_time']}", '%Y-%m-%d %H:%M')
         end_datetime = start_datetime + timedelta(minutes=service['duration_minutes'])
         
+        print(f"Inserting booking: service_id={body['service_id']}, date={body['booking_date']}, start={start_datetime.time()}, end={end_datetime.time()}")
+        
         cursor.execute("""
             INSERT INTO t_p89870318_access_bars_service.bookings 
-            (service_id, booking_date, start_time, end_time, client_name, client_phone, client_email, notes, total_price)
+            (service_id, service_name, booking_date, start_time, end_time, client_name, client_phone, client_email, notes)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id
         """, (
             body['service_id'],
+            service['name'],
             body['booking_date'],
             start_datetime.time(),
             end_datetime.time(),
             body['client_name'],
             body['client_phone'],
             body.get('client_email'),
-            body.get('notes'),
-            service['price']
+            body.get('notes')
         ))
         
         booking_id = cursor.fetchone()['id']
