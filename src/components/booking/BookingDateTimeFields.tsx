@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Icon from "@/components/ui/icon";
 import { FormData, FormErrors } from './BookingFormTypes';
 import { getMinDate } from './BookingFormUtils';
@@ -18,6 +18,23 @@ const BookingDateTimeFields: React.FC<BookingDateTimeFieldsProps> = ({
   loadingSlots,
   onInputChange
 }) => {
+  const [isTimeDropdownOpen, setIsTimeDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.time-dropdown')) {
+        setIsTimeDropdownOpen(false);
+      }
+    };
+    
+    if (isTimeDropdownOpen) {
+      setTimeout(() => {
+        document.addEventListener('click', handleClickOutside);
+      }, 0);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [isTimeDropdownOpen]);
   return (
     <div className="grid md:grid-cols-2 gap-4">
       <div>
@@ -48,27 +65,45 @@ const BookingDateTimeFields: React.FC<BookingDateTimeFieldsProps> = ({
             Загрузка времени...
           </div>
         ) : (
-          <select
-            value={formData.time}
-            onChange={(e) => onInputChange('time', e.target.value)}
-            className={`w-full px-4 py-3 bg-emerald-900/50 border rounded-lg text-gold-100 focus:outline-none focus:ring-2 focus:ring-gold-400 max-h-32 overflow-y-auto ${
-              errors.time ? 'border-red-400' : 'border-gold-400/30'
-            }`}
-            disabled={!formData.date || !formData.service}
-            size={6}
-          >
-            <option value="">
-              {!formData.date || !formData.service 
-                ? 'Сначала выберите дату и услугу' 
-                : availableSlots.length > 0 
-                  ? 'Выберите время' 
-                  : 'Нет доступного времени'
-              }
-            </option>
-            {availableSlots.map(time => (
-              <option key={time} value={time}>{time}</option>
-            ))}
-          </select>
+          <div className="relative time-dropdown">
+            <button
+              type="button"
+              onClick={() => setIsTimeDropdownOpen(!isTimeDropdownOpen)}
+              disabled={!formData.date || !formData.service}
+              className={`w-full px-4 py-3 bg-emerald-900/50 border rounded-lg text-gold-100 focus:outline-none focus:ring-2 focus:ring-gold-400 flex justify-between items-center ${
+                errors.time ? 'border-red-400' : 'border-gold-400/30'
+              } ${!formData.date || !formData.service ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+            >
+              <span>
+                {formData.time || (
+                  !formData.date || !formData.service 
+                    ? 'Сначала выберите дату и услугу' 
+                    : availableSlots.length > 0 
+                      ? 'Выберите время' 
+                      : 'Нет доступного времени'
+                )}
+              </span>
+              <Icon name={isTimeDropdownOpen ? "ChevronUp" : "ChevronDown"} size={16} />
+            </button>
+            
+            {isTimeDropdownOpen && availableSlots.length > 0 && (
+              <div className="absolute z-10 w-full mt-1 bg-emerald-900 border border-gold-400/30 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                {availableSlots.map(time => (
+                  <button
+                    key={time}
+                    type="button"
+                    onClick={() => {
+                      onInputChange('time', time);
+                      setIsTimeDropdownOpen(false);
+                    }}
+                    className="w-full px-4 py-2 text-left text-gold-100 hover:bg-emerald-700/50 focus:bg-emerald-700/50 focus:outline-none first:rounded-t-lg last:rounded-b-lg"
+                  >
+                    {time}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         )}
         {errors.time && <p className="mt-1 text-red-400 text-sm">{errors.time}</p>}
         {formData.date && formData.service && !loadingSlots && availableSlots.length === 0 && (
