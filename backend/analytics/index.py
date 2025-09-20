@@ -62,7 +62,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         total_visits_query = f"""
             SELECT COUNT(*) as total_visits
             FROM t_p89870318_access_bars_service.page_visits 
-            WHERE visited_at >= '{start_date_str}' AND visited_at <= '{end_date_str}'
+            WHERE DATE(visited_at) >= '{start_date_str}' AND DATE(visited_at) <= '{end_date_str}'
         """
         cursor.execute(total_visits_query)
         total_visits = cursor.fetchone()[0]
@@ -71,7 +71,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         unique_visitors_query = f"""
             SELECT COUNT(DISTINCT user_ip) as unique_visitors
             FROM t_p89870318_access_bars_service.page_visits 
-            WHERE visited_at >= '{start_date_str}' AND visited_at <= '{end_date_str}'
+            WHERE DATE(visited_at) >= '{start_date_str}' AND DATE(visited_at) <= '{end_date_str}'
         """
         cursor.execute(unique_visitors_query)
         unique_visitors = cursor.fetchone()[0]
@@ -80,7 +80,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         top_pages_query = f"""
             SELECT page_url, COUNT(*) as visits
             FROM t_p89870318_access_bars_service.page_visits 
-            WHERE visited_at >= '{start_date_str}' AND visited_at <= '{end_date_str}'
+            WHERE DATE(visited_at) >= '{start_date_str}' AND DATE(visited_at) <= '{end_date_str}'
             GROUP BY page_url 
             ORDER BY visits DESC 
             LIMIT 10
@@ -92,7 +92,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         daily_stats_query = f"""
             SELECT DATE(visited_at) as visit_date, COUNT(*) as visits
             FROM t_p89870318_access_bars_service.page_visits 
-            WHERE visited_at >= '{start_date_str}' AND visited_at <= '{end_date_str}'
+            WHERE DATE(visited_at) >= '{start_date_str}' AND DATE(visited_at) <= '{end_date_str}'
             GROUP BY DATE(visited_at) 
             ORDER BY visit_date
         """
@@ -103,7 +103,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         top_referrers_query = f"""
             SELECT COALESCE(NULLIF(referrer, ''), 'Direct') as referrer, COUNT(*) as visits
             FROM t_p89870318_access_bars_service.page_visits 
-            WHERE visited_at >= '{start_date_str}' AND visited_at <= '{end_date_str}'
+            WHERE DATE(visited_at) >= '{start_date_str}' AND DATE(visited_at) <= '{end_date_str}'
             GROUP BY COALESCE(NULLIF(referrer, ''), 'Direct')
             ORDER BY visits DESC 
             LIMIT 10
