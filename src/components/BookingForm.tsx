@@ -27,24 +27,26 @@ interface FormErrors {
 
 const SERVICES = [
   // Access Bars
-  { id: 'access-bars-first', name: 'Первая сессия', duration: '90 мин', price: '7 000 ₽', category: 'Access Bars' },
-  { id: 'access-bars-standard', name: 'Стандартная сессия', duration: '60 мин', price: '7 000 ₽', category: 'Access Bars' },
-  { id: 'access-bars-intensive', name: 'Интенсивная программа', duration: '3 сессии', price: '18 000 ₽', category: 'Access Bars' },
+  { id: 'access-bars-first', name: 'Первая сессия', duration: '90 мин', price: '7 000 ₽', category: 'Access Bars', apiId: 1 },
+  { id: 'access-bars-standard', name: 'Стандартная сессия', duration: '60 мин', price: '7 000 ₽', category: 'Access Bars', apiId: 1 },
+  { id: 'access-bars-intensive', name: 'Интенсивная программа', duration: '3 сессии', price: '18 000 ₽', category: 'Access Bars', apiId: 4 },
   
   // Massage
-  { id: 'classic-massage', name: 'Классический массаж', duration: '60 мин', price: '6 000 ₽', category: 'Массаж' },
-  { id: 'complex-massage', name: 'Комплексная программа', duration: '90 мин', price: '7 000 ₽', category: 'Массаж' },
+  { id: 'classic-massage', name: 'Классический массаж', duration: '60 мин', price: '6 000 ₽', category: 'Массаж', apiId: 2 },
+  { id: 'complex-massage', name: 'Комплексная программа', duration: '90 мин', price: '7 000 ₽', category: 'Массаж', apiId: 3 },
   
   // Healing
-  { id: 'body-healing', name: 'Телесное исцеление', duration: '60 мин', price: '8 000 ₽', category: 'Целительство' },
-  { id: 'body-healing-package', name: 'Телесное исцеление пакет 3 сеанса', duration: '3 сеанса', price: '21 000 ₽', category: 'Целительство' },
-  { id: 'remote-healing', name: 'Дистанционное исцеление', duration: '60 мин', price: '7 000 ₽', category: 'Целительство' },
+  { id: 'body-healing', name: 'Телесное исцеление', duration: '60 мин', price: '8 000 ₽', category: 'Целительство', apiId: 5 },
+  { id: 'body-healing-package', name: 'Телесное исцеление пакет 3 сеанса', duration: '3 сеанса', price: '21 000 ₽', category: 'Целительство', apiId: 5 },
+  { id: 'remote-healing', name: 'Дистанционное исцеление', duration: '60 мин', price: '7 000 ₽', category: 'Целительство', apiId: 5 },
   
   // Training
-  { id: 'training-basic', name: 'Базовый курс', duration: '8ч', price: '29 000 ₽', category: 'Обучение' },
-  { id: 'training-repeat', name: 'Повторное обучение', duration: '8ч', price: '14 500 ₽', category: 'Обучение' },
-  { id: 'training-teen', name: 'Для подростков', duration: '8ч', price: '14 500 ₽', category: 'Обучение' },
+  { id: 'training-basic', name: 'Базовый курс', duration: '8ч', price: '29 000 ₽', category: 'Обучение', apiId: 4 },
+  { id: 'training-repeat', name: 'Повторное обучение', duration: '8ч', price: '14 500 ₽', category: 'Обучение', apiId: 4 },
+  { id: 'training-teen', name: 'Для подростков', duration: '8ч', price: '14 500 ₽', category: 'Обучение', apiId: 4 },
 ];
+
+const SCHEDULE_API_URL = 'https://functions.poehali.dev/162a7498-295a-4897-a0d8-695fadc8f40b';
 
 const TIME_SLOTS = [
   '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'
@@ -63,6 +65,8 @@ const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose, preselectedS
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isServiceDropdownOpen, setIsServiceDropdownOpen] = useState(false);
+  const [availableSlots, setAvailableSlots] = useState<string[]>([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -104,12 +108,37 @@ const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose, preselectedS
     
     try {
       const selectedServiceInfo = SERVICES.find(s => s.id === formData.service);
-      const serviceName = selectedServiceInfo?.name || 'Не выбрана';
-      const servicePrice = selectedServiceInfo?.price || '';
-      const serviceDuration = selectedServiceInfo?.duration || '';
       
-      const emailSubject = `Заявка на запись - ${serviceName}`;
-      const emailBody = `Заявка на запись на сеанс
+      if (!selectedServiceInfo) {
+        throw new Error('Услуга не найдена');
+      }
+
+      // Отправляем запрос в backend API
+      const response = await fetch(SCHEDULE_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          service_id: selectedServiceInfo.apiId,
+          booking_date: formData.date,
+          start_time: formData.time,
+          client_name: formData.name,
+          client_phone: formData.phone,
+          notes: `Заявка через сайт: ${selectedServiceInfo.name} ${selectedServiceInfo.price}`
+        })
+      });
+
+      if (!response.ok) {
+        // Если API недоступен, используем fallback на email
+        console.warn('API недоступен, используем email fallback');
+        
+        const serviceName = selectedServiceInfo.name;
+        const servicePrice = selectedServiceInfo.price;
+        const serviceDuration = selectedServiceInfo.duration;
+        
+        const emailSubject = `Заявка на запись - ${serviceName}`;
+        const emailBody = `Заявка на запись на сеанс
 
 Имя: ${formData.name}
 Телефон: ${formData.phone}
@@ -123,8 +152,14 @@ const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose, preselectedS
 С уважением,
 ${formData.name}`;
 
-      const mailtoLink = `mailto:record@velikaya-nataliya.ru?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-      window.location.href = mailtoLink;
+        const mailtoLink = `mailto:record@velikaya-nataliya.ru?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+        window.location.href = mailtoLink;
+      } else {
+        const result = await response.json();
+        if (!result.success) {
+          throw new Error(result.error || 'Ошибка создания записи');
+        }
+      }
       
       setShowSuccess(true);
       setFormData({ name: '', phone: '+7(', service: '', date: '', time: '' });
@@ -137,6 +172,41 @@ ${formData.name}`;
       
     } catch (error) {
       console.error('Ошибка отправки:', error);
+      
+      // Fallback на email в случае любой ошибки
+      const selectedServiceInfo = SERVICES.find(s => s.id === formData.service);
+      if (selectedServiceInfo) {
+        const serviceName = selectedServiceInfo.name;
+        const servicePrice = selectedServiceInfo.price;
+        const serviceDuration = selectedServiceInfo.duration;
+        
+        const emailSubject = `Заявка на запись - ${serviceName}`;
+        const emailBody = `Заявка на запись на сеанс
+
+Имя: ${formData.name}
+Телефон: ${formData.phone}
+Услуга: ${serviceName} ${servicePrice}
+Продолжительность: ${serviceDuration}
+Дата: ${formData.date}
+Время: ${formData.time}
+
+Пожалуйста, подтвердите запись.
+
+С уважением,
+${formData.name}`;
+
+        const mailtoLink = `mailto:record@velikaya-nataliya.ru?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+        window.location.href = mailtoLink;
+        
+        setShowSuccess(true);
+        setFormData({ name: '', phone: '+7(', service: '', date: '', time: '' });
+        setErrors({});
+        
+        setTimeout(() => {
+          setShowSuccess(false);
+          onClose();
+        }, 3000);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -175,6 +245,29 @@ ${formData.name}`;
     return result;
   };
 
+  const loadAvailableSlots = async (date: string, serviceId: number) => {
+    setLoadingSlots(true);
+    try {
+      const response = await fetch(`${SCHEDULE_API_URL}?date=${date}&service_id=${serviceId}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.length > 0) {
+          setAvailableSlots(data[0].available_slots || []);
+        } else {
+          setAvailableSlots([]);
+        }
+      } else {
+        // Fallback к статическим слотам
+        setAvailableSlots(TIME_SLOTS);
+      }
+    } catch (error) {
+      console.warn('Не удалось загрузить слоты из API, используем статические:', error);
+      setAvailableSlots(TIME_SLOTS);
+    } finally {
+      setLoadingSlots(false);
+    }
+  };
+
   const handleInputChange = (field: keyof FormData, value: string) => {
     if (field === 'phone') {
       value = formatPhoneNumber(value);
@@ -183,6 +276,21 @@ ${formData.name}`;
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: undefined }));
+    }
+
+    // Загружаем доступные слоты при изменении даты или услуги
+    if (field === 'date' || field === 'service') {
+      const selectedService = SERVICES.find(s => s.id === (field === 'service' ? value : formData.service));
+      const selectedDate = field === 'date' ? value : formData.date;
+      
+      if (selectedDate && selectedService) {
+        loadAvailableSlots(selectedDate, selectedService.apiId);
+      }
+      
+      // Сбрасываем время при изменении даты или услуги
+      if (field === 'date' || field === 'service') {
+        setFormData(prev => ({ ...prev, time: '' }));
+      }
     }
   };
 
@@ -371,19 +479,39 @@ ${formData.name}`;
                     <Icon name="Clock" size={16} className="inline mr-2" />
                     Время *
                   </label>
-                  <select
-                    value={formData.time}
-                    onChange={(e) => handleInputChange('time', e.target.value)}
-                    className={`w-full px-4 py-3 bg-emerald-900/50 border rounded-lg text-gold-100 focus:outline-none focus:ring-2 focus:ring-gold-400 ${
-                      errors.time ? 'border-red-400' : 'border-gold-400/30'
-                    }`}
-                  >
-                    <option value="">Выберите время</option>
-                    {TIME_SLOTS.map(time => (
-                      <option key={time} value={time}>{time}</option>
-                    ))}
-                  </select>
+                  {loadingSlots ? (
+                    <div className="w-full px-4 py-3 bg-emerald-900/50 border border-gold-400/30 rounded-lg text-emerald-400 flex items-center gap-2">
+                      <Icon name="Loader2" size={16} className="animate-spin" />
+                      Загрузка времени...
+                    </div>
+                  ) : (
+                    <select
+                      value={formData.time}
+                      onChange={(e) => handleInputChange('time', e.target.value)}
+                      className={`w-full px-4 py-3 bg-emerald-900/50 border rounded-lg text-gold-100 focus:outline-none focus:ring-2 focus:ring-gold-400 ${
+                        errors.time ? 'border-red-400' : 'border-gold-400/30'
+                      }`}
+                      disabled={!formData.date || !formData.service}
+                    >
+                      <option value="">
+                        {!formData.date || !formData.service 
+                          ? 'Сначала выберите дату и услугу' 
+                          : availableSlots.length > 0 
+                            ? 'Выберите время' 
+                            : 'Нет доступного времени'
+                        }
+                      </option>
+                      {availableSlots.map(time => (
+                        <option key={time} value={time}>{time}</option>
+                      ))}
+                    </select>
+                  )}
                   {errors.time && <p className="mt-1 text-red-400 text-sm">{errors.time}</p>}
+                  {formData.date && formData.service && !loadingSlots && availableSlots.length === 0 && (
+                    <p className="mt-1 text-amber-400 text-sm">
+                      На выбранную дату нет свободного времени. Попробуйте другую дату.
+                    </p>
+                  )}
                 </div>
               </div>
 

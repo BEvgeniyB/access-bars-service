@@ -14,8 +14,7 @@ const Navigation = ({ variant = 'secondary', className = '' }: NavigationProps) 
     { path: '/access-bars', label: 'Access Bars' },
     { path: '/training', label: 'Обучение' },
     { path: '/massage', label: 'Массаж' },
-    { path: '/healing', label: 'Целительство' },
-    { path: '/booking', label: 'Запись' }
+    { path: '/healing', label: 'Целительство' }
   ];
 
   const getNavItemClassName = (path: string) => {
