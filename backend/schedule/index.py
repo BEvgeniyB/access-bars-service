@@ -207,8 +207,12 @@ def calculate_slots(day_schedule, service_duration_minutes):
     if day_schedule['bookings']:
         for booking in day_schedule['bookings']:
             if booking and booking['start_time'] and booking['end_time']:
-                booking_start = datetime.combine(date, booking['start_time'])
-                booking_end = datetime.combine(date, booking['end_time'])
+                # Конвертируем строки времени в объекты time
+                start_time_obj = datetime.strptime(booking['start_time'], '%H:%M:%S').time()
+                end_time_obj = datetime.strptime(booking['end_time'], '%H:%M:%S').time()
+                
+                booking_start = datetime.combine(date, start_time_obj)
+                booking_end = datetime.combine(date, end_time_obj)
                 
                 # Блокируем время записи + 30 минут после неё
                 extended_booking_end = booking_end + timedelta(minutes=30)
