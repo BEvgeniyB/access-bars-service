@@ -5,6 +5,7 @@ import PhoneLink from "@/components/ui/phone-link";
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import BookingForm from "@/components/BookingForm";
+import { getDetailedServicesByCategory } from "@/data/services";
 
 const Massage = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
@@ -40,34 +41,15 @@ const Massage = () => {
       setIsBookingOpen(true);
     }
   }, []);
-  const services = [
-    {
-      title: "Классический массаж",
-      duration: "60 мин",
-      price: "6 000 ₽",
-      description: "Глубокая проработка мышц и суставов для снятия напряжения и восстановления",
-      benefits: [
-        "Улучшение кровообращения",
-        "Снятие мышечного напряжения", 
-        "Восстановление подвижности",
-        "Общее оздоровление организма"
-      ],
-      icon: "Heart"
-    },
-    {
-      title: "Комплексная программа",
-      duration: "60 мин",
-      price: "7 000 ₽",
-      description: "Сочетание классических техник с ароматерапией",
-      benefits: [
-        "Комплексное оздоровление",
-        "Максимальный терапевтический эффект",
-        "Индивидуальный подход",
-        "Долговременный результат"
-      ],
-      icon: "Sparkles"
-    }
-  ];
+  // Используем данные из центрального источника
+  const services = getDetailedServicesByCategory('Массаж').map(service => ({
+    title: service.name,
+    duration: service.duration,
+    price: service.price,
+    description: service.description,
+    benefits: service.benefits,
+    icon: service.icon
+  }));
 
   return (
     <div className="min-h-screen relative overflow-hidden" style={{

@@ -1,27 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
+import { getDetailedServicesByCategory } from "@/data/services";
 
-const sessions = [
-  {
-    name: "Первая сессия Access Bars",
-    duration: "90 мин",
-    price: "7 000 ₽",
-    description: "Знакомство с методикой, полная диагностика и первый сеанс"
-  },
-  {
-    name: "Стандартная сессия", 
-    duration: "60 мин",
-    price: "7 000 ₽",
-    description: "Классический сеанс Access Bars для регулярной практики"
-  },
-  {
-    name: "Интенсивная программа",
-    duration: "3 сессии",
-    price: "18 000 ₽", 
-    description: "Курс из 3 сессий со скидкой для максимального эффекта"
-  }
-];
+// Используем данные из центрального источника
+const sessions = getDetailedServicesByCategory('Access Bars');
 
 interface AccessBarsSessionsProps {
   onBookingClick: (serviceId: string) => void;

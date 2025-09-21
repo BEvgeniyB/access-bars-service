@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import SEOHead from "@/components/SEOHead";
 import BookingForm from "@/components/BookingForm";
 import { breadcrumbStructuredData } from "@/data/structuredData";
+import { getDetailedServicesByCategory } from "@/data/services";
 
 const Healing = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
@@ -45,48 +46,15 @@ const Healing = () => {
       setIsBookingOpen(true);
     }
   }, []);
-  const services = [
-    {
-      title: "Телесное исцеление",
-      duration: "60 мин",
-      price: "8 000 ₽",
-      description: "Работа происходит с опорно-двигательным аппаратом, мышцами, связками тела. С обязательным присутствием",
-      benefits: [
-        "Оздоровительная программа для тела",
-        "Работа с психоэмоциональным фоном",
-        "Реабилитация после тяжелых заболеваний",
-        "Корректировка энергий в теле"
-      ],
-      icon: "Sparkles"
-    },
-    {
-      title: "Телесное исцеление пакет 3 сеанса",
-      duration: "3 сеанса",
-      price: "21 000 ₽",
-      description: "Работа происходит с опорно-двигательным аппаратом, мышцами, связками тела. С обязательным присутствием",
-      benefits: [
-        "Оздоровительная программа для тела",
-        "Работа с психоэмоциональным фоном",
-        "Реабилитация после тяжелых заболеваний",
-        "Корректировка энергий в теле"
-      ],
-      icon: "Sparkles"
-    },
-    {
-      title: "Дистанционное исцеление",
-      duration: "60 мин",
-      price: "7 000 ₽",
-      description: "Энергетическая работа на расстоянии по видеосвязи из любой точки мира",
-      benefits: [
-        "Активация самоисцеления",
-        "Снятие энергетических блоков",
-        "Балансировка чакр",
-        "Очищение ауры",
-        "Работа с предназначением"
-      ],
-      icon: "Wifi"
-    }
-  ];
+  // Используем данные из центрального источника
+  const services = getDetailedServicesByCategory('Целительство').map(service => ({
+    title: service.name,
+    duration: service.duration,
+    price: service.price,
+    description: service.description,
+    benefits: service.benefits,
+    icon: service.icon
+  }));
 
   const techniques = [];
 

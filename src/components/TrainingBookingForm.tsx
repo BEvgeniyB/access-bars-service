@@ -25,11 +25,9 @@ interface FormErrors {
   time?: string;
 }
 
-const TRAINING_SERVICES = [
-  { id: 'training-basic', name: 'Базовый курс', duration: '8ч', price: '29 000 ₽', category: 'Обучение' },
-  { id: 'training-repeat', name: 'Повторное обучение', duration: '8ч', price: '14 500 ₽', category: 'Обучение' },
-  { id: 'training-teen', name: 'Для подростков', duration: '8ч', price: '14 500 ₽', category: 'Обучение' },
-];
+// Используем данные из центрального источника
+import { getServicesByCategory } from '@/data/services';
+const TRAINING_SERVICES = getServicesByCategory('Обучение');
 
 const TIME_SLOTS = [
   '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'

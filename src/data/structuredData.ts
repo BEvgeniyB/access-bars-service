@@ -1,4 +1,5 @@
 // Структурированные данные для разных страниц
+import { ALL_SERVICES } from './services';
 
 export const businessStructuredData = {
   "@context": "https://schema.org",
@@ -25,55 +26,28 @@ export const businessStructuredData = {
   }
 };
 
+// Создаем полный список услуг для SEO из центрального источника
 export const servicesStructuredData = {
   "@context": "https://schema.org",
   "@type": "ItemList",
   "name": "Услуги Гармонии энергий",
   "description": "Полный спектр услуг массажа, Access Bars и энергетического целительства",
-  "itemListElement": [
-    {
-      "@type": "Service",
-      "name": "Access Bars",
-      "description": "Телесная техника для освобождения от ментальных блоков и глубокой трансформации сознания",
-      "provider": {
-        "@type": "LocalBusiness",
-        "name": "Гармония энергий"
-      },
-      "offers": {
-        "@type": "Offer",
-        "price": "7000",
-        "priceCurrency": "RUB"
-      }
+  "itemListElement": ALL_SERVICES.map(service => ({
+    "@type": "Service",
+    "name": service.name,
+    "description": service.description || `${service.category} - ${service.duration}`,
+    "category": service.category,
+    "duration": service.duration,
+    "provider": {
+      "@type": "LocalBusiness",
+      "name": "Гармония энергий"
     },
-    {
-      "@type": "Service", 
-      "name": "Классический массаж",
-      "description": "Глубокая проработка мышц для снятия напряжения и восстановления",
-      "provider": {
-        "@type": "LocalBusiness",
-        "name": "Гармония энергий"
-      },
-      "offers": {
-        "@type": "Offer",
-        "price": "6000",
-        "priceCurrency": "RUB"
-      }
-    },
-    {
-      "@type": "Service",
-      "name": "Энергетическое целительство", 
-      "description": "Энергетическое исцеление, работа с чакрами и восстановление баланса жизненных сил",
-      "provider": {
-        "@type": "LocalBusiness",
-        "name": "Гармония энергий"
-      },
-      "offers": {
-        "@type": "Offer",
-        "price": "7000", 
-        "priceCurrency": "RUB"
-      }
+    "offers": {
+      "@type": "Offer",
+      "price": service.price.replace(/[\s₽]/g, ''), // Убираем пробелы и символ рубля для числового значения
+      "priceCurrency": "RUB"
     }
-  ]
+  }))
 };
 
 export const personStructuredData = {
