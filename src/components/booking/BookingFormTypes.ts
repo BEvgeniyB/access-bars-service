@@ -47,7 +47,6 @@ export const SERVICES: Service[] = [
 ];
 
 export const SCHEDULE_API_URL = 'https://functions.poehali.dev/162a7498-295a-4897-a0d8-695fadc8f40b';
-export const AVAILABILITY_API_URL = 'https://functions.poehali.dev/01a7b7ae-7b74-425e-ab44-9f3f42d94cb8';
 export const NOTIFICATIONS_API_URL = 'https://functions.poehali.dev/271b12ed-66af-4af4-bd63-b0794c0dbf1f';
 
 export const TIME_SLOTS = [
