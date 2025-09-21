@@ -83,11 +83,11 @@ def success_response(data, status_code=200):
 
 def get_schedule(cursor, event):
     params = event.get('queryStringParameters') or {}
-    action = params.get('action', 'get_schedule')
+    action = params.get('action')
     
     if action == 'get_bookings':
         return get_bookings(cursor, params)
-    elif action == 'get_schedule':
+    elif action == 'get_weekly_schedule':
         return get_weekly_schedule(cursor, params)
     
     date_str = params.get('date')

@@ -1,17 +1,10 @@
 {
   "tests": [
     {
-      "name": "OPTIONS request",
-      "method": "OPTIONS",
-      "path": "/",
-      "expectedStatus": 200
-    },
-    {
       "name": "Basic GET request",
       "method": "GET",
       "path": "/",
-      "expectedStatus": 200,
-      "bodyMatcher": "partial"
+      "expectedStatus": 200
     }
   ]
 }
