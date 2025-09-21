@@ -259,6 +259,7 @@ def create_booking(cursor, conn, event):
                 'service_name': service['name'],
                 'booking_date': body['booking_date'],
                 'booking_time': body['start_time'],
+                'end_time': end_datetime.time().strftime('%H:%M'),
                 'notes': body.get('notes', '')
             })
         except Exception as e:
@@ -448,11 +449,20 @@ def update_booking_status(cursor, conn, body):
 def send_new_booking_notification(booking_data):
     """Отправляет уведомление о новой записи"""
     try:
-        notifications_url = 'https://functions.poehali.dev/271b12ed-66af-4af4-bd63-b0794c0dbf1f'
+        notifications_url = 'https://functions.poehali.dev/55f4ae60-6da0-4d03-8257-73225a215d38'
         
         payload = {
-            'type': 'new_booking',
-            **booking_data
+            'action': 'send_notification',
+            'booking_data': {
+                'client_name': booking_data['client_name'],
+                'client_phone': booking_data['client_phone'],
+                'client_email': booking_data.get('client_email', ''),
+                'service_name': booking_data['service_name'],
+                'appointment_date': booking_data['booking_date'],
+                'appointment_time': booking_data['booking_time'],
+                'end_time': booking_data.get('end_time', ''),
+                'status': 'pending'
+            }
         }
         
         response = requests.post(
@@ -463,7 +473,11 @@ def send_new_booking_notification(booking_data):
         )
         
         if response.status_code == 200:
-            print("New booking notification sent successfully")
+            result = response.json()
+            if result.get('success'):
+                print("New booking notification sent successfully")
+            else:
+                print(f"Notification failed: {result.get('error', 'Unknown error')}")
         else:
             print(f"Failed to send notification: {response.status_code}")
             
@@ -473,11 +487,18 @@ def send_new_booking_notification(booking_data):
 def send_status_update_notification(booking_data):
     """Отправляет уведомление об изменении статуса"""
     try:
-        notifications_url = 'https://functions.poehali.dev/271b12ed-66af-4af4-bd63-b0794c0dbf1f'
+        notifications_url = 'https://functions.poehali.dev/55f4ae60-6da0-4d03-8257-73225a215d38'
         
         payload = {
-            'type': 'status_update',
-            **booking_data
+            'action': 'send_notification',
+            'booking_data': {
+                'client_name': booking_data['client_name'],
+                'client_email': booking_data['client_email'],
+                'service_name': booking_data['service_name'],
+                'appointment_date': booking_data['booking_date'],
+                'appointment_time': booking_data['booking_time'],
+                'status': booking_data['status']
+            }
         }
         
         response = requests.post(
@@ -488,7 +509,11 @@ def send_status_update_notification(booking_data):
         )
         
         if response.status_code == 200:
-            print("Status update notification sent successfully")
+            result = response.json()
+            if result.get('success'):
+                print("Status update notification sent successfully")
+            else:
+                print(f"Status notification failed: {result.get('error', 'Unknown error')}")
         else:
             print(f"Failed to send status notification: {response.status_code}")
             
