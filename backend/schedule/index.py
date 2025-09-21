@@ -255,6 +255,8 @@ def calculate_slots(day_schedule, service_duration_minutes, break_duration_minut
             # Проверяем пересечение: слот должен полностью НЕ пересекаться с блоком
             if not (slot_end <= blocked_start or current_time >= blocked_end):
                 slot_available = False
+                if current_time.strftime('%H:%M') == '19:00':
+                    print(f"DEBUG 19:00: Blocked by interval {blocked_start}-{blocked_end}, our slot: {current_time}-{slot_end}")
                 break
         
         # Дополнительная проверка: достаточно ли времени до следующей записи
@@ -266,6 +268,8 @@ def calculate_slots(day_schedule, service_duration_minutes, break_duration_minut
                 # Если следующая запись начинается раньше чем через break_duration_minutes после нашего слота
                 if blocked_start < our_session_end_with_break and blocked_start >= slot_end:
                     slot_available = False
+                    if current_time.strftime('%H:%M') == '19:00':
+                        print(f"DEBUG 19:00: Blocked by booking {blocked_start}-{blocked_end}, our end: {slot_end}, with break: {our_session_end_with_break}")
                     break
         
         # Проверяем, что время ещё не прошло
