@@ -117,7 +117,218 @@ def handler(event, context):
                 body_data = json.loads(event.get('body', '{}'))
                 action = body_data.get('action')
                 
-                if action == 'send_status_update':
+                if action == 'send_notification':
+                    # Уведомление администратору о новой записи
+                    booking_data = body_data.get('booking_data', {})
+                    
+                    # Получаем настройки email
+                    settings = get_email_settings()
+                    
+                    if not settings['notifications_enabled']:
+                        return {
+                            'statusCode': 200,
+                            'headers': {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Allow-Origin': '*'
+                            },
+                            'body': json.dumps({
+                                'success': True,
+                                'message': 'Уведомления отключены'
+                            })
+                        }
+                    
+                    if not settings['admin_email']:
+                        return {
+                            'statusCode': 400,
+                            'headers': {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Allow-Origin': '*'
+                            },
+                            'body': json.dumps({
+                                'success': False,
+                                'error': 'Email администратора не настроен'
+                            })
+                        }
+                    
+                    if not settings['sender_email']:
+                        return {
+                            'statusCode': 400,
+                            'headers': {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Allow-Origin': '*'
+                            },
+                            'body': json.dumps({
+                                'success': False,
+                                'error': 'Email отправителя не настроен'
+                            })
+                        }
+                    
+                    email_password = os.environ.get('EMAIL_PASSWORD')
+                    if not email_password:
+                        return {
+                            'statusCode': 400,
+                            'headers': {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Allow-Origin': '*'
+                            },
+                            'body': json.dumps({
+                                'success': False,
+                                'error': 'EMAIL_PASSWORD не настроен'
+                            })
+                        }
+                    
+                    # Отправляем уведомление администратору о новой записи
+                    msg = MIMEMultipart()
+                    msg['From'] = settings['sender_email']
+                    msg['To'] = settings['admin_email']
+                    msg['Subject'] = f'Новая запись - Гармония энергий'
+                    
+                    body = f'''
+Новая запись в системе!
+
+• Клиент: {booking_data.get('client_name', '')}
+• Телефон: {booking_data.get('client_phone', '')}
+• Email: {booking_data.get('client_email', 'не указан')}
+• Услуга: {booking_data.get('service_name', '')}
+• Дата: {booking_data.get('appointment_date', '')}
+• Время: {booking_data.get('appointment_time', '')} - {booking_data.get('end_time', '')}
+• Статус: ожидает подтверждения
+
+Войдите в админ-панель для подтверждения записи.
+
+---
+Система "Гармония энергий"
+'''
+                    
+                    msg.attach(MIMEText(body, 'plain', 'utf-8'))
+                    
+                    # Отправляем email
+                    server = smtplib.SMTP(settings['smtp_host'], settings['smtp_port'])
+                    server.starttls()
+                    server.login(settings['sender_email'], email_password)
+                    server.send_message(msg)
+                    server.quit()
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'body': json.dumps({
+                            'success': True,
+                            'message': f'Уведомление администратору отправлено на {settings["admin_email"]}'
+                        })
+                    }
+                
+                elif action == 'send_client_confirmation':
+                    # Подтверждение записи клиенту
+                    booking_data = body_data.get('booking_data', {})
+                    
+                    # Получаем настройки email
+                    settings = get_email_settings()
+                    
+                    if not settings['notifications_enabled']:
+                        return {
+                            'statusCode': 200,
+                            'headers': {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Allow-Origin': '*'
+                            },
+                            'body': json.dumps({
+                                'success': True,
+                                'message': 'Уведомления отключены'
+                            })
+                        }
+                    
+                    if not settings['sender_email']:
+                        return {
+                            'statusCode': 400,
+                            'headers': {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Allow-Origin': '*'
+                            },
+                            'body': json.dumps({
+                                'success': False,
+                                'error': 'Email отправителя не настроен'
+                            })
+                        }
+                    
+                    client_email = booking_data.get('client_email')
+                    if not client_email:
+                        return {
+                            'statusCode': 200,
+                            'headers': {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Allow-Origin': '*'
+                            },
+                            'body': json.dumps({
+                                'success': True,
+                                'message': 'Email клиента не указан'
+                            })
+                        }
+                    
+                    email_password = os.environ.get('EMAIL_PASSWORD')
+                    if not email_password:
+                        return {
+                            'statusCode': 400,
+                            'headers': {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Allow-Origin': '*'
+                            },
+                            'body': json.dumps({
+                                'success': False,
+                                'error': 'EMAIL_PASSWORD не настроен'
+                            })
+                        }
+                    
+                    # Отправляем подтверждение клиенту
+                    msg = MIMEMultipart()
+                    msg['From'] = settings['sender_email']
+                    msg['To'] = client_email
+                    msg['Subject'] = f'Подтверждение записи - Гармония энергий'
+                    
+                    body = f'''
+Добро пожаловать, {booking_data.get('client_name', '')}!
+
+Ваша запись успешно создана:
+
+• Услуга: {booking_data.get('service_name', '')}
+• Дата: {booking_data.get('appointment_date', '')}
+• Время: {booking_data.get('appointment_time', '')} - {booking_data.get('end_time', '')}
+• Статус: ожидает подтверждения
+
+{('• Комментарий: ' + booking_data.get('notes', '')) if booking_data.get('notes') else ''}
+
+Мы свяжемся с вами для подтверждения записи.
+
+---
+С уважением,
+Команда "Гармония энергий"
+'''
+                    
+                    msg.attach(MIMEText(body, 'plain', 'utf-8'))
+                    
+                    # Отправляем email
+                    server = smtplib.SMTP(settings['smtp_host'], settings['smtp_port'])
+                    server.starttls()
+                    server.login(settings['sender_email'], email_password)
+                    server.send_message(msg)
+                    server.quit()
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'body': json.dumps({
+                            'success': True,
+                            'message': f'Подтверждение отправлено клиенту на {client_email}'
+                        })
+                    }
+                
+                elif action == 'send_status_update':
                     booking_data = body_data.get('booking_data', {})
                     
                     # Получаем настройки email
