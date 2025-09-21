@@ -140,12 +140,13 @@ def get_schedule(cursor, event):
     
     # Получаем настройки расписания
     cursor.execute("""
-        SELECT break_duration_minutes 
+        SELECT break_duration_minutes, time_slot_interval_minutes 
         FROM t_p89870318_access_bars_service.schedule_settings 
         ORDER BY id LIMIT 1
     """)
     settings_row = cursor.fetchone()
     break_duration = settings_row['break_duration_minutes'] if settings_row else 30
+    time_slot_interval = settings_row['time_slot_interval_minutes'] if settings_row else 30
     
     date_str = params.get('date')
     service_id = params.get('service_id')
@@ -197,7 +198,7 @@ def get_schedule(cursor, event):
     
     result = []
     for day in schedule_data:
-        available_slots = calculate_slots(day, service_duration, break_duration)
+        available_slots = calculate_slots(day, service_duration, break_duration, time_slot_interval)
         
         result.append({
             'date': day['date'].strftime('%Y-%m-%d'),
@@ -211,7 +212,7 @@ def get_schedule(cursor, event):
     
     return success_response(result)
 
-def calculate_slots(day_schedule, service_duration_minutes, break_duration_minutes=30):
+def calculate_slots(day_schedule, service_duration_minutes, break_duration_minutes=30, time_slot_interval_minutes=30):
     slots = []
     date = day_schedule['date']
     start_time = datetime.combine(date, day_schedule['start_time'])
@@ -240,7 +241,7 @@ def calculate_slots(day_schedule, service_duration_minutes, break_duration_minut
     
     current_time = start_time
     slot_duration = timedelta(minutes=service_duration_minutes)
-    step = timedelta(minutes=30)
+    step = timedelta(minutes=time_slot_interval_minutes)
     
     # Разрешаем слоты, которые могут закончиться на 30 минут позже рабочего времени
     extended_end_time = end_time + timedelta(minutes=30)
@@ -258,11 +259,11 @@ def calculate_slots(day_schedule, service_duration_minutes, break_duration_minut
         
         # Дополнительная проверка: достаточно ли времени до следующей записи
         if slot_available:
-            # Проверяем, что после нашего слота + 30 минут нет других записей
-            our_session_end_with_break = slot_end + timedelta(minutes=30)
+            # Проверяем, что после нашего слота + перерыв нет других записей
+            our_session_end_with_break = slot_end + timedelta(minutes=break_duration_minutes)
             
             for blocked_start, blocked_end in blocked_intervals:
-                # Если следующая запись начинается раньше чем через 30 минут после нашего слота
+                # Если следующая запись начинается раньше чем через break_duration_minutes после нашего слота
                 if blocked_start < our_session_end_with_break and blocked_start >= slot_end:
                     slot_available = False
                     break
@@ -786,6 +787,13 @@ def get_schedule_settings(cursor):
         settings = cursor.fetchone()
         
         if settings:
+            # Конвертируем объекты time в строки
+            settings_dict = dict(settings)
+            if 'working_hours_start' in settings_dict and settings_dict['working_hours_start']:
+                settings_dict['working_hours_start'] = str(settings_dict['working_hours_start'])
+            if 'working_hours_end' in settings_dict and settings_dict['working_hours_end']:
+                settings_dict['working_hours_end'] = str(settings_dict['working_hours_end'])
+                
             return {
                 'statusCode': 200,
                 'headers': {
@@ -794,7 +802,7 @@ def get_schedule_settings(cursor):
                 },
                 'body': json.dumps({
                     'success': True,
-                    'settings': dict(settings)
+                    'settings': settings_dict
                 })
             }
         else:
