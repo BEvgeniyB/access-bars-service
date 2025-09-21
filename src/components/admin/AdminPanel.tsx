@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
 import { SERVICES, SCHEDULE_API_URL } from '@/components/booking/BookingFormTypes';
 import EmailSettingsPanel from './EmailSettingsPanel';
 import ServicesPanel from './ServicesPanel';
@@ -39,15 +40,40 @@ const STATUS_LABELS = {
 };
 
 export default function AdminPanel() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState('');
+  const [authError, setAuthError] = useState('');
   const [weekBookings, setWeekBookings] = useState<{[key: string]: Booking[]}>({});
   const [loading, setLoading] = useState(true);
   const [weekDates, setWeekDates] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState('bookings');
+  
+  // Тот же пароль что и в AdminButton
+  const ADMIN_PASSWORD = 'K9mX#7bN2w';
+
+  const handlePasswordSubmit = () => {
+    if (password === ADMIN_PASSWORD) {
+      setIsAuthenticated(true);
+      setPassword('');
+      setAuthError('');
+    } else {
+      setAuthError('Неверный пароль');
+      setPassword('');
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handlePasswordSubmit();
+    }
+  };
 
   useEffect(() => {
-    generateWeekDates();
-    loadWeekBookings();
-  }, []);
+    if (isAuthenticated) {
+      generateWeekDates();
+      loadWeekBookings();
+    }
+  }, [isAuthenticated]);
 
   const generateWeekDates = () => {
     const dates = [];
@@ -188,6 +214,50 @@ export default function AdminPanel() {
     return timeString.slice(0, 5);
   };
 
+  // Показать форму входа если не аутентифицирован
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-center flex items-center justify-center gap-2">
+              <Icon name="Lock" size={24} />
+              Вход в админ-панель
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Input
+                type="password"
+                placeholder="Введите пароль"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyPress={handleKeyPress}
+                autoFocus
+              />
+              {authError && (
+                <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
+                  <Icon name="AlertCircle" size={16} />
+                  {authError}
+                </p>
+              )}
+            </div>
+            <div className="flex gap-3">
+              <Button onClick={handlePasswordSubmit} className="flex-1">
+                <Icon name="LogIn" size={16} className="mr-2" />
+                Войти
+              </Button>
+              <Button onClick={() => window.location.href = '/'} variant="outline" className="flex-1">
+                <Icon name="ArrowLeft" size={16} className="mr-2" />
+                На главную
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -202,14 +272,25 @@ export default function AdminPanel() {
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-3xl font-bold text-gray-900">Админ-панель</h1>
-            <Button 
-              onClick={() => window.location.href = '/'}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <Icon name="ArrowLeft" size={16} />
-              На главную
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button 
+                onClick={() => setIsAuthenticated(false)}
+                variant="outline"
+                className="flex items-center gap-2"
+                title="Выйти из админки"
+              >
+                <Icon name="LogOut" size={16} />
+                Выйти
+              </Button>
+              <Button 
+                onClick={() => window.location.href = '/'}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Icon name="ArrowLeft" size={16} />
+                На главную
+              </Button>
+            </div>
           </div>
           
           <Tabs value={activeTab} onValueChange={setActiveTab}>
