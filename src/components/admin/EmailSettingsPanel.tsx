@@ -63,18 +63,22 @@ export default function EmailSettingsPanel() {
       saveEmailSettings(smtpSettings);
       
       // Сохраняем в базу данных через SMTP функцию - всегда обновляем единственную запись
+      const requestData = {
+        smtp_host: smtpSettings.host || 'smtp.yandex.ru',
+        smtp_port: smtpSettings.port || 587,
+        sender_email: smtpSettings.username || '',
+        admin_email: smtpSettings.adminEmail || '',
+        notifications_enabled: smtpSettings.enabled
+      };
+      
+      console.log('Saving email settings:', requestData);
+      
       const response = await fetch(EMAIL_NOTIFICATIONS_API_URL, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          smtp_host: smtpSettings.host || 'smtp.yandex.ru',
-          smtp_port: smtpSettings.port || 587,
-          sender_email: smtpSettings.username || '',
-          admin_email: smtpSettings.adminEmail || '',
-          notifications_enabled: smtpSettings.enabled
-        })
+        body: JSON.stringify(requestData)
       });
       
       if (response.ok) {
@@ -86,8 +90,9 @@ export default function EmailSettingsPanel() {
           throw new Error(result.error || 'Ошибка сохранения');
         }
       } else {
-        const errorData = await response.json().catch(() => ({ error: 'Ошибка соединения' }));
-        throw new Error(errorData.error || 'Ошибка сохранения в базе данных');
+        const errorText = await response.text();
+        console.error('Response error:', response.status, errorText);
+        throw new Error(`Ошибка ${response.status}: ${errorText || 'Не удалось сохранить настройки'}`);
       }
     } catch (error) {
       console.error('Error saving settings:', error);

@@ -9,18 +9,13 @@ def get_db_connection():
     database_url = os.environ.get('DATABASE_URL')
     if not database_url:
         raise Exception('DATABASE_URL не настроен')
-    conn = psycopg2.connect(database_url)
-    # Устанавливаем правильную схему по умолчанию
-    cursor = conn.cursor()
-    cursor.execute("SET search_path TO t_p89870318_access_bars_service, public")
-    conn.commit()
-    return conn
+    return psycopg2.connect(database_url)
 
 def get_email_settings():
     conn = get_db_connection()
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT smtp_host, smtp_port, sender_email, admin_email, notifications_enabled FROM email_settings ORDER BY id LIMIT 1")
+        cursor.execute("SELECT smtp_host, smtp_port, sender_email, admin_email, notifications_enabled FROM t_p89870318_access_bars_service.email_settings ORDER BY id LIMIT 1")
         result = cursor.fetchone()
         
         if result:
@@ -51,13 +46,13 @@ def save_email_settings(settings_data):
         cursor = conn.cursor()
         
         # Всегда обновляем первую запись, если она есть, иначе создаем
-        cursor.execute("SELECT id FROM email_settings ORDER BY id LIMIT 1")
+        cursor.execute("SELECT id FROM t_p89870318_access_bars_service.email_settings ORDER BY id LIMIT 1")
         existing = cursor.fetchone()
         
         if existing:
             # Обновляем единственную запись
             cursor.execute("""
-                UPDATE email_settings SET 
+                UPDATE t_p89870318_access_bars_service.email_settings SET 
                 smtp_host = %s, 
                 smtp_port = %s, 
                 sender_email = %s, 
@@ -76,7 +71,7 @@ def save_email_settings(settings_data):
         else:
             # Создаем новую запись
             cursor.execute("""
-                INSERT INTO email_settings (smtp_host, smtp_port, sender_email, admin_email, notifications_enabled)
+                INSERT INTO t_p89870318_access_bars_service.email_settings (smtp_host, smtp_port, sender_email, admin_email, notifications_enabled)
                 VALUES (%s, %s, %s, %s, %s)
             """, (
                 settings_data.get('smtp_host', 'smtp.yandex.ru'),
