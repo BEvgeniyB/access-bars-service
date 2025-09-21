@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SERVICES, SCHEDULE_API_URL } from '@/components/booking/BookingFormTypes';
 import EmailSettingsPanel from './EmailSettingsPanel';
+import ServicesPanel from './ServicesPanel';
 
 interface Booking {
   id: number;
@@ -212,14 +213,18 @@ export default function AdminPanel() {
           </div>
           
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="bookings" className="flex items-center gap-2">
                 <Icon name="Calendar" size={16} />
                 Записи
               </TabsTrigger>
+              <TabsTrigger value="services" className="flex items-center gap-2">
+                <Icon name="Package" size={16} />
+                Услуги
+              </TabsTrigger>
               <TabsTrigger value="settings" className="flex items-center gap-2">
                 <Icon name="Settings" size={16} />
-                Настройки Email
+                Email
               </TabsTrigger>
             </TabsList>
             
@@ -352,6 +357,10 @@ export default function AdminPanel() {
                   </Card>
                 )}
               </div>
+            </TabsContent>
+            
+            <TabsContent value="services" className="mt-6">
+              <ServicesPanel />
             </TabsContent>
             
             <TabsContent value="settings" className="mt-6">
