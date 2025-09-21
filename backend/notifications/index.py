@@ -111,6 +111,136 @@ def handler(event, context):
                 'body': ''
             }
         
+        # Send status update notification
+        if method == 'POST':
+            try:
+                body_data = json.loads(event.get('body', '{}'))
+                action = body_data.get('action')
+                
+                if action == 'send_status_update':
+                    booking_data = body_data.get('booking_data', {})
+                    
+                    # Получаем настройки email
+                    settings = get_email_settings()
+                    
+                    if not settings['notifications_enabled']:
+                        return {
+                            'statusCode': 200,
+                            'headers': {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Allow-Origin': '*'
+                            },
+                            'body': json.dumps({
+                                'success': True,
+                                'message': 'Уведомления отключены'
+                            })
+                        }
+                    
+                    if not settings['sender_email']:
+                        return {
+                            'statusCode': 400,
+                            'headers': {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Allow-Origin': '*'
+                            },
+                            'body': json.dumps({
+                                'success': False,
+                                'error': 'Email отправителя не настроен'
+                            })
+                        }
+                    
+                    email_password = os.environ.get('EMAIL_PASSWORD')
+                    if not email_password:
+                        return {
+                            'statusCode': 400,
+                            'headers': {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Allow-Origin': '*'
+                            },
+                            'body': json.dumps({
+                                'success': False,
+                                'error': 'EMAIL_PASSWORD не настроен'
+                            })
+                        }
+                    
+                    # Отправляем уведомление клиенту
+                    status_translations = {
+                        'pending': 'ожидает подтверждения',
+                        'confirmed': 'подтверждена',
+                        'cancelled': 'отменена',
+                        'completed': 'завершена'
+                    }
+                    
+                    status_text = status_translations.get(booking_data.get('status'), booking_data.get('status', 'неизвестен'))
+                    
+                    # Создаем email
+                    msg = MIMEMultipart()
+                    msg['From'] = settings['sender_email']
+                    msg['To'] = booking_data.get('client_email', '')
+                    msg['Subject'] = f'Изменение статуса записи - Гармония энергий'
+                    
+                    body = f'''
+Добро пожаловать, {booking_data.get('client_name', '')}!
+
+Статус вашей записи изменился:
+
+• Услуга: {booking_data.get('service_name', '')}
+• Дата: {booking_data.get('appointment_date', '')}
+• Время: {booking_data.get('appointment_time', '')}
+• Новый статус: {status_text}
+
+---
+С уважением,
+Команда "Гармония энергий"
+'''
+                    
+                    msg.attach(MIMEText(body, 'plain', 'utf-8'))
+                    
+                    # Отправляем email
+                    server = smtplib.SMTP(settings['smtp_host'], settings['smtp_port'])
+                    server.starttls()
+                    server.login(settings['sender_email'], email_password)
+                    server.send_message(msg)
+                    server.quit()
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'body': json.dumps({
+                            'success': True,
+                            'message': f'Уведомление отправлено на {booking_data.get("client_email", "")}'
+                        })
+                    }
+                
+                else:
+                    return {
+                        'statusCode': 400,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'body': json.dumps({
+                            'success': False,
+                            'error': 'Неизвестное действие'
+                        })
+                    }
+                    
+            except Exception as e:
+                return {
+                    'statusCode': 500,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'body': json.dumps({
+                        'success': False,
+                        'error': f'Ошибка отправки уведомления: {str(e)}'
+                    })
+                }
+        
         # Get settings
         if method == 'GET':
             try:
