@@ -157,19 +157,33 @@ def calculate_slots(day_schedule, service_duration_minutes):
     start_time = datetime.combine(date, day_schedule['start_time'])
     end_time = datetime.combine(date, day_schedule['end_time'])
     
+    # Обрабатываем обеденный перерыв
     break_start = None
     break_end = None
     if day_schedule['break_start_time'] and day_schedule['break_end_time']:
         break_start = datetime.combine(date, day_schedule['break_start_time'])
         break_end = datetime.combine(date, day_schedule['break_end_time'])
     
-    existing_bookings = []
+    # Создаем список заблокированных интервалов с учетом 30-минутных перерывов
+    blocked_intervals = []
+    
+    # 1. Добавляем обеденный перерыв
+    if break_start and break_end:
+        blocked_intervals.append((break_start, break_end))
+    
+    # 2. Добавляем существующие записи + 30 минут после каждой
     if day_schedule['bookings']:
         for booking in day_schedule['bookings']:
             if booking and booking['start_time'] and booking['end_time']:
                 booking_start = datetime.combine(date, booking['start_time'])
                 booking_end = datetime.combine(date, booking['end_time'])
-                existing_bookings.append((booking_start, booking_end))
+                
+                # Блокируем время записи + 30 минут после неё
+                extended_booking_end = booking_end + timedelta(minutes=30)
+                blocked_intervals.append((booking_start, extended_booking_end))
+    
+    # 3. Объединяем пересекающиеся интервалы для оптимизации
+    blocked_intervals = merge_overlapping_intervals(blocked_intervals)
     
     current_time = start_time
     slot_duration = timedelta(minutes=service_duration_minutes)
@@ -177,20 +191,30 @@ def calculate_slots(day_schedule, service_duration_minutes):
     
     # Разрешаем слоты, которые могут закончиться на 30 минут позже рабочего времени
     extended_end_time = end_time + timedelta(minutes=30)
+    
     while current_time + slot_duration <= extended_end_time:
         slot_end = current_time + slot_duration
         
-        if break_start and break_end:
-            if not (slot_end <= break_start or current_time >= break_end):
-                current_time += step
-                continue
-        
+        # Проверяем, что слот не пересекается с заблокированными интервалами
         slot_available = True
-        for booking_start, booking_end in existing_bookings:
-            if not (slot_end <= booking_start or current_time >= booking_end):
+        for blocked_start, blocked_end in blocked_intervals:
+            # Проверяем пересечение: слот должен полностью НЕ пересекаться с блоком
+            if not (slot_end <= blocked_start or current_time >= blocked_end):
                 slot_available = False
                 break
         
+        # Дополнительная проверка: достаточно ли времени до следующей записи
+        if slot_available:
+            # Проверяем, что после нашего слота + 30 минут нет других записей
+            our_session_end_with_break = slot_end + timedelta(minutes=30)
+            
+            for blocked_start, blocked_end in blocked_intervals:
+                # Если следующая запись начинается раньше чем через 30 минут после нашего слота
+                if blocked_start < our_session_end_with_break and blocked_start >= slot_end:
+                    slot_available = False
+                    break
+        
+        # Проверяем, что время ещё не прошло
         now = datetime.now()
         if current_time < now:
             slot_available = False
@@ -201,6 +225,28 @@ def calculate_slots(day_schedule, service_duration_minutes):
         current_time += step
     
     return slots
+
+def merge_overlapping_intervals(intervals):
+    """Объединяет пересекающиеся временные интервалы"""
+    if not intervals:
+        return []
+    
+    # Сортируем интервалы по времени начала
+    sorted_intervals = sorted(intervals, key=lambda x: x[0])
+    merged = [sorted_intervals[0]]
+    
+    for current_start, current_end in sorted_intervals[1:]:
+        last_start, last_end = merged[-1]
+        
+        # Если интервалы пересекаются или касаются
+        if current_start <= last_end:
+            # Объединяем интервалы
+            merged[-1] = (last_start, max(last_end, current_end))
+        else:
+            # Добавляем новый интервал
+            merged.append((current_start, current_end))
+    
+    return merged
 
 def create_booking(cursor, conn, event):
     try:
