@@ -41,6 +41,8 @@ def handler(event, context):
             
             if action == 'update_booking_status':
                 return update_booking_status(cursor, conn, body)
+            elif action == 'update_booking_service':
+                return update_booking_service(cursor, conn, body)
             else:
                 return create_booking(cursor, conn, event)
         elif method == 'PUT':
@@ -482,6 +484,61 @@ def update_booking_status(cursor, conn, body):
     except Exception as e:
         conn.rollback()
         return error_response(f'Failed to update booking status: {str(e)}', 400)
+
+def update_booking_service(cursor, conn, body):
+    """Обновление услуги записи (для админ-панели)"""
+    try:
+        booking_id = body.get('booking_id')
+        service_id = body.get('service_id')
+        
+        if not booking_id or not service_id:
+            return error_response('Booking ID and service ID are required', 400)
+        
+        # Проверяем, что услуга существует
+        cursor.execute("""
+            SELECT id, duration_minutes FROM t_p89870318_access_bars_service.services 
+            WHERE id = %s AND is_active = true
+        """, (service_id,))
+        service = cursor.fetchone()
+        
+        if not service:
+            return error_response('Service not found or inactive', 400)
+        
+        # Получаем текущие данные записи
+        cursor.execute("""
+            SELECT booking_date, start_time FROM t_p89870318_access_bars_service.bookings 
+            WHERE id = %s
+        """, (booking_id,))
+        booking = cursor.fetchone()
+        
+        if not booking:
+            return error_response('Booking not found', 404)
+        
+        # Рассчитываем новое время окончания
+        start_datetime = datetime.combine(booking['booking_date'], booking['start_time'])
+        end_datetime = start_datetime + timedelta(minutes=service['duration_minutes'])
+        
+        # Обновляем запись
+        cursor.execute("""
+            UPDATE t_p89870318_access_bars_service.bookings 
+            SET service_id = %s, end_time = %s, updated_at = CURRENT_TIMESTAMP
+            WHERE id = %s
+            RETURNING id
+        """, (service_id, end_datetime.time(), booking_id))
+        
+        if cursor.rowcount == 0:
+            return error_response('Booking not found', 404)
+        
+        conn.commit()
+        
+        return success_response({
+            'success': True,
+            'message': 'Booking service updated successfully'
+        })
+        
+    except Exception as e:
+        conn.rollback()
+        return error_response(f'Failed to update booking service: {str(e)}', 400)
 
 def send_new_booking_notification(booking_data):
     """Отправляет уведомление о новой записи"""

@@ -119,6 +119,28 @@ export default function AdminPanel() {
     }
   };
 
+  const updateBookingService = async (bookingId: number, newServiceId: number) => {
+    try {
+      const response = await fetch(SCHEDULE_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'update_booking_service',
+          booking_id: bookingId,
+          service_id: newServiceId
+        })
+      });
+
+      if (response.ok) {
+        loadWeekBookings(); // Перезагружаем данные
+      } else {
+        console.error('Ошибка обновления услуги');
+      }
+    } catch (error) {
+      console.error('Ошибка обновления услуги:', error);
+    }
+  };
+
   const getServiceName = (serviceId: number) => {
     const service = SERVICES.find(s => s.apiId === serviceId);
     return service ? service.name : 'Неизвестная услуга';
@@ -177,7 +199,17 @@ export default function AdminPanel() {
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Админ-панель</h1>
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-3xl font-bold text-gray-900">Админ-панель</h1>
+            <Button 
+              onClick={() => window.location.href = '/'}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <Icon name="ArrowLeft" size={16} />
+              На главную
+            </Button>
+          </div>
           
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-2">
@@ -246,8 +278,25 @@ export default function AdminPanel() {
                                     {/* Услуга */}
                                     <div className="flex items-center gap-2 text-gray-600">
                                       <Icon name="Scissors" size={16} />
-                                      <span>{getServiceName(booking.service_id)}</span>
-                                      <span className="text-sm">({getServiceDuration(booking.service_id)})</span>
+                                      <Select
+                                        value={booking.service_id.toString()}
+                                        onValueChange={(newServiceId) => updateBookingService(booking.id, parseInt(newServiceId))}
+                                      >
+                                        <SelectTrigger className="w-auto h-8 border-0 bg-transparent p-1 hover:bg-gray-100">
+                                          <div className="flex items-center gap-1">
+                                            <span>{getServiceName(booking.service_id)}</span>
+                                            <span className="text-sm">({getServiceDuration(booking.service_id)})</span>
+                                            <Icon name="ChevronDown" size={12} />
+                                          </div>
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {SERVICES.map((service) => (
+                                            <SelectItem key={service.apiId} value={service.apiId.toString()}>
+                                              {service.name} ({service.duration})
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
                                     </div>
                                   </div>
                                   
