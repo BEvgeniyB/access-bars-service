@@ -33,7 +33,7 @@ export const SERVICES: Service[] = [
   
   // Massage
   { id: 'classic-massage', name: 'Классический массаж', duration: '60 мин', price: '6 000 ₽', category: 'Массаж', apiId: 2 },
-  { id: 'complex-massage', name: 'Комплексная программа', duration: '90 мин', price: '7 000 ₽', category: 'Массаж', apiId: 3 },
+  { id: 'complex-massage', name: 'Комплексная программа', duration: '60 мин', price: '7 000 ₽', category: 'Массаж', apiId: 3 },
   
   // Healing
   { id: 'body-healing', name: 'Телесное исцеление', duration: '60 мин', price: '8 000 ₽', category: 'Целительство', apiId: 5 },
