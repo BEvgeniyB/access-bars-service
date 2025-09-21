@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import BookingForm from "@/components/BookingForm";
 import { businessStructuredData, servicesStructuredData, personStructuredData } from "@/data/structuredData";
 import { trackPageVisit } from "@/utils/analytics";
+import AdminButton from "@/components/AdminButton";
 
 
 const MassageWebsite = () => {
@@ -439,13 +440,7 @@ const MassageWebsite = () => {
       />
       
       {/* Admin Panel Access */}
-      <Link 
-        to="/admin" 
-        className="fixed bottom-4 right-4 bg-emerald-600 hover:bg-emerald-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-40"
-        title="Админ-панель"
-      >
-        <Icon name="Settings" size={20} />
-      </Link>
+      <AdminButton />
       </div>
     </>
   );
