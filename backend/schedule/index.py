@@ -6,62 +6,102 @@ from psycopg2.extras import RealDictCursor
 import requests
 
 def handler(event, context):
-    """
+    '''
     Business: API для управления расписанием и записями клиентов
-    Args: event с httpMethod, queryStringParameters, body; context с request_id
-    Returns: HTTP ответ с расписанием или результатом операции
-    """
-    method = event.get('httpMethod', 'GET')
-    
-    if method == 'OPTIONS':
-        return {
-            'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-                'Access-Control-Max-Age': '86400'
-            },
-            'body': ''
-        }
-    
+    Args: event - dict with httpMethod, queryStringParameters, body
+          context - object with attributes: request_id, function_name, function_version, memory_limit_in_mb
+    Returns: HTTP response dict
+    '''
     try:
-        database_url = os.environ.get('DATABASE_URL')
-        if not database_url:
-            return error_response('Database connection not configured', 500)
+        method = event.get('httpMethod', 'GET')
         
-        conn = psycopg2.connect(database_url)
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
-        
+        # Handle CORS OPTIONS request
+        if method == 'OPTIONS':
+            return {
+                'statusCode': 200,
+                'headers': {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+                    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+                    'Access-Control-Max-Age': '86400'
+                },
+                'body': ''
+            }
+    
+        # Get schedule for specific date
         if method == 'GET':
-            return get_schedule(cursor, event)
-        elif method == 'POST':
-            body = json.loads(event.get('body', '{}'))
-            action = body.get('action', 'create_booking')
+            database_url = os.environ.get('DATABASE_URL')
+            if not database_url:
+                return {
+                    'statusCode': 500,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'body': json.dumps({'error': 'Database connection not configured'})
+                }
             
-            if action == 'update_booking_status':
-                return update_booking_status(cursor, conn, body)
-            elif action == 'update_booking_service':
-                return update_booking_service(cursor, conn, body)
-            else:
-                return create_booking(cursor, conn, event)
-        elif method == 'PUT':
-            return update_booking(cursor, conn, event)
-        elif method == 'DELETE':
-            return delete_booking(cursor, conn, event)
+            conn = psycopg2.connect(database_url)
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
+            
+            try:
+                return get_schedule(cursor, event)
+            finally:
+                conn.close()
+        
+        # Create new booking
+        elif method == 'POST':
+            database_url = os.environ.get('DATABASE_URL')
+            if not database_url:
+                return {
+                    'statusCode': 500,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'body': json.dumps({'error': 'Database connection not configured'})
+                }
+            
+            conn = psycopg2.connect(database_url)
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
+            
+            try:
+                body = json.loads(event.get('body', '{}'))
+                action = body.get('action', 'create_booking')
+                
+                if action == 'update_booking_status':
+                    return update_booking_status(cursor, conn, body)
+                elif action == 'update_booking_service':
+                    return update_booking_service(cursor, conn, body)
+                else:
+                    return create_booking(cursor, conn, event)
+            finally:
+                conn.close()
+        
         else:
-            return error_response('Method not allowed', 405)
+            return {
+                'statusCode': 405,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                'body': json.dumps({'error': 'Method not allowed'})
+            }
             
     except Exception as e:
         print(f"Schedule function error: {str(e)}")
         import traceback
         print(f"Traceback: {traceback.format_exc()}")
-        return error_response(f'Server error: {str(e)}', 500)
-    finally:
-        if 'conn' in locals():
-            conn.close()
+        return {
+            'statusCode': 500,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            'body': json.dumps({'error': f'Server error: {str(e)}'})
+        }
 
-def error_response(message, status_code):
+def error_response(message, status_code=500):
     return {
         'statusCode': status_code,
         'headers': {
