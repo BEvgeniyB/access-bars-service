@@ -464,7 +464,10 @@ def update_booking_status(cursor, conn, body):
             """, (booking_id,))
             booking_data = cursor.fetchone()
             
+            print(f"Booking data for notification: {booking_data}")
+            
             if booking_data and booking_data['client_email']:
+                print(f"Sending status update notification to {booking_data['client_email']}")
                 send_status_update_notification({
                     'client_name': booking_data['client_name'],
                     'client_email': booking_data['client_email'],
@@ -473,6 +476,8 @@ def update_booking_status(cursor, conn, body):
                     'booking_time': booking_data['start_time'].strftime('%H:%M'),
                     'status': status
                 })
+            else:
+                print(f"No email for notification or no booking data: {booking_data}")
         except Exception as e:
             print(f"Failed to send status notification: {str(e)}")
         
@@ -640,12 +645,18 @@ def send_status_update_notification(booking_data):
             }
         }
         
+        print(f"Sending status update notification to {notifications_url}")
+        print(f"Payload: {payload}")
+        
         response = requests.post(
             notifications_url,
             json=payload,
             headers={'Content-Type': 'application/json'},
             timeout=10
         )
+        
+        print(f"Response status: {response.status_code}")
+        print(f"Response text: {response.text}")
         
         if response.status_code == 200:
             result = response.json()
