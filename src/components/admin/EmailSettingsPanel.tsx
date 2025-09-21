@@ -10,7 +10,7 @@ import Icon from '@/components/ui/icon';
 import { SMTPSettings, EmailStatus } from '@/types/admin';
 import { getEmailSettings, saveEmailSettings, validateEmailSettings } from '@/utils/emailSettings';
 
-const NOTIFICATIONS_API_URL = 'https://functions.poehali.dev/271b12ed-66af-4af4-bd63-b0794c0dbf1f';
+const SMTP_CONFIG_API_URL = 'https://functions.poehali.dev/9449ef82-dea6-46a7-b3e8-a26709cae9a5';
 
 export default function EmailSettingsPanel() {
   const [emailStatus, setEmailStatus] = useState<EmailStatus | null>(null);
@@ -21,19 +21,37 @@ export default function EmailSettingsPanel() {
 
   const checkEmailStatus = async () => {
     setLoading(true);
-    const settings = getEmailSettings();
-    const isValid = validateEmailSettings(settings);
-    
-    setTimeout(() => {
-      setEmailStatus({
-        smtp_configured: isValid,
-        admin_email_set: !!settings.adminEmail,
-        password_configured: false, // Будет проверяться через секреты
-        last_test: null,
-        error_message: isValid ? 'Добавьте секрет EMAIL_PASSWORD для тестирования' : 'Заполните все SMTP настройки'
+    try {
+      const response = await fetch(SMTP_CONFIG_API_URL, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setEmailStatus({
+          smtp_configured: true,
+          admin_email_set: !!data.admin_email,
+          password_configured: data.has_email_password,
+          last_test: null,
+          error_message: data.has_email_password ? null : 'Добавьте секрет EMAIL_PASSWORD для тестирования'
+        });
+      } else {
+        throw new Error('Ошибка получения статуса');
+      }
+    } catch (error) {
+      setEmailStatus({
+        smtp_configured: false,
+        admin_email_set: false,
+        password_configured: false,
+        last_test: null,
+        error_message: 'Ошибка подключения к SMTP функции'
+      });
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
 
   const handleSaveSettings = async () => {
@@ -50,31 +68,29 @@ export default function EmailSettingsPanel() {
   };
 
   const testEmailSending = async () => {
-    if (!validateEmailSettings(smtpSettings)) {
-      alert('❌ Сначала сохраните корректные SMTP настройки');
-      return;
-    }
-    
     setTesting(true);
     try {
-      const response = await fetch(NOTIFICATIONS_API_URL, {
+      const response = await fetch(SMTP_CONFIG_API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          type: 'test_email',
-          smtp_settings: smtpSettings
+          action: 'test_smtp'
         })
       });
       
-      if (response.ok) {
-        alert('✅ Тестовое письмо отправлено! Проверьте почту.');
+      const result = await response.json();
+      
+      if (result.success) {
+        alert('✅ Тестовое письмо отправлено! Проверьте почту natalya.velikaya@yandex.ru');
+        // Обновляем статус после успешного теста
+        await checkEmailStatus();
       } else {
-        alert('❌ Ошибка отправки. Проверьте настройки и секрет EMAIL_PASSWORD.');
+        alert(`❌ Ошибка отправки: ${result.error}`);
       }
     } catch (error) {
-      alert('❌ Ошибка соединения. Проверьте настройки.');
+      alert('❌ Ошибка соединения с SMTP функцией');
     } finally {
       setTesting(false);
     }

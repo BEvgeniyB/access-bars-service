@@ -1,0 +1,31 @@
+{
+  "tests": [
+    {
+      "name": "Get SMTP config status",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "has_email_password": "boolean",
+        "smtp_server": "string",
+        "smtp_port": "number",
+        "admin_email": "string",
+        "sender_email": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Test SMTP connection",
+      "method": "POST", 
+      "path": "/",
+      "body": {
+        "action": "test_smtp"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": "boolean"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
