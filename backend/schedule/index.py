@@ -157,21 +157,10 @@ def calculate_slots(day_schedule, service_duration_minutes):
     start_time = datetime.combine(date, day_schedule['start_time'])
     end_time = datetime.combine(date, day_schedule['end_time'])
     
-    # Обрабатываем обеденный перерыв
-    break_start = None
-    break_end = None
-    if day_schedule['break_start_time'] and day_schedule['break_end_time']:
-        break_start = datetime.combine(date, day_schedule['break_start_time'])
-        break_end = datetime.combine(date, day_schedule['break_end_time'])
-    
     # Создаем список заблокированных интервалов с учетом 30-минутных перерывов
     blocked_intervals = []
     
-    # 1. Добавляем обеденный перерыв
-    if break_start and break_end:
-        blocked_intervals.append((break_start, break_end))
-    
-    # 2. Добавляем существующие записи + 30 минут после каждой
+    # Добавляем существующие записи + 30 минут после каждой
     if day_schedule['bookings']:
         for booking in day_schedule['bookings']:
             if booking and booking['start_time'] and booking['end_time']:
@@ -182,7 +171,7 @@ def calculate_slots(day_schedule, service_duration_minutes):
                 extended_booking_end = booking_end + timedelta(minutes=30)
                 blocked_intervals.append((booking_start, extended_booking_end))
     
-    # 3. Объединяем пересекающиеся интервалы для оптимизации
+    # Объединяем пересекающиеся интервалы для оптимизации
     blocked_intervals = merge_overlapping_intervals(blocked_intervals)
     
     current_time = start_time
