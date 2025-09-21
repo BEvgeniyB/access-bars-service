@@ -13,11 +13,11 @@ export const getEmailSettings = (): SMTPSettings => {
   }
   
   return {
-    host: '',
+    host: 'smtp.yandex.ru',
     port: 587,
     username: '',
     adminEmail: '',
-    enabled: false
+    enabled: true
   };
 };
 

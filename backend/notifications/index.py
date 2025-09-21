@@ -20,40 +20,26 @@ def get_email_settings():
     conn = get_db_connection()
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT smtp_host, smtp_port, sender_email, admin_email, notifications_enabled FROM email_settings LIMIT 1")
+        cursor.execute("SELECT smtp_host, smtp_port, sender_email, admin_email, notifications_enabled FROM email_settings ORDER BY id LIMIT 1")
         result = cursor.fetchone()
         
         if result:
             return {
-                'smtp_host': result[0],
-                'smtp_port': result[1], 
-                'sender_email': result[2],
-                'admin_email': result[3],
-                'notifications_enabled': result[4]
+                'smtp_host': result[0] or 'smtp.yandex.ru',
+                'smtp_port': result[1] or 587, 
+                'sender_email': result[2] or '',
+                'admin_email': result[3] or '',
+                'notifications_enabled': result[4] if result[4] is not None else True
             }
         else:
-            # Создать настройки по умолчанию если их нет
-            default_settings = {
+            # Возвращаем настройки по умолчанию без создания записи
+            return {
                 'smtp_host': 'smtp.yandex.ru',
                 'smtp_port': 587,
-                'sender_email': 'natalya.velikaya@yandex.ru',
-                'admin_email': 'natalya.velikaya@yandex.ru',
+                'sender_email': '',
+                'admin_email': '',
                 'notifications_enabled': True
             }
-            
-            cursor.execute("""
-                INSERT INTO email_settings (smtp_host, smtp_port, sender_email, admin_email, notifications_enabled)
-                VALUES (%s, %s, %s, %s, %s)
-            """, (
-                default_settings['smtp_host'],
-                default_settings['smtp_port'],
-                default_settings['sender_email'],
-                default_settings['admin_email'],
-                default_settings['notifications_enabled']
-            ))
-            conn.commit()
-            
-            return default_settings
     except Exception as e:
         raise Exception(f'Ошибка получения настроек email: {str(e)}')
     finally:
@@ -64,12 +50,12 @@ def save_email_settings(settings_data):
     try:
         cursor = conn.cursor()
         
-        # Проверим, есть ли уже настройки
-        cursor.execute("SELECT id FROM email_settings LIMIT 1")
+        # Всегда обновляем первую запись, если она есть, иначе создаем
+        cursor.execute("SELECT id FROM email_settings ORDER BY id LIMIT 1")
         existing = cursor.fetchone()
         
         if existing:
-            # Обновляем существующие настройки
+            # Обновляем единственную запись
             cursor.execute("""
                 UPDATE email_settings SET 
                 smtp_host = %s, 
@@ -80,23 +66,23 @@ def save_email_settings(settings_data):
                 updated_at = CURRENT_TIMESTAMP
                 WHERE id = %s
             """, (
-                settings_data.get('smtp_host'),
-                settings_data.get('smtp_port'),
-                settings_data.get('sender_email'),
-                settings_data.get('admin_email'),
+                settings_data.get('smtp_host', 'smtp.yandex.ru'),
+                settings_data.get('smtp_port', 587),
+                settings_data.get('sender_email', ''),
+                settings_data.get('admin_email', ''),
                 settings_data.get('notifications_enabled', True),
                 existing[0]
             ))
         else:
-            # Создаем новые настройки
+            # Создаем новую запись
             cursor.execute("""
                 INSERT INTO email_settings (smtp_host, smtp_port, sender_email, admin_email, notifications_enabled)
                 VALUES (%s, %s, %s, %s, %s)
             """, (
-                settings_data.get('smtp_host'),
-                settings_data.get('smtp_port'),
-                settings_data.get('sender_email'),
-                settings_data.get('admin_email'),
+                settings_data.get('smtp_host', 'smtp.yandex.ru'),
+                settings_data.get('smtp_port', 587),
+                settings_data.get('sender_email', ''),
+                settings_data.get('admin_email', ''),
                 settings_data.get('notifications_enabled', True)
             ))
         
@@ -222,6 +208,20 @@ def handler(event, context):
                         }
                     
                     settings = get_email_settings()
+                    
+                    # Проверяем, что все настройки заполнены
+                    if not settings['sender_email'] or not settings['admin_email']:
+                        return {
+                            'statusCode': 400,
+                            'headers': {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Allow-Origin': '*'
+                            },
+                            'body': json.dumps({
+                                'success': False,
+                                'error': 'Заполните email отправителя и администратора'
+                            })
+                        }
                     
                     # Test SMTP connection
                     server = smtplib.SMTP(settings['smtp_host'], settings['smtp_port'])

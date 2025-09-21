@@ -62,29 +62,36 @@ export default function EmailSettingsPanel() {
       // Сохраняем в локальное хранилище
       saveEmailSettings(smtpSettings);
       
-      // Сохраняем в базу данных через SMTP функцию
+      // Сохраняем в базу данных через SMTP функцию - всегда обновляем единственную запись
       const response = await fetch(EMAIL_NOTIFICATIONS_API_URL, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          smtp_host: smtpSettings.host,
-          smtp_port: smtpSettings.port,
-          sender_email: smtpSettings.username,
-          admin_email: smtpSettings.adminEmail,
+          smtp_host: smtpSettings.host || 'smtp.yandex.ru',
+          smtp_port: smtpSettings.port || 587,
+          sender_email: smtpSettings.username || '',
+          admin_email: smtpSettings.adminEmail || '',
           notifications_enabled: smtpSettings.enabled
         })
       });
       
       if (response.ok) {
-        await checkEmailStatus();
-        alert('✅ Настройки сохранены в базе данных!');
+        const result = await response.json();
+        if (result.success) {
+          await checkEmailStatus();
+          alert('✅ Настройки сохранены в базе данных!');
+        } else {
+          throw new Error(result.error || 'Ошибка сохранения');
+        }
       } else {
-        throw new Error('Ошибка сохранения в базе данных');
+        const errorData = await response.json().catch(() => ({ error: 'Ошибка соединения' }));
+        throw new Error(errorData.error || 'Ошибка сохранения в базе данных');
       }
     } catch (error) {
-      alert('❌ Ошибка сохранения настроек');
+      console.error('Error saving settings:', error);
+      alert(`❌ Ошибка сохранения настроек: ${error.message}`);
     } finally {
       setSaving(false);
     }
@@ -93,6 +100,9 @@ export default function EmailSettingsPanel() {
   const testEmailSending = async () => {
     setTesting(true);
     try {
+      // Сначала сохраняем текущие настройки
+      await handleSaveSettings();
+      
       const response = await fetch(EMAIL_NOTIFICATIONS_API_URL, {
         method: 'POST',
         headers: {
@@ -103,17 +113,23 @@ export default function EmailSettingsPanel() {
         })
       });
       
-      const result = await response.json();
-      
-      if (result.success) {
-        alert('✅ Тестовое письмо отправлено! Проверьте почту natalya.velikaya@yandex.ru');
-        // Обновляем статус после успешного теста
-        await checkEmailStatus();
+      if (response.ok) {
+        const result = await response.json();
+        
+        if (result.success) {
+          alert(`✅ Тестовое письмо отправлено! Проверьте почту ${smtpSettings.adminEmail}`);
+          // Обновляем статус после успешного теста
+          await checkEmailStatus();
+        } else {
+          alert(`❌ Ошибка отправки: ${result.error}`);
+        }
       } else {
-        alert(`❌ Ошибка отправки: ${result.error}`);
+        const errorData = await response.json().catch(() => ({ error: 'Ошибка соединения' }));
+        alert(`❌ Ошибка отправки: ${errorData.error}`);
       }
     } catch (error) {
-      alert('❌ Ошибка соединения с SMTP функцией');
+      console.error('Email test error:', error);
+      alert(`❌ Ошибка соединения с SMTP функцией: ${error.message}`);
     } finally {
       setTesting(false);
     }
@@ -143,8 +159,8 @@ export default function EmailSettingsPanel() {
           setSmtpSettings({
             host: data.settings.smtp_host || 'smtp.yandex.ru',
             port: data.settings.smtp_port || 587,
-            username: data.settings.sender_email || 'natalya.velikaya@yandex.ru',
-            adminEmail: data.settings.admin_email || 'natalya.velikaya@yandex.ru',
+            username: data.settings.sender_email || '',
+            adminEmail: data.settings.admin_email || '',
             enabled: data.settings.notifications_enabled !== false
           });
         }
@@ -363,7 +379,7 @@ export default function EmailSettingsPanel() {
             </div>
             <Button 
               onClick={testEmailSending} 
-              disabled={testing || !validateEmailSettings(smtpSettings)}
+              disabled={testing || !smtpSettings.username || !smtpSettings.adminEmail}
               className="ml-4"
             >
               {testing ? (
