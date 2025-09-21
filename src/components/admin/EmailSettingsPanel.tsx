@@ -31,10 +31,12 @@ export default function EmailSettingsPanel() {
       
       if (response.ok) {
         const data = await response.json();
+        console.log('Email settings response:', data);
+        
         setEmailStatus({
-          smtp_configured: true,
-          admin_email_set: !!data.admin_email,
-          password_configured: data.has_email_password,
+          smtp_configured: data.success && !!data.settings,
+          admin_email_set: !!(data.admin_email || data.settings?.admin_email),
+          password_configured: !!data.has_email_password,
           last_test: null,
           error_message: data.has_email_password ? null : 'Добавьте секрет EMAIL_PASSWORD для тестирования'
         });
@@ -135,13 +137,17 @@ export default function EmailSettingsPanel() {
       
       if (response.ok) {
         const data = await response.json();
-        setSmtpSettings({
-          host: data.smtp_server || 'smtp.yandex.ru',
-          port: data.smtp_port || 587,
-          username: data.sender_email || 'natalya.velikaya@yandex.ru',
-          adminEmail: data.admin_email || 'natalya.velikaya@yandex.ru',
-          enabled: data.notifications_enabled !== false
-        });
+        console.log('Settings from server:', data);
+        
+        if (data.success && data.settings) {
+          setSmtpSettings({
+            host: data.settings.smtp_host || 'smtp.yandex.ru',
+            port: data.settings.smtp_port || 587,
+            username: data.settings.sender_email || 'natalya.velikaya@yandex.ru',
+            adminEmail: data.settings.admin_email || 'natalya.velikaya@yandex.ru',
+            enabled: data.settings.notifications_enabled !== false
+          });
+        }
       }
     } catch (error) {
       console.log('Ошибка загрузки настроек с сервера, используем локальные');

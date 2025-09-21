@@ -5,10 +5,8 @@
       "method": "OPTIONS",
       "path": "/",
       "expectedStatus": 200,
-      "expectedBody": {
-        "Access-Control-Allow-Origin": "*"
-      },
-      "bodyMatcher": "partial"
+      "expectedBody": "",
+      "bodyMatcher": "exact"
     },
     {
       "name": "Get email settings",
