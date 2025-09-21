@@ -1,45 +1,93 @@
-import React, { useState } from 'react';
-import Icon from '@/components/ui/icon';
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { NOTIFICATIONS_API_URL } from '@/components/booking/BookingFormTypes';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Separator } from '@/components/ui/separator';
+import Icon from '@/components/ui/icon';
+import { SMTPSettings, EmailStatus } from '@/types/admin';
+import { getEmailSettings, saveEmailSettings, validateEmailSettings } from '@/utils/emailSettings';
 
-interface EmailStatus {
-  smtp_configured: boolean;
-  admin_email_set: boolean;
-  last_test: string | null;
-  error_message: string | null;
-}
+const NOTIFICATIONS_API_URL = 'https://functions.poehali.dev/271b12ed-66af-4af4-bd63-b0794c0dbf1f';
 
 export default function EmailSettingsPanel() {
   const [emailStatus, setEmailStatus] = useState<EmailStatus | null>(null);
   const [testing, setTesting] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [smtpSettings, setSmtpSettings] = useState<SMTPSettings>(getEmailSettings());
+  const [saving, setSaving] = useState(false);
 
   const checkEmailStatus = async () => {
     setLoading(true);
-    // Симуляция проверки статуса
+    const settings = getEmailSettings();
+    const isValid = validateEmailSettings(settings);
+    
     setTimeout(() => {
       setEmailStatus({
-        smtp_configured: false,
-        admin_email_set: false,
+        smtp_configured: isValid,
+        admin_email_set: !!settings.adminEmail,
+        password_configured: false, // Будет проверяться через секреты
         last_test: null,
-        error_message: 'Настройте секреты проекта для работы email уведомлений'
+        error_message: isValid ? 'Добавьте секрет EMAIL_PASSWORD для тестирования' : 'Заполните все SMTP настройки'
       });
       setLoading(false);
-    }, 1000);
+    }, 500);
+  };
+
+  const handleSaveSettings = async () => {
+    setSaving(true);
+    try {
+      saveEmailSettings(smtpSettings);
+      await checkEmailStatus();
+      alert('✅ Настройки сохранены!');
+    } catch (error) {
+      alert('❌ Ошибка сохранения настроек');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const testEmailSending = async () => {
+    if (!validateEmailSettings(smtpSettings)) {
+      alert('❌ Сначала сохраните корректные SMTP настройки');
+      return;
+    }
+    
     setTesting(true);
-    setTimeout(() => {
-      alert('📧 Функция тестирования email будет доступна после настройки всех секретов');
+    try {
+      const response = await fetch(NOTIFICATIONS_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          type: 'test_email',
+          smtp_settings: smtpSettings
+        })
+      });
+      
+      if (response.ok) {
+        alert('✅ Тестовое письмо отправлено! Проверьте почту.');
+      } else {
+        alert('❌ Ошибка отправки. Проверьте настройки и секрет EMAIL_PASSWORD.');
+      }
+    } catch (error) {
+      alert('❌ Ошибка соединения. Проверьте настройки.');
+    } finally {
       setTesting(false);
-    }, 1000);
+    }
   };
 
-  React.useEffect(() => {
+  const handleSettingChange = (field: keyof SMTPSettings, value: string | number | boolean) => {
+    setSmtpSettings(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  useEffect(() => {
     checkEmailStatus();
   }, []);
 
@@ -78,12 +126,12 @@ export default function EmailSettingsPanel() {
                 </Badge>
               </div>
 
-              {emailStatus.last_test && (
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Последний тест:</span>
-                  <span className="text-sm text-gray-600">{emailStatus.last_test}</span>
-                </div>
-              )}
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Пароль email (секрет):</span>
+                <Badge className={emailStatus.password_configured ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>
+                  {emailStatus.password_configured ? '✅ Настроено' : '⚠️ Добавьте секрет EMAIL_PASSWORD'}
+                </Badge>
+              </div>
 
               {emailStatus.error_message && (
                 <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -104,72 +152,125 @@ export default function EmailSettingsPanel() {
         </CardContent>
       </Card>
 
-      {/* Инструкции по настройке */}
+      {/* Форма настроек SMTP */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Icon name="Info" size={20} />
-            Как настроить Email
+            <Icon name="Mail" size={20} />
+            SMTP настройки
           </CardTitle>
+          <CardDescription>
+            Настройте параметры почтового сервера для отправки уведомлений
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="prose prose-sm max-w-none">
-            <p className="text-gray-700 mb-4">
-              Для работы email уведомлений нужно настроить 5 параметров в секретах проекта:
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="smtp-host">SMTP сервер</Label>
+              <Input
+                id="smtp-host"
+                placeholder="smtp.yandex.ru"
+                value={smtpSettings.host}
+                onChange={(e) => handleSettingChange('host', e.target.value)}
+              />
+              <p className="text-xs text-gray-500">smtp.yandex.ru, smtp.gmail.com, smtp.mail.ru</p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="smtp-port">Порт</Label>
+              <Input
+                id="smtp-port"
+                type="number"
+                placeholder="587"
+                value={smtpSettings.port}
+                onChange={(e) => handleSettingChange('port', parseInt(e.target.value) || 587)}
+              />
+              <p className="text-xs text-gray-500">587 (TLS) или 465 (SSL)</p>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="email-user">Email отправителя</Label>
+            <Input
+              id="email-user"
+              type="email"
+              placeholder="your-email@yandex.ru"
+              value={smtpSettings.username}
+              onChange={(e) => handleSettingChange('username', e.target.value)}
+            />
+            <p className="text-xs text-gray-500">Адрес, от имени которого отправляются письма</p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="admin-email">Email администратора</Label>
+            <Input
+              id="admin-email"
+              type="email"
+              placeholder="admin@example.com"
+              value={smtpSettings.adminEmail}
+              onChange={(e) => handleSettingChange('adminEmail', e.target.value)}
+            />
+            <p className="text-xs text-gray-500">Куда приходят уведомления о новых записях</p>
+          </div>
+
+          <Separator />
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <Label htmlFor="email-enabled">Включить email уведомления</Label>
+              <p className="text-xs text-gray-500">Автоматическая отправка писем при записях</p>
+            </div>
+            <Switch
+              id="email-enabled"
+              checked={smtpSettings.enabled}
+              onCheckedChange={(checked) => handleSettingChange('enabled', checked)}
+            />
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <Button 
+              onClick={handleSaveSettings} 
+              disabled={saving}
+              className="flex-1"
+            >
+              {saving ? (
+                <>
+                  <Icon name="Loader2" size={16} className="animate-spin mr-2" />
+                  Сохраняем...
+                </>
+              ) : (
+                <>
+                  <Icon name="Save" size={16} className="mr-2" />
+                  Сохранить настройки
+                </>
+              )}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Инструкция по паролю */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Icon name="Key" size={20} />
+            Настройка пароля
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="flex items-center gap-2 text-yellow-800 mb-2">
+              <Icon name="AlertTriangle" size={16} />
+              <span className="font-medium">Важно!</span>
+            </div>
+            <p className="text-sm text-yellow-700 mb-3">
+              Добавьте секрет <code className="bg-yellow-100 px-1 rounded">EMAIL_PASSWORD</code> в настройках проекта:
             </p>
-            
-            <div className="space-y-3">
-              <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
-                <Icon name="Server" size={16} className="text-blue-600 mt-0.5" />
-                <div>
-                  <p className="font-medium text-blue-900">SMTP_HOST</p>
-                  <p className="text-sm text-blue-700">smtp.yandex.ru (для Яндекс) или smtp.gmail.com (для Gmail)</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
-                <Icon name="Hash" size={16} className="text-blue-600 mt-0.5" />
-                <div>
-                  <p className="font-medium text-blue-900">SMTP_PORT</p>
-                  <p className="text-sm text-blue-700">587 (рекомендуется) или 465</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
-                <Icon name="Mail" size={16} className="text-blue-600 mt-0.5" />
-                <div>
-                  <p className="font-medium text-blue-900">EMAIL_USER</p>
-                  <p className="text-sm text-blue-700">Ваш email адрес (от имени которого отправляются письма)</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
-                <Icon name="Key" size={16} className="text-blue-600 mt-0.5" />
-                <div>
-                  <p className="font-medium text-blue-900">EMAIL_PASSWORD</p>
-                  <p className="text-sm text-blue-700">Пароль приложения (НЕ обычный пароль от почты!)</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
-                <Icon name="UserCheck" size={16} className="text-blue-600 mt-0.5" />
-                <div>
-                  <p className="font-medium text-blue-900">ADMIN_EMAIL</p>
-                  <p className="text-sm text-blue-700">Email администратора (куда приходят уведомления о записях)</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <div className="flex items-center gap-2 text-yellow-800 mb-2">
-                <Icon name="AlertTriangle" size={16} />
-                <span className="font-medium">Важно!</span>
-              </div>
-              <p className="text-sm text-yellow-700">
-                Для EMAIL_PASSWORD используйте <strong>пароль приложения</strong>, а не обычный пароль от почты. 
-                Создайте его в настройках безопасности вашего почтового сервиса.
-              </p>
-            </div>
+            <ul className="text-sm text-yellow-700 space-y-1 ml-4 list-disc">
+              <li>Для Яндекс: создайте пароль приложения в настройках безопасности</li>
+              <li>Для Gmail: включите 2FA и создайте пароль приложения</li>
+              <li>НЕ используйте обычный пароль от почты!</li>
+            </ul>
           </div>
         </CardContent>
       </Card>
@@ -194,7 +295,7 @@ export default function EmailSettingsPanel() {
             </div>
             <Button 
               onClick={testEmailSending} 
-              disabled={testing || !emailStatus?.smtp_configured || !emailStatus?.admin_email_set}
+              disabled={testing || !validateEmailSettings(smtpSettings)}
               className="ml-4"
             >
               {testing ? (
