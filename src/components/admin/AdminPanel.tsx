@@ -4,7 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SERVICES, SCHEDULE_API_URL } from '@/components/booking/BookingFormTypes';
+import EmailSettingsPanel from './EmailSettingsPanel';
 
 interface Booking {
   id: number;
@@ -39,6 +41,7 @@ export default function AdminPanel() {
   const [weekBookings, setWeekBookings] = useState<{[key: string]: Booking[]}>({});
   const [loading, setLoading] = useState(true);
   const [weekDates, setWeekDates] = useState<string[]>([]);
+  const [activeTab, setActiveTab] = useState('bookings');
 
   useEffect(() => {
     generateWeekDates();
@@ -174,117 +177,138 @@ export default function AdminPanel() {
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
-          <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-gray-900">Записи на неделю</h1>
-            <Button onClick={loadWeekBookings} variant="outline" size="sm">
-              <Icon name="RefreshCw" size={16} />
-              Обновить
-            </Button>
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          {weekDates.map((date) => {
-            const dayBookings = weekBookings[date] || [];
-            const isToday = date === new Date().toISOString().split('T')[0];
-            
-            // Пропускаем дни без записей
-            if (dayBookings.length === 0) return null;
-            
-            return (
-              <div key={date}>
-                {/* Разделитель дня */}
-                <div className={`flex items-center gap-4 mb-4 ${isToday ? 'text-blue-600' : 'text-gray-700'}`}>
-                  <div className={`flex items-center gap-2 font-semibold text-lg ${isToday ? 'bg-blue-50 px-3 py-1 rounded-lg' : ''}`}>
-                    <Icon name="Calendar" size={20} />
-                    {formatDate(date)}
-                    {isToday && <span className="text-blue-500">● Сегодня</span>}
-                  </div>
-                  <div className="flex-1 h-px bg-gray-300"></div>
-                  <span className="text-sm text-gray-500">{dayBookings.length} записей</span>
-                </div>
-
-                {/* Записи дня */}
-                <div className="space-y-3">
-                  {dayBookings
-                    .sort((a, b) => a.appointment_time.localeCompare(b.appointment_time))
-                    .map((booking) => (
-                      <Card key={booking.id} className="p-4">
-                        <div className="flex items-center justify-between">
-                          {/* Левая часть - основная информация */}
-                          <div className="flex-1">
-                            <div className="flex items-center gap-6">
-                              {/* Время */}
-                              <div className="flex items-center gap-2 font-medium text-lg">
-                                <Icon name="Clock" size={16} className="text-blue-600" />
-                                <span>{formatTime(booking.appointment_time)} - {calculateEndTime(booking.appointment_time, booking.service_id)}</span>
-                              </div>
-                              
-                              {/* Клиент */}
-                              <div className="flex items-center gap-2">
-                                <Icon name="User" size={16} className="text-gray-600" />
-                                <span className="font-medium">{booking.client_name}</span>
-                              </div>
-                              
-                              {/* Услуга */}
-                              <div className="flex items-center gap-2 text-gray-600">
-                                <Icon name="Scissors" size={16} />
-                                <span>{getServiceName(booking.service_id)}</span>
-                                <span className="text-sm">({getServiceDuration(booking.service_id)})</span>
-                              </div>
-                            </div>
-                            
-                            {/* Контакты */}
-                            <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
-                              <a href={`tel:${booking.client_phone}`} className="flex items-center gap-1 hover:text-blue-600">
-                                <Icon name="Phone" size={14} />
-                                {booking.client_phone}
-                              </a>
-                              
-                              {booking.client_email && (
-                                <a href={`mailto:${booking.client_email}`} className="flex items-center gap-1 hover:text-blue-600">
-                                  <Icon name="Mail" size={14} />
-                                  {booking.client_email}
-                                </a>
-                              )}
-                            </div>
-                          </div>
-                          
-                          {/* Правая часть - статус */}
-                          <div className="flex items-center gap-3">
-                            <Select
-                              value={booking.status}
-                              onValueChange={(newStatus) => updateBookingStatus(booking.id, newStatus)}
-                            >
-                              <SelectTrigger className="w-32 h-8">
-                                <Badge className={`text-xs ${STATUS_COLORS[booking.status]}`}>
-                                  {STATUS_LABELS[booking.status]}
-                                </Badge>
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="pending">Ожидает</SelectItem>
-                                <SelectItem value="confirmed">Подтверждена</SelectItem>
-                                <SelectItem value="completed">Завершена</SelectItem>
-                                <SelectItem value="cancelled">Отменена</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
-                      </Card>
-                    ))}
-                </div>
-              </div>
-            );
-          })}
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">Админ-панель</h1>
           
-          {/* Если нет записей вообще */}
-          {weekDates.every(date => (weekBookings[date] || []).length === 0) && (
-            <Card className="p-12 text-center">
-              <Icon name="Calendar" size={48} className="mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Нет записей на эту неделю</h3>
-              <p className="text-gray-600">Записи появятся здесь, когда клиенты забронируют время</p>
-            </Card>
-          )}
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="bookings" className="flex items-center gap-2">
+                <Icon name="Calendar" size={16} />
+                Записи
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="flex items-center gap-2">
+                <Icon name="Settings" size={16} />
+                Настройки Email
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="bookings" className="mt-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-900">Записи на неделю</h2>
+                <Button onClick={loadWeekBookings} variant="outline" size="sm">
+                  <Icon name="RefreshCw" size={16} />
+                  Обновить
+                </Button>
+              </div>
+
+              <div className="space-y-6">
+                {weekDates.map((date) => {
+                  const dayBookings = weekBookings[date] || [];
+                  const isToday = date === new Date().toISOString().split('T')[0];
+                  
+                  // Пропускаем дни без записей
+                  if (dayBookings.length === 0) return null;
+                  
+                  return (
+                    <div key={date}>
+                      {/* Разделитель дня */}
+                      <div className={`flex items-center gap-4 mb-4 ${isToday ? 'text-blue-600' : 'text-gray-700'}`}>
+                        <div className={`flex items-center gap-2 font-semibold text-lg ${isToday ? 'bg-blue-50 px-3 py-1 rounded-lg' : ''}`}>
+                          <Icon name="Calendar" size={20} />
+                          {formatDate(date)}
+                          {isToday && <span className="text-blue-500">● Сегодня</span>}
+                        </div>
+                        <div className="flex-1 h-px bg-gray-300"></div>
+                        <span className="text-sm text-gray-500">{dayBookings.length} записей</span>
+                      </div>
+
+                      {/* Записи дня */}
+                      <div className="space-y-3">
+                        {dayBookings
+                          .sort((a, b) => a.appointment_time.localeCompare(b.appointment_time))
+                          .map((booking) => (
+                            <Card key={booking.id} className="p-4">
+                              <div className="flex items-center justify-between">
+                                {/* Левая часть - основная информация */}
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-6">
+                                    {/* Время */}
+                                    <div className="flex items-center gap-2 font-medium text-lg">
+                                      <Icon name="Clock" size={16} className="text-blue-600" />
+                                      <span>{formatTime(booking.appointment_time)} - {calculateEndTime(booking.appointment_time, booking.service_id)}</span>
+                                    </div>
+                                    
+                                    {/* Клиент */}
+                                    <div className="flex items-center gap-2">
+                                      <Icon name="User" size={16} className="text-gray-600" />
+                                      <span className="font-medium">{booking.client_name}</span>
+                                    </div>
+                                    
+                                    {/* Услуга */}
+                                    <div className="flex items-center gap-2 text-gray-600">
+                                      <Icon name="Scissors" size={16} />
+                                      <span>{getServiceName(booking.service_id)}</span>
+                                      <span className="text-sm">({getServiceDuration(booking.service_id)})</span>
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Контакты */}
+                                  <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
+                                    <a href={`tel:${booking.client_phone}`} className="flex items-center gap-1 hover:text-blue-600">
+                                      <Icon name="Phone" size={14} />
+                                      {booking.client_phone}
+                                    </a>
+                                    
+                                    {booking.client_email && (
+                                      <a href={`mailto:${booking.client_email}`} className="flex items-center gap-1 hover:text-blue-600">
+                                        <Icon name="Mail" size={14} />
+                                        {booking.client_email}
+                                      </a>
+                                    )}
+                                  </div>
+                                </div>
+                                
+                                {/* Правая часть - статус */}
+                                <div className="flex items-center gap-3">
+                                  <Select
+                                    value={booking.status}
+                                    onValueChange={(newStatus) => updateBookingStatus(booking.id, newStatus)}
+                                  >
+                                    <SelectTrigger className="w-32 h-8">
+                                      <Badge className={`text-xs ${STATUS_COLORS[booking.status]}`}>
+                                        {STATUS_LABELS[booking.status]}
+                                      </Badge>
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="pending">Ожидает</SelectItem>
+                                      <SelectItem value="confirmed">Подтверждена</SelectItem>
+                                      <SelectItem value="completed">Завершена</SelectItem>
+                                      <SelectItem value="cancelled">Отменена</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              </div>
+                            </Card>
+                          ))}
+                      </div>
+                    </div>
+                  );
+                })}
+                
+                {/* Если нет записей вообще */}
+                {weekDates.every(date => (weekBookings[date] || []).length === 0) && (
+                  <Card className="p-12 text-center">
+                    <Icon name="Calendar" size={48} className="mx-auto text-gray-400 mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Нет записей на эту неделю</h3>
+                    <p className="text-gray-600">Записи появятся здесь, когда клиенты забронируют время</p>
+                  </Card>
+                )}
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="settings" className="mt-6">
+              <EmailSettingsPanel />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>
