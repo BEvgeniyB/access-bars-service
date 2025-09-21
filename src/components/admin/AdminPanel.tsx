@@ -414,10 +414,10 @@ export default function AdminPanel() {
                                       </Badge>
                                     </SelectTrigger>
                                     <SelectContent>
-                                      <SelectItem value="pending">Ожидает</SelectItem>
-                                      <SelectItem value="confirmed">Подтверждена</SelectItem>
-                                      <SelectItem value="completed">Завершена</SelectItem>
-                                      <SelectItem value="cancelled">Отменена</SelectItem>
+                                      <SelectItem key="pending" value="pending">Ожидает</SelectItem>
+                                      <SelectItem key="confirmed" value="confirmed">Подтверждена</SelectItem>
+                                      <SelectItem key="completed" value="completed">Завершена</SelectItem>
+                                      <SelectItem key="cancelled" value="cancelled">Отменена</SelectItem>
                                     </SelectContent>
                                   </Select>
                                 </div>
