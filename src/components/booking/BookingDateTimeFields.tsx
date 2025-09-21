@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Icon from "@/components/ui/icon";
-import { FormData, FormErrors, TIME_SLOTS, SCHEDULE_API_URL } from './BookingFormTypes';
+import { FormData, FormErrors, TIME_SLOTS, SCHEDULE_API_URL, updateTimeSlotsFromSettings } from './BookingFormTypes';
 import { getMinDate } from './BookingFormUtils';
 
 interface SlotInfo {
@@ -32,6 +32,11 @@ const BookingDateTimeFields: React.FC<BookingDateTimeFieldsProps> = ({
   const [isTimeDropdownOpen, setIsTimeDropdownOpen] = useState(false);
   const [allSlots, setAllSlots] = useState<SlotInfo[]>([]);
   const [loadingSlotDetails, setLoadingSlotDetails] = useState(false);
+
+  // Загружаем настройки времени при инициализации
+  useEffect(() => {
+    updateTimeSlotsFromSettings();
+  }, []);
 
   // Функция для получения детальной информации о всех слотах
   const loadSlotDetails = async (date: string, serviceId: number) => {

@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { SERVICES, SCHEDULE_API_URL } from '@/components/booking/BookingFormTypes';
 import EmailSettingsPanel from './EmailSettingsPanel';
 import ServicesPanel from './ServicesPanel';
+import ScheduleSettingsPanel from './ScheduleSettingsPanel';
 
 interface Booking {
   id: number;
@@ -294,7 +295,7 @@ export default function AdminPanel() {
           </div>
           
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="bookings" className="flex items-center gap-2">
                 <Icon name="Calendar" size={16} />
                 Записи
@@ -302,6 +303,10 @@ export default function AdminPanel() {
               <TabsTrigger value="services" className="flex items-center gap-2">
                 <Icon name="Package" size={16} />
                 Услуги
+              </TabsTrigger>
+              <TabsTrigger value="schedule" className="flex items-center gap-2">
+                <Icon name="Clock" size={16} />
+                Расписание
               </TabsTrigger>
               <TabsTrigger value="settings" className="flex items-center gap-2">
                 <Icon name="Settings" size={16} />
@@ -442,6 +447,10 @@ export default function AdminPanel() {
             
             <TabsContent value="services" className="mt-6">
               <ServicesPanel />
+            </TabsContent>
+            
+            <TabsContent value="schedule" className="mt-6">
+              <ScheduleSettingsPanel />
             </TabsContent>
             
             <TabsContent value="settings" className="mt-6">

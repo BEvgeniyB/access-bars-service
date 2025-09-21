@@ -28,7 +28,7 @@ def handler(event, context):
                 'body': ''
             }
     
-        # Get schedule for specific date
+        # Get schedule for specific date or settings
         if method == 'GET':
             database_url = os.environ.get('DATABASE_URL')
             if not database_url:
@@ -45,7 +45,13 @@ def handler(event, context):
             cursor = conn.cursor(cursor_factory=RealDictCursor)
             
             try:
-                return get_schedule(cursor, event)
+                params = event.get('queryStringParameters') or {}
+                action = params.get('action')
+                
+                if action == 'get_settings':
+                    return get_schedule_settings(cursor)
+                else:
+                    return get_schedule(cursor, event)
             finally:
                 conn.close()
         
@@ -69,7 +75,9 @@ def handler(event, context):
                 body = json.loads(event.get('body', '{}'))
                 action = body.get('action', 'create_booking')
                 
-                if action == 'update_booking_status':
+                if action == 'save_settings':
+                    return save_schedule_settings(cursor, conn, body)
+                elif action == 'update_booking_status':
                     return update_booking_status(cursor, conn, body)
                 elif action == 'update_booking_service':
                     return update_booking_service(cursor, conn, body)
@@ -130,6 +138,15 @@ def get_schedule(cursor, event):
     elif action == 'get_weekly_schedule':
         return get_weekly_schedule(cursor, params)
     
+    # Получаем настройки расписания
+    cursor.execute("""
+        SELECT break_duration_minutes 
+        FROM t_p89870318_access_bars_service.schedule_settings 
+        ORDER BY id LIMIT 1
+    """)
+    settings_row = cursor.fetchone()
+    break_duration = settings_row['break_duration_minutes'] if settings_row else 30
+    
     date_str = params.get('date')
     service_id = params.get('service_id')
     
@@ -180,7 +197,7 @@ def get_schedule(cursor, event):
     
     result = []
     for day in schedule_data:
-        available_slots = calculate_slots(day, service_duration)
+        available_slots = calculate_slots(day, service_duration, break_duration)
         
         result.append({
             'date': day['date'].strftime('%Y-%m-%d'),
@@ -194,7 +211,7 @@ def get_schedule(cursor, event):
     
     return success_response(result)
 
-def calculate_slots(day_schedule, service_duration_minutes):
+def calculate_slots(day_schedule, service_duration_minutes, break_duration_minutes=30):
     slots = []
     date = day_schedule['date']
     start_time = datetime.combine(date, day_schedule['start_time'])
@@ -214,8 +231,8 @@ def calculate_slots(day_schedule, service_duration_minutes):
                 booking_start = datetime.combine(date, start_time_obj)
                 booking_end = datetime.combine(date, end_time_obj)
                 
-                # Блокируем время записи + 30 минут после неё
-                extended_booking_end = booking_end + timedelta(minutes=30)
+                # Блокируем время записи + перерыв после неё
+                extended_booking_end = booking_end + timedelta(minutes=break_duration_minutes)
                 blocked_intervals.append((booking_start, extended_booking_end))
     
     # Объединяем пересекающиеся интервалы для оптимизации
@@ -751,3 +768,115 @@ def send_status_update_notification(booking_data):
             
     except Exception as e:
         print(f"Error sending status notification: {str(e)}")
+
+def get_schedule_settings(cursor):
+    """Получение настроек расписания"""
+    try:
+        cursor.execute("""
+            SELECT 
+                time_slot_interval_minutes,
+                break_duration_minutes,
+                working_hours_start,
+                working_hours_end
+            FROM t_p89870318_access_bars_service.schedule_settings
+            ORDER BY id
+            LIMIT 1
+        """)
+        
+        settings = cursor.fetchone()
+        
+        if settings:
+            return {
+                'statusCode': 200,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                'body': json.dumps({
+                    'success': True,
+                    'settings': dict(settings)
+                })
+            }
+        else:
+            # Возвращаем настройки по умолчанию
+            return {
+                'statusCode': 200,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                'body': json.dumps({
+                    'success': True,
+                    'settings': {
+                        'time_slot_interval_minutes': 30,
+                        'break_duration_minutes': 30,
+                        'working_hours_start': '12:00:00',
+                        'working_hours_end': '21:00:00'
+                    }
+                })
+            }
+    except Exception as e:
+        print(f"Error getting schedule settings: {str(e)}")
+        return error_response(f'Error getting settings: {str(e)}', 500)
+
+def save_schedule_settings(cursor, conn, body):
+    """Сохранение настроек расписания"""
+    try:
+        settings = body.get('settings', {})
+        
+        if not settings:
+            return error_response('Settings data is required', 400)
+        
+        # Валидация данных
+        interval = settings.get('time_slot_interval_minutes', 30)
+        break_duration = settings.get('break_duration_minutes', 30)
+        start_time = settings.get('working_hours_start', '12:00:00')
+        end_time = settings.get('working_hours_end', '21:00:00')
+        
+        if not isinstance(interval, int) or interval < 15 or interval > 120:
+            return error_response('Invalid time slot interval (must be 15-120 minutes)', 400)
+        
+        if not isinstance(break_duration, int) or break_duration < 0 or break_duration > 60:
+            return error_response('Invalid break duration (must be 0-60 minutes)', 400)
+        
+        # Проверяем, есть ли уже запись настроек
+        cursor.execute("SELECT id FROM t_p89870318_access_bars_service.schedule_settings LIMIT 1")
+        existing = cursor.fetchone()
+        
+        if existing:
+            # Обновляем существующую запись
+            cursor.execute("""
+                UPDATE t_p89870318_access_bars_service.schedule_settings 
+                SET 
+                    time_slot_interval_minutes = %s,
+                    break_duration_minutes = %s,
+                    working_hours_start = %s,
+                    working_hours_end = %s,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE id = %s
+            """, (interval, break_duration, start_time, end_time, existing['id']))
+        else:
+            # Создаем новую запись
+            cursor.execute("""
+                INSERT INTO t_p89870318_access_bars_service.schedule_settings 
+                (time_slot_interval_minutes, break_duration_minutes, working_hours_start, working_hours_end)
+                VALUES (%s, %s, %s, %s)
+            """, (interval, break_duration, start_time, end_time))
+        
+        conn.commit()
+        
+        return {
+            'statusCode': 200,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            'body': json.dumps({
+                'success': True,
+                'message': 'Settings saved successfully'
+            })
+        }
+        
+    except Exception as e:
+        print(f"Error saving schedule settings: {str(e)}")
+        return error_response(f'Error saving settings: {str(e)}', 500)
