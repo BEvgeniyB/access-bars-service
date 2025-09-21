@@ -53,6 +53,9 @@ def handler(event, context):
             return error_response('Method not allowed', 405)
             
     except Exception as e:
+        print(f"Schedule function error: {str(e)}")
+        import traceback
+        print(f"Traceback: {traceback.format_exc()}")
         return error_response(f'Server error: {str(e)}', 500)
     finally:
         if 'conn' in locals():
