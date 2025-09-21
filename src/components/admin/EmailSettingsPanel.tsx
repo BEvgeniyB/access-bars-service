@@ -10,7 +10,7 @@ import Icon from '@/components/ui/icon';
 import { SMTPSettings, EmailStatus } from '@/types/admin';
 import { getEmailSettings, saveEmailSettings, validateEmailSettings } from '@/utils/emailSettings';
 
-const SMTP_CONFIG_API_URL = 'https://functions.poehali.dev/9449ef82-dea6-46a7-b3e8-a26709cae9a5';
+const EMAIL_NOTIFICATIONS_API_URL = 'https://functions.poehali.dev/55f4ae60-6da0-4d03-8257-73225a215d38';
 
 export default function EmailSettingsPanel() {
   const [emailStatus, setEmailStatus] = useState<EmailStatus | null>(null);
@@ -22,7 +22,7 @@ export default function EmailSettingsPanel() {
   const checkEmailStatus = async () => {
     setLoading(true);
     try {
-      const response = await fetch(SMTP_CONFIG_API_URL, {
+      const response = await fetch(EMAIL_NOTIFICATIONS_API_URL, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -57,9 +57,30 @@ export default function EmailSettingsPanel() {
   const handleSaveSettings = async () => {
     setSaving(true);
     try {
+      // Сохраняем в локальное хранилище
       saveEmailSettings(smtpSettings);
-      await checkEmailStatus();
-      alert('✅ Настройки сохранены!');
+      
+      // Сохраняем в базу данных через SMTP функцию
+      const response = await fetch(EMAIL_NOTIFICATIONS_API_URL, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          smtp_host: smtpSettings.host,
+          smtp_port: smtpSettings.port,
+          sender_email: smtpSettings.username,
+          admin_email: smtpSettings.adminEmail,
+          notifications_enabled: smtpSettings.enabled
+        })
+      });
+      
+      if (response.ok) {
+        await checkEmailStatus();
+        alert('✅ Настройки сохранены в базе данных!');
+      } else {
+        throw new Error('Ошибка сохранения в базе данных');
+      }
     } catch (error) {
       alert('❌ Ошибка сохранения настроек');
     } finally {
@@ -70,7 +91,7 @@ export default function EmailSettingsPanel() {
   const testEmailSending = async () => {
     setTesting(true);
     try {
-      const response = await fetch(SMTP_CONFIG_API_URL, {
+      const response = await fetch(EMAIL_NOTIFICATIONS_API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -103,7 +124,32 @@ export default function EmailSettingsPanel() {
     }));
   };
 
+  const loadSettingsFromServer = async () => {
+    try {
+      const response = await fetch(EMAIL_NOTIFICATIONS_API_URL, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setSmtpSettings({
+          host: data.smtp_server || 'smtp.yandex.ru',
+          port: data.smtp_port || 587,
+          username: data.sender_email || 'natalya.velikaya@yandex.ru',
+          adminEmail: data.admin_email || 'natalya.velikaya@yandex.ru',
+          enabled: data.notifications_enabled !== false
+        });
+      }
+    } catch (error) {
+      console.log('Ошибка загрузки настроек с сервера, используем локальные');
+    }
+  };
+
   useEffect(() => {
+    loadSettingsFromServer();
     checkEmailStatus();
   }, []);
 
