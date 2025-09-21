@@ -258,7 +258,7 @@ def create_booking(cursor, conn, event):
                 'client_email': body.get('client_email', ''),
                 'service_name': service['name'],
                 'booking_date': body['booking_date'],
-                'booking_time': body['start_time'],
+                'booking_time': start_datetime.time().strftime('%H:%M'),
                 'end_time': end_datetime.time().strftime('%H:%M'),
                 'notes': body.get('notes', '')
             })
@@ -272,7 +272,7 @@ def create_booking(cursor, conn, event):
                 'client_email': body.get('client_email', ''),
                 'service_name': service['name'],
                 'booking_date': body['booking_date'],
-                'booking_time': body['start_time'],
+                'booking_time': start_datetime.time().strftime('%H:%M'),
                 'end_time': end_datetime.time().strftime('%H:%M'),
                 'notes': body.get('notes', '')
             })

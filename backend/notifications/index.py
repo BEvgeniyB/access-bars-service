@@ -416,8 +416,8 @@ SMTP сервер: {settings['smtp_host']}
 Спасибо за запись в центр "Гармония энергий". Ваша запись успешно создана.
 
 📋 ДЕТАЛИ ЗАПИСИ:
-🗓 Дата: {booking_data.get('appointment_date', '')}
-🕒 Время: {booking_data.get('appointment_time', '')} - {booking_data.get('end_time', '')}
+🗓 Дата: {booking_data.get('booking_date', booking_data.get('appointment_date', ''))}
+🕒 Время: {booking_data.get('booking_time', booking_data.get('appointment_time', ''))} - {booking_data.get('end_time', '')}
 💆‍♀️ Услуга: {booking_data.get('service_name', '')}
 
 📝 Примечания: {booking_data.get('notes', 'Нет')}
