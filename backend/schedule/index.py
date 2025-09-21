@@ -250,7 +250,7 @@ def create_booking(cursor, conn, event):
         booking_id = cursor.fetchone()['id']
         conn.commit()
         
-        # Отправляем уведомление о новой записи
+        # Отправляем уведомление администратору о новой записи
         try:
             send_new_booking_notification({
                 'client_name': body['client_name'],
@@ -263,7 +263,21 @@ def create_booking(cursor, conn, event):
                 'notes': body.get('notes', '')
             })
         except Exception as e:
-            print(f"Failed to send notification: {str(e)}")
+            print(f"Failed to send admin notification: {str(e)}")
+        
+        # Отправляем подтверждение клиенту
+        try:
+            send_client_booking_confirmation({
+                'client_name': body['client_name'],
+                'client_email': body.get('client_email', ''),
+                'service_name': service['name'],
+                'booking_date': body['booking_date'],
+                'booking_time': body['start_time'],
+                'end_time': end_datetime.time().strftime('%H:%M'),
+                'notes': body.get('notes', '')
+            })
+        except Exception as e:
+            print(f"Failed to send client confirmation: {str(e)}")
         
         return success_response({
             'success': True,
@@ -289,6 +303,19 @@ def update_booking(cursor, conn, event):
         if status not in ['confirmed', 'cancelled', 'completed']:
             return error_response('Invalid status', 400)
         
+        # Получаем данные записи для уведомления
+        cursor.execute("""
+            SELECT b.*, s.name as service_name
+            FROM t_p89870318_access_bars_service.bookings b
+            JOIN t_p89870318_access_bars_service.services s ON b.service_id = s.id
+            WHERE b.id = %s
+        """, (booking_id,))
+        
+        booking = cursor.fetchone()
+        if not booking:
+            return error_response('Booking not found', 404)
+        
+        # Обновляем статус
         cursor.execute("""
             UPDATE t_p89870318_access_bars_service.bookings 
             SET status = %s, updated_at = CURRENT_TIMESTAMP
@@ -296,10 +323,20 @@ def update_booking(cursor, conn, event):
             RETURNING id
         """, (status, booking_id))
         
-        if cursor.rowcount == 0:
-            return error_response('Booking not found', 404)
-        
         conn.commit()
+        
+        # Отправляем уведомление клиенту об изменении статуса
+        try:
+            send_status_update_notification({
+                'client_name': booking['client_name'],
+                'client_email': booking['client_email'],
+                'service_name': booking['service_name'],
+                'booking_date': booking['booking_date'].strftime('%Y-%m-%d'),
+                'booking_time': booking['start_time'].strftime('%H:%M'),
+                'status': status
+            })
+        except Exception as e:
+            print(f"Failed to send status update notification: {str(e)}")
         
         return success_response({
             'success': True, 
@@ -449,7 +486,7 @@ def update_booking_status(cursor, conn, body):
 def send_new_booking_notification(booking_data):
     """Отправляет уведомление о новой записи"""
     try:
-        notifications_url = 'https://functions.poehali.dev/55f4ae60-6da0-4d03-8257-73225a215d38'
+        notifications_url = 'https://functions.poehali.dev/eba9cd24-baee-4359-80c0-d36c5b4643ff'
         
         payload = {
             'action': 'send_notification',
@@ -484,13 +521,58 @@ def send_new_booking_notification(booking_data):
     except Exception as e:
         print(f"Error sending notification: {str(e)}")
 
-def send_status_update_notification(booking_data):
-    """Отправляет уведомление об изменении статуса"""
+def send_client_booking_confirmation(booking_data):
+    """Отправляет подтверждение записи клиенту"""
+    if not booking_data.get('client_email'):
+        print("No client email provided for confirmation")
+        return
+        
     try:
-        notifications_url = 'https://functions.poehali.dev/55f4ae60-6da0-4d03-8257-73225a215d38'
+        notifications_url = 'https://functions.poehali.dev/eba9cd24-baee-4359-80c0-d36c5b4643ff'
         
         payload = {
-            'action': 'send_notification',
+            'action': 'send_client_confirmation',
+            'booking_data': {
+                'client_name': booking_data['client_name'],
+                'client_email': booking_data['client_email'],
+                'service_name': booking_data['service_name'],
+                'appointment_date': booking_data['booking_date'],
+                'appointment_time': booking_data['booking_time'],
+                'end_time': booking_data.get('end_time', ''),
+                'notes': booking_data.get('notes', '')
+            }
+        }
+        
+        response = requests.post(
+            notifications_url,
+            json=payload,
+            headers={'Content-Type': 'application/json'},
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            result = response.json()
+            if result.get('success'):
+                print("Client confirmation sent successfully")
+            else:
+                print(f"Client confirmation failed: {result.get('error', 'Unknown error')}")
+        else:
+            print(f"Failed to send client confirmation: {response.status_code}")
+            
+    except Exception as e:
+        print(f"Error sending client confirmation: {str(e)}")
+
+def send_status_update_notification(booking_data):
+    """Отправляет уведомление об изменении статуса клиенту"""
+    if not booking_data.get('client_email'):
+        print("No client email provided for status update")
+        return
+        
+    try:
+        notifications_url = 'https://functions.poehali.dev/eba9cd24-baee-4359-80c0-d36c5b4643ff'
+        
+        payload = {
+            'action': 'send_status_update',
             'booking_data': {
                 'client_name': booking_data['client_name'],
                 'client_email': booking_data['client_email'],
