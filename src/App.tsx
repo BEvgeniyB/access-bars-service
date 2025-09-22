@@ -11,6 +11,7 @@ import Healing from "./pages/Healing";
 import Massage from "./pages/Massage";
 import Analytics from "./pages/Analytics";
 import AdminPanel from "./components/admin/AdminPanel";
+import YandexMetrika from "./components/YandexMetrika";
 
 import NotFound from "./pages/NotFound";
 
@@ -22,6 +23,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <YandexMetrika />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/access-bars" element={<AccessBars />} />

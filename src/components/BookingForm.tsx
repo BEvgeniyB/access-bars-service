@@ -17,6 +17,7 @@ import {
   loadAvailableSlots, 
   createEmailFallback 
 } from './booking/BookingFormUtils';
+import { trackEvent, YMEvents } from "@/utils/yandexMetrika";
 
 interface BookingFormProps {
   isOpen: boolean;
@@ -87,6 +88,14 @@ const BookingForm: React.FC<BookingFormProps> = ({ isOpen, onClose, preselectedS
           throw new Error(result.error || 'Ошибка создания записи');
         }
       }
+      
+      // Отслеживаем успешную отправку формы
+      trackEvent(YMEvents.SCHEDULE_FORM_SUBMIT, {
+        service: formData.service,
+        date: formData.date,
+        time: formData.time,
+        source: 'booking_form'
+      });
       
       setShowSuccess(true);
       setFormData({ name: '', phone: '+7(', service: '', date: '', time: '' });

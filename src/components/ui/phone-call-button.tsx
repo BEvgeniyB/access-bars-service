@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
+import { trackEvent, YMEvents } from "@/utils/yandexMetrika";
 
 interface PhoneCallButtonProps {
   phoneNumber?: string;
@@ -25,6 +26,12 @@ const PhoneCallButton: React.FC<PhoneCallButtonProps> = ({
   };
 
   const handlePhoneClick = (e: React.MouseEvent) => {
+    // Отслеживаем клик по телефону в Яндекс Метрике
+    trackEvent(YMEvents.PHONE_CLICK, { 
+      time: new Date().toISOString(),
+      business_hours: isMoscowBusinessHours()
+    });
+    
     if (!isMoscowBusinessHours()) {
       e.preventDefault();
       alert("Звонки принимаются с 12:00 до 21:00 по московскому времени.\n\nВы можете:\n• Оставить заявку через форму записи\n• Написать в Telegram: @velikaya_nataliya");

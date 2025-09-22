@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import BookingForm from "@/components/BookingForm";
 import { businessStructuredData, servicesStructuredData, personStructuredData } from "@/data/structuredData";
 import { trackPageVisit } from "@/utils/analytics";
+import { trackEvent, YMEvents } from "@/utils/yandexMetrika";
 import AdminButton from "@/components/AdminButton";
 
 
@@ -188,7 +189,10 @@ const MassageWebsite = () => {
             </h1>
             <p className="text-xl text-emerald-100 mb-12 max-w-3xl mx-auto leading-relaxed">Глубокие энергетические практики и исцеление в атмосфере абсолютного спокойствия и гармонии</p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <Button size="lg" className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold px-10 py-4 text-lg shadow-2xl border-2 border-gold-400" onClick={() => setIsBookingOpen(true)}>ЗАПИСАТЬСЯ</Button>
+              <Button size="lg" className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold px-10 py-4 text-lg shadow-2xl border-2 border-gold-400" onClick={() => {
+                trackEvent(YMEvents.SCHEDULE_FORM_OPEN, { source: 'hero_button', page: 'index' });
+                setIsBookingOpen(true);
+              }}>ЗАПИСАТЬСЯ</Button>
               <PhoneLink>
                 <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold px-10 py-4 text-lg" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
                   <Icon name="Phone" className="mr-2" size={20} />

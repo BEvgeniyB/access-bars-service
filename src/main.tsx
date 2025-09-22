@@ -4,6 +4,7 @@ import { HelmetProvider } from 'react-helmet-async'
 import App from './App'
 import './index.css'
 import './utils/blockBadge'
+import './utils/metricsTest'
 
 createRoot(document.getElementById("root")!).render(
   <HelmetProvider>
