@@ -6,7 +6,7 @@ declare global {
   }
 }
 
-const COUNTER_ID = 101026698;
+const COUNTER_ID = 104236315;
 
 export const trackEvent = (target: string, params?: object) => {
   if (typeof window !== 'undefined' && window.ym) {
