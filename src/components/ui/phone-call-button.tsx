@@ -34,7 +34,8 @@ const PhoneCallButton: React.FC<PhoneCallButtonProps> = ({
     
     if (!isMoscowBusinessHours()) {
       e.preventDefault();
-      alert("Звонки принимаются с 12:00 до 21:00 по московскому времени.\n\nВы можете:\n• Оставить заявку через форму записи\n• Написать в Telegram: @velikaya_nataliya");
+      const currentPageUrl = window.location.href;
+      alert(`Звонки принимаются с 12:00 до 21:00 по московскому времени.\n\nВы можете:\n• Оставить заявку через форму записи на ${currentPageUrl}\n• Написать в Telegram: @velikaya_nataliya`);
       return;
     }
     // Если время подходящее, ссылка сработает как обычно
