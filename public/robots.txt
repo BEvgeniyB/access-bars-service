@@ -12,5 +12,9 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /404.html
+
+# Custom 404 handling for SEO
+# Real 404 errors should return HTTP 404 status
 
 Sitemap: https://velikaya-nataliya.ru/sitemap.xml

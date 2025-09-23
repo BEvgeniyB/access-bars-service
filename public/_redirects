@@ -1,0 +1,16 @@
+# Netlify redirects file for proper 404 handling in SPA
+# See: https://docs.netlify.com/routing/redirects/
+
+# API routes - if you have backend endpoints
+/api/*  /api/:splat  200
+
+# All other routes should serve index.html with 200 status for SPA routing
+# But 404 pages should return proper 404 status
+/*  /index.html  200
+
+# Handle actual 404s for non-existent files
+# This won't work in SPA, but helps with direct file access
+/*.html  /404.html  404
+/*.php   /404.html  404
+/*.asp   /404.html  404
+/*.jsp   /404.html  404

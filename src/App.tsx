@@ -12,6 +12,7 @@ import Massage from "./pages/Massage";
 import Analytics from "./pages/Analytics";
 import AdminPanel from "./components/admin/AdminPanel";
 import YandexMetrika from "./components/YandexMetrika";
+import SEO404Handler from "./components/SEO404Handler";
 
 import NotFound from "./pages/NotFound";
 
@@ -24,6 +25,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <YandexMetrika />
+        <SEO404Handler />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/access-bars" element={<AccessBars />} />
