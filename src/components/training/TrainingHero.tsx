@@ -17,9 +17,9 @@ const TrainingHero = ({ onBookingClick }: TrainingHeroProps) => {
     }}>
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
-          <h2 className="font-montserrat font-bold text-4xl md:text-5xl text-gold-100 mb-6">
+          <h1 className="font-montserrat font-bold text-4xl md:text-5xl text-gold-100 mb-6">
             Обучение технике <span className="text-gold-400">Access Bars</span>
-          </h2>
+          </h1>
           <p className="text-xl text-emerald-100 mb-8 leading-relaxed">
             Освойте уникальную методику энергетического исцеления и откройте новые возможности 
             для себя и помощи другим

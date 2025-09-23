@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
+import SEOHead from "@/components/SEOHead";
 import TrainingBookingForm from "@/components/TrainingBookingForm";
 import TrainingHero from "@/components/training/TrainingHero";
 import TrainingCourses from "@/components/training/TrainingCourses";
@@ -85,6 +86,16 @@ const Training = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-950 via-emerald-900 to-emerald-950">
+      <SEOHead 
+        title="Обучение Access Bars — курсы и сертификация | Наталия Великая"
+        description="Профессиональные курсы обучения Access Bars в Москве. Получите сертификат международного образца. Индивидуальное и групповое обучение от сертифицированного фасилитатора."
+        keywords="обучение access bars, курсы access bars, сертификация access bars, фасилитатор access bars, обучение энергетическим практикам, курсы целительства"
+        ogImage="https://velikaya-nataliya.ru/img/training-og.jpg"
+        breadcrumbs={[
+          { name: 'Главная', url: 'https://velikaya-nataliya.ru/' },
+          { name: 'Обучение Access Bars', url: 'https://velikaya-nataliya.ru/training' }
+        ]}
+      />
       <Header />
       
       <TrainingHero onBookingClick={handleBookingClick} />

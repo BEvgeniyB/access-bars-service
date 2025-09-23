@@ -4,6 +4,7 @@ import Icon from "@/components/ui/icon";
 import PhoneLink from "@/components/ui/phone-link";
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
+import SEOHead from "@/components/SEOHead";
 import BookingForm from "@/components/BookingForm";
 import { getDetailedServicesByCategory } from "@/data/services";
 
@@ -59,6 +60,16 @@ const Massage = () => {
         backgroundRepeat: 'no-repeat',
         backgroundAttachment: 'fixed'
       }}>
+      <SEOHead 
+        title="Массаж и ароматерапия в Москве | Наталия Великая"
+        description="Профессиональный массаж и ароматерапия в Москве. Классический, лечебный и расслабляющий массаж от сертифицированного массажиста с 6-летним опытом."
+        keywords="массаж Москва, ароматерапия, классический массаж, лечебный массаж, расслабляющий массаж, массажист Москва, эфирные масла"
+        ogImage="https://velikaya-nataliya.ru/img/massage-og.jpg"
+        breadcrumbs={[
+          { name: 'Главная', url: 'https://velikaya-nataliya.ru/' },
+          { name: 'Массаж и ароматерапия', url: 'https://velikaya-nataliya.ru/massage' }
+        ]}
+      />
       {/* Header */}
       <Header />
 
