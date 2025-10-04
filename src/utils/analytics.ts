@@ -1,6 +1,16 @@
 // Analytics utility for tracking page visits
 export const trackPageVisit = async (pageUrl: string) => {
   try {
+    // Skip tracking for preview and development domains
+    const hostname = window.location.hostname;
+    const isPreview = hostname.includes('preview--') || hostname.includes('.poehali.dev');
+    const isDevelopment = hostname === 'localhost' || hostname === '127.0.0.1';
+    
+    if (isPreview || isDevelopment) {
+      console.log('Analytics tracking skipped for:', hostname);
+      return;
+    }
+
     // Generate session ID if not exists
     let sessionId = sessionStorage.getItem('analytics_session');
     if (!sessionId) {
