@@ -11,14 +11,12 @@ const COUNTER_ID = 104236315;
 export const trackEvent = (target: string, params?: object) => {
   if (typeof window !== 'undefined' && window.ym) {
     window.ym(COUNTER_ID, 'reachGoal', target, params);
-    console.log('Yandex Metrika: goal tracked', target, params);
   }
 };
 
 export const trackPageView = (url: string) => {
   if (typeof window !== 'undefined' && window.ym) {
     window.ym(COUNTER_ID, 'hit', url);
-    console.log('Yandex Metrika: page view tracked', url);
   }
 };
 

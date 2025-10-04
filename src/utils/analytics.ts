@@ -7,7 +7,6 @@ export const trackPageVisit = async (pageUrl: string) => {
     const isDevelopment = hostname === 'localhost' || hostname === '127.0.0.1';
     
     if (isPreview || isDevelopment) {
-      console.log('Analytics tracking skipped for:', hostname);
       return;
     }
 
@@ -35,10 +34,10 @@ export const trackPageVisit = async (pageUrl: string) => {
     });
 
     if (!response.ok) {
-      console.warn('Analytics tracking failed:', response.status);
+      // Silent fail for analytics
     }
   } catch (error) {
-    console.warn('Analytics tracking error:', error);
+    // Silent fail for analytics
   }
 };
 
