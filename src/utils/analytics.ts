@@ -1,6 +1,12 @@
 // Analytics utility for tracking page visits
 export const trackPageVisit = async (pageUrl: string) => {
   try {
+    // Check if tracking is enabled
+    const trackingEnabled = localStorage.getItem('analytics_tracking_enabled') !== 'false';
+    if (!trackingEnabled) {
+      return;
+    }
+
     // Skip tracking for preview and development domains
     const hostname = window.location.hostname;
     const isPreview = hostname.includes('preview--') || hostname.includes('.poehali.dev');
