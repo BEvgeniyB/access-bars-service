@@ -10,6 +10,7 @@ import { SERVICES, SCHEDULE_API_URL } from '@/components/booking/BookingFormType
 import EmailSettingsPanel from './EmailSettingsPanel';
 import ServicesPanel from './ServicesPanel';
 import ScheduleSettingsPanel from './ScheduleSettingsPanel';
+import YandexMetrikaWidget from './YandexMetrikaWidget';
 
 interface Booking {
   id: number;
@@ -295,10 +296,14 @@ export default function AdminPanel() {
           </div>
           
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="bookings" className="flex items-center gap-2">
                 <Icon name="Calendar" size={16} />
                 Записи
+              </TabsTrigger>
+              <TabsTrigger value="analytics" className="flex items-center gap-2">
+                <Icon name="BarChart3" size={16} />
+                Аналитика
               </TabsTrigger>
               <TabsTrigger value="services" className="flex items-center gap-2">
                 <Icon name="Package" size={16} />
@@ -313,6 +318,10 @@ export default function AdminPanel() {
                 Email
               </TabsTrigger>
             </TabsList>
+            
+            <TabsContent value="analytics" className="mt-6">
+              <YandexMetrikaWidget />
+            </TabsContent>
             
             <TabsContent value="bookings" className="mt-6">
               <div className="flex items-center justify-between mb-6">
