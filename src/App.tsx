@@ -13,6 +13,7 @@ import Analytics from "./pages/Analytics";
 import AdminPanel from "./components/admin/AdminPanel";
 import YandexMetrika from "./components/YandexMetrika";
 import SEO404Handler from "./components/SEO404Handler";
+import Reviews from "./pages/Reviews";
 
 import NotFound from "./pages/NotFound";
 
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/training" element={<Training />} />
           <Route path="/healing" element={<Healing />} />
           <Route path="/massage" element={<Massage />} />
+          <Route path="/reviews" element={<Reviews />} />
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/admin" element={<AdminPanel />} />
 
