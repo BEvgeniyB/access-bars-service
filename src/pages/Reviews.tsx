@@ -4,7 +4,7 @@ import Icon from "@/components/ui/icon";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import SEOHead from "@/components/SEOHead";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface Review {
   id: number;
@@ -15,81 +15,37 @@ interface Review {
   date: string;
 }
 
-const ALL_REVIEWS: Review[] = [
-  {
-    id: 1,
-    name: "Елена М.",
-    service: "Access Bars",
-    rating: 5,
-    text: "После первой сессии Access Bars я почувствовала невероятное облегчение. Ушли тревожность и напряжение, которые копились месяцами. Наталья - профессионал с большой буквы!",
-    date: "2025-01-15"
-  },
-  {
-    id: 2,
-    name: "Дмитрий К.",
-    service: "Классический массаж",
-    rating: 5,
-    text: "Занимаюсь спортом, постоянно были боли в спине. После курса массажа у Натальи состояние улучшилось на 100%. Глубокая проработка мышц, профессиональный подход. Рекомендую!",
-    date: "2025-01-10"
-  },
-  {
-    id: 3,
-    name: "Ирина В.",
-    service: "Целительство",
-    rating: 5,
-    text: "Дистанционное исцеление превзошло все ожидания! Не верила, что на расстоянии может быть такой эффект. Но после сеанса ушли хронические боли в суставах. Наталья - уникальный специалист!",
-    date: "2024-12-28"
-  },
-  {
-    id: 4,
-    name: "Анна С.",
-    service: "Обучение Access Bars",
-    rating: 5,
-    text: "Прошла обучение Access Bars у Натальи. Очень доступно объясняет, практика под контролем, все понятно даже новичку. Теперь применяю технику на себе и близких. Спасибо!",
-    date: "2024-12-20"
-  },
-  {
-    id: 5,
-    name: "Михаил Л.",
-    service: "Телесное исцеление",
-    rating: 5,
-    text: "После травмы долго не мог восстановиться. Наталья буквально поставила меня на ноги! Её энергия и профессионализм творят чудеса. Пакет из 3 сеансов дал потрясающий результат.",
-    date: "2024-12-15"
-  },
-  {
-    id: 6,
-    name: "Светлана Р.",
-    service: "Access Bars",
-    rating: 5,
-    text: "Хочу выразить огромную благодарность! После Access Bars у меня улучшился сон, ушла бессонница. Появилась ясность мыслей и спокойствие. Очень рекомендую Наталью!",
-    date: "2024-12-05"
-  },
-  {
-    id: 7,
-    name: "Олег Н.",
-    service: "Комплексная программа массажа",
-    rating: 5,
-    text: "Комплексная программа массажа с ароматерапией - это что-то невероятное! Расслабление на всех уровнях. Наталья знает свое дело. Буду ходить регулярно!",
-    date: "2024-11-28"
-  },
-  {
-    id: 8,
-    name: "Мария З.",
-    service: "Целительство",
-    rating: 5,
-    text: "Долго искала специалиста по энергетическому целительству. Наталья превзошла все ожидания! Ее дар уникален. После сеанса чувствую себя заново родившейся!",
-    date: "2024-11-20"
-  }
-];
+const REVIEWS_API_URL = 'https://functions.poehali.dev/2f5c36e4-cdb6-496c-8ca9-5aaa20079486';
 
 const Reviews = () => {
   const [selectedService, setSelectedService] = useState<string>("Все");
+  const [allReviews, setAllReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
   
   const services = ["Все", "Access Bars", "Массаж", "Целительство", "Обучение"];
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch(`${REVIEWS_API_URL}?status=approved`);
+        const data = await response.json();
+        
+        if (data.success && data.reviews) {
+          setAllReviews(data.reviews);
+        }
+      } catch (error) {
+        console.error('Ошибка загрузки отзывов:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, []);
   
   const filteredReviews = selectedService === "Все" 
-    ? ALL_REVIEWS 
-    : ALL_REVIEWS.filter(review => 
+    ? allReviews 
+    : allReviews.filter(review => 
         review.service.toLowerCase().includes(selectedService.toLowerCase())
       );
 
@@ -144,8 +100,13 @@ const Reviews = () => {
             </div>
 
             {/* Reviews Grid */}
-            <div className="grid md:grid-cols-2 gap-6">
-              {filteredReviews.map((review) => (
+            {loading ? (
+              <div className="text-center py-12">
+                <p className="text-emerald-200 text-lg">Загрузка отзывов...</p>
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 gap-6">
+                {filteredReviews.map((review) => (
                 <Card 
                   key={review.id} 
                   className="border-2 border-gold-400/30 shadow-xl hover:shadow-2xl transition-shadow duration-300"
@@ -187,10 +148,11 @@ const Reviews = () => {
                     </div>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
 
-            {filteredReviews.length === 0 && (
+            {!loading && filteredReviews.length === 0 && (
               <div className="text-center py-12">
                 <p className="text-emerald-200 text-lg">
                   Отзывов по выбранной категории пока нет

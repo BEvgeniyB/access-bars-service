@@ -12,52 +12,47 @@ interface Review {
   date: string;
 }
 
-const MOCK_REVIEWS: Review[] = [
-  {
-    id: 1,
-    name: "Елена М.",
-    service: "Access Bars",
-    rating: 5,
-    text: "После первой сессии Access Bars я почувствовала невероятное облегчение. Ушли тревожность и напряжение, которые копились месяцами. Наталья - профессионал с большой буквы!",
-    date: "2025-01-15"
-  },
-  {
-    id: 2,
-    name: "Дмитрий К.",
-    service: "Классический массаж",
-    rating: 5,
-    text: "Занимаюсь спортом, постоянно были боли в спине. После курса массажа у Натальи состояние улучшилось на 100%. Глубокая проработка мышц, профессиональный подход. Рекомендую!",
-    date: "2025-01-10"
-  },
-  {
-    id: 3,
-    name: "Ирина В.",
-    service: "Целительство",
-    rating: 5,
-    text: "Дистанционное исцеление превзошло все ожидания! Не верила, что на расстоянии может быть такой эффект. Но после сеанса ушли хронические боли в суставах. Наталья - уникальный специалист!",
-    date: "2024-12-28"
-  },
-  {
-    id: 4,
-    name: "Анна С.",
-    service: "Обучение Access Bars",
-    rating: 5,
-    text: "Прошла обучение Access Bars у Натальи. Очень доступно объясняет, практика под контролем, все понятно даже новичку. Теперь применяю технику на себе и близких. Спасибо!",
-    date: "2024-12-20"
-  },
-  {
-    id: 5,
-    name: "Михаил Л.",
-    service: "Телесное исцеление",
-    rating: 5,
-    text: "После травмы долго не мог восстановиться. Наталья буквально поставила меня на ноги! Её энергия и профессионализм творят чудеса. Пакет из 3 сеансов дал потрясающий результат.",
-    date: "2024-12-15"
-  }
-];
+const REVIEWS_API_URL = 'https://functions.poehali.dev/2f5c36e4-cdb6-496c-8ca9-5aaa20079486';
 
 const ReviewsCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [reviews] = useState<Review[]>(MOCK_REVIEWS);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch(`${REVIEWS_API_URL}?status=approved`);
+        const data = await response.json();
+        
+        if (data.success && data.reviews) {
+          setReviews(data.reviews.slice(0, 5));
+        }
+      } catch (error) {
+        console.error('Ошибка загрузки отзывов:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-emerald-200">Загрузка отзывов...</p>
+      </div>
+    );
+  }
+
+  if (reviews.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-emerald-200">Отзывов пока нет</p>
+      </div>
+    );
+  }
 
   useEffect(() => {
     const interval = setInterval(() => {
