@@ -150,6 +150,17 @@ const MassageWebsite = () => {
               <button 
                 className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
                 onClick={() => {
+                  document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' });
+                  closeMenu();
+                }}
+              >
+                <Icon name="MessageSquare" size={16} />
+                Отзывы
+              </button>
+              
+              <button 
+                className="w-full text-left px-4 py-3 text-gold-200 hover:bg-gold-400/20 hover:text-gold-400 transition-colors rounded flex items-center gap-3"
+                onClick={() => {
                   document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
                   closeMenu();
                 }}
