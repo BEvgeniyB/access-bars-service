@@ -27,11 +27,27 @@ const Reviews = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
+        // Проверяем кеш (действителен 24 часа)
+        const cached = localStorage.getItem('all_reviews_cache');
+        const cacheTime = localStorage.getItem('all_reviews_cache_time');
+        const now = Date.now();
+        
+        if (cached && cacheTime && (now - parseInt(cacheTime)) < 24 * 60 * 60 * 1000) {
+          setAllReviews(JSON.parse(cached));
+          setLoading(false);
+          return;
+        }
+
+        // Загружаем с сервера
         const response = await fetch(`${REVIEWS_API_URL}?status=approved`);
         const data = await response.json();
         
         if (data.success && data.reviews) {
           setAllReviews(data.reviews);
+          
+          // Сохраняем в кеш
+          localStorage.setItem('all_reviews_cache', JSON.stringify(data.reviews));
+          localStorage.setItem('all_reviews_cache_time', now.toString());
         }
       } catch (error) {
         console.error('Ошибка загрузки отзывов:', error);

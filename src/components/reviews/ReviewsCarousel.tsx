@@ -22,11 +22,28 @@ const ReviewsCarousel = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
+        // Проверяем кеш (действителен 24 часа)
+        const cached = localStorage.getItem('reviews_cache');
+        const cacheTime = localStorage.getItem('reviews_cache_time');
+        const now = Date.now();
+        
+        if (cached && cacheTime && (now - parseInt(cacheTime)) < 24 * 60 * 60 * 1000) {
+          setReviews(JSON.parse(cached));
+          setLoading(false);
+          return;
+        }
+
+        // Загружаем с сервера
         const response = await fetch(`${REVIEWS_API_URL}?status=approved`);
         const data = await response.json();
         
         if (data.success && data.reviews) {
-          setReviews(data.reviews.slice(0, 5));
+          const reviewsData = data.reviews.slice(0, 5);
+          setReviews(reviewsData);
+          
+          // Сохраняем в кеш
+          localStorage.setItem('reviews_cache', JSON.stringify(reviewsData));
+          localStorage.setItem('reviews_cache_time', now.toString());
         }
       } catch (error) {
         console.error('Ошибка загрузки отзывов:', error);
