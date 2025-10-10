@@ -14,24 +14,23 @@ const ReviewsSection = () => {
         }}
       >
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12 animate-fade-in">
-            <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-4">Отзывы клиентов</h2>
-            <p className="text-xl text-emerald-100 max-w-2xl mx-auto">Истории тех, кто уже нашел свой путь к гармонии</p>
-          </div>
-
-          <ReviewsCarousel />
-
-          <div className="text-center mt-8">
+          <div className="flex justify-between items-start mb-12 animate-fade-in">
+            <div className="flex-1">
+              <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-4">Отзывы клиентов</h2>
+              <p className="text-xl text-emerald-100">Истории тех, кто уже нашел свой путь к гармонии</p>
+            </div>
             <Link to="/reviews">
               <Button 
                 variant="outline" 
-                className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 px-8 py-3"
+                className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 px-8 py-3 whitespace-nowrap"
               >
+                <Icon name="Star" className="mr-2" size={16} />
                 Все отзывы
-                <Icon name="ArrowRight" className="ml-2" size={16} />
               </Button>
             </Link>
           </div>
+
+          <ReviewsCarousel />
         </div>
       </section>
     </>
