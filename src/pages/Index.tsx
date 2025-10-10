@@ -200,19 +200,17 @@ const MassageWebsite = () => {
               <span className="text-gold-400 block bg-gradient-to-r from-gold-300 to-gold-500 bg-clip-text text-transparent">внутренний покой</span>
             </h1>
             <p className="text-xl text-emerald-100 mb-12 max-w-3xl mx-auto leading-relaxed">Глубокие энергетические практики и исцеление в атмосфере абсолютного спокойствия и гармонии</p>
-            <div className="flex flex-col items-center gap-4">
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Button size="lg" className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold px-8 py-4 text-lg shadow-2xl border-2 border-gold-400" onClick={() => {
-                  trackEvent(YMEvents.SCHEDULE_FORM_OPEN, { source: 'hero_button', page: 'index' });
-                  setIsBookingOpen(true);
-                }}>ЗАПИСАТЬСЯ</Button>
-                <PhoneLink>
-                  <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold px-8 py-4 text-lg" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
-                    <Icon name="Phone" className="mr-2" size={20} />
-                    +7(918) 414-1221
-                  </Button>
-                </PhoneLink>
-              </div>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Button size="lg" className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold px-8 py-4 text-lg shadow-2xl border-2 border-gold-400" onClick={() => {
+                trackEvent(YMEvents.SCHEDULE_FORM_OPEN, { source: 'hero_button', page: 'index' });
+                setIsBookingOpen(true);
+              }}>ЗАПИСАТЬСЯ</Button>
+              <PhoneLink>
+                <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold px-8 py-4 text-lg" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
+                  <Icon name="Phone" className="mr-2" size={20} />
+                  +7(918) 414-1221
+                </Button>
+              </PhoneLink>
               <Link to="/reviews">
                 <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold px-8 py-4 text-lg">
                   <Icon name="Star" className="mr-2" size={20} />
