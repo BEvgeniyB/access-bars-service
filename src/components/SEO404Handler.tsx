@@ -11,7 +11,7 @@ const SEO404Handler = () => {
   useEffect(() => {
     // Проверяем, является ли текущий маршрут 404
     const is404Page = location.pathname !== '/' && 
-                     !location.pathname.match(/^\/(access-bars|training|healing|massage|analytics|admin)$/);
+                     !location.pathname.match(/^\/(access-bars|training|healing|massage|reviews|analytics|admin)$/);
 
     if (is404Page) {
       // Устанавливаем статус 404 для поисковых роботов
