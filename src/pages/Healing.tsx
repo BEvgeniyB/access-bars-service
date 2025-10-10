@@ -8,6 +8,7 @@ import SEOHead from "@/components/SEOHead";
 import BookingForm from "@/components/BookingForm";
 import { breadcrumbStructuredData } from "@/data/structuredData";
 import { getDetailedServicesByCategory } from "@/data/services";
+import ShareButton from "@/components/ShareButton";
 
 const Healing = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
@@ -113,6 +114,9 @@ const Healing = () => {
       <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full blur-3xl" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover`}}></div>
       {/* Header */}
       <Header backgroundImage="https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg" />
+
+      {/* Share Button */}
+      <ShareButton />
 
       {/* Navigation Menu */}
       <div className="fixed bottom-4 right-4 md:top-24 md:bottom-auto md:right-2 md:left-auto z-40">

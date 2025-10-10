@@ -11,6 +11,7 @@ import { businessStructuredData, servicesStructuredData, personStructuredData } 
 import { trackEvent, YMEvents } from "@/utils/yandexMetrika";
 import AdminButton from "@/components/AdminButton";
 import ReviewsCarousel from "@/components/reviews/ReviewsCarousel";
+import ShareButton from "@/components/ShareButton";
 
 
 const MassageWebsite = () => {
@@ -101,7 +102,8 @@ const MassageWebsite = () => {
       {/* Header */}
       <Header />
 
-
+      {/* Share Button */}
+      <ShareButton />
 
       {/* Navigation Menu */}
       <div className="fixed top-20 sm:top-22 md:top-24 right-2 md:right-4 z-40">

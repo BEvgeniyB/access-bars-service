@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import SEOHead from "@/components/SEOHead";
 import BookingForm from "@/components/BookingForm";
 import { getDetailedServicesByCategory } from "@/data/services";
+import ShareButton from "@/components/ShareButton";
 
 const Massage = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
@@ -69,6 +70,9 @@ const Massage = () => {
       />
       {/* Header */}
       <Header />
+
+      {/* Share Button */}
+      <ShareButton />
 
       {/* Navigation Menu */}
       <div className="fixed bottom-4 right-4 md:top-24 md:bottom-auto md:right-2 md:left-auto z-40">

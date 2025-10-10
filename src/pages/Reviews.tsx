@@ -4,6 +4,7 @@ import Icon from "@/components/ui/icon";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import SEOHead from "@/components/SEOHead";
+import ShareButton from "@/components/ShareButton";
 import { useState, useEffect } from "react";
 
 interface Review {
@@ -122,6 +123,9 @@ const Reviews = () => {
         <div className="absolute inset-0 opacity-0"></div>
         
         <Header />
+        
+        {/* Share Button */}
+        <ShareButton />
 
         <main className="pt-32 pb-20 px-4 relative z-10">
           <div className="container mx-auto max-w-6xl">

@@ -10,6 +10,7 @@ import AccessBarsSessions from "@/components/AccessBars/AccessBarsSessions";
 import AccessBarsNavigation from "@/components/AccessBars/AccessBarsNavigation";
 import AccessBarsFAQ from "@/components/AccessBars/AccessBarsFAQ";
 import AccessBarsContact from "@/components/AccessBars/AccessBarsContact";
+import ShareButton from "@/components/ShareButton";
 
 const AccessBars = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
@@ -64,6 +65,9 @@ const AccessBars = () => {
       
       {/* Header */}
       <Header backgroundImage="https://cdn.poehali.dev/files/4e95d530-7f57-4257-9e14-933aa912aea1.png" />
+
+      {/* Share Button */}
+      <ShareButton />
 
       {/* Navigation Menu */}
       <AccessBarsNavigation />

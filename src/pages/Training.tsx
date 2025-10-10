@@ -8,6 +8,7 @@ import TrainingBenefits from "@/components/training/TrainingBenefits";
 import TrainingTestimonials from "@/components/training/TrainingTestimonials";
 import TrainingFooter from "@/components/training/TrainingFooter";
 import TrainingNavigation from "@/components/training/TrainingNavigation";
+import ShareButton from "@/components/ShareButton";
 
 const Training = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
@@ -94,6 +95,9 @@ const Training = () => {
         image="https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg"
       />
       <Header />
+      
+      {/* Share Button */}
+      <ShareButton />
       
       <TrainingHero onBookingClick={handleBookingClick} />
       
