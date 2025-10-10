@@ -65,12 +65,53 @@ const Reviews = () => {
         review.service.toLowerCase().includes(selectedService.toLowerCase())
       );
 
+  const averageRating = allReviews.length > 0 
+    ? (allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length).toFixed(1)
+    : "5.0";
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Гармония энергий - Наталья Великая",
+    "image": "https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Москва",
+      "addressCountry": "RU"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": averageRating,
+      "reviewCount": allReviews.length,
+      "bestRating": "5",
+      "worstRating": "1"
+    },
+    "review": allReviews.slice(0, 10).map(review => ({
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": review.name
+      },
+      "datePublished": review.date,
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": review.rating,
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "reviewBody": review.text
+    }))
+  };
+
   return (
     <>
       <SEOHead 
         title="Отзывы клиентов - Гармония энергий"
         description="Реальные отзывы клиентов о услугах Access Bars, массажа, целительства и обучения. Читайте истории трансформации и исцеления."
         keywords="отзывы Access Bars, отзывы массаж Москва, отзывы целительство, отзывы Наталья Великая"
+        url="https://velikaya-nataliya.ru/reviews"
+        image="https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg"
+        structuredData={structuredData}
       />
       <div 
         className="min-h-screen font-openSans relative overflow-hidden"
