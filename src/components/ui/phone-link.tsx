@@ -38,11 +38,6 @@ const PhoneLink: React.FC<PhoneLinkProps> = ({
       title={!isBusinessHours ? 'Звонки принимаются с 12:00 до 21:00 МСК' : 'Позвонить сейчас'}
     >
       {children}
-      {!isBusinessHours && (
-        <span className="ml-1 text-xs opacity-75">
-          (12:00-21:00 МСК)
-        </span>
-      )}
     </a>
   );
 };
