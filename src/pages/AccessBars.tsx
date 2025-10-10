@@ -54,7 +54,8 @@ const AccessBars = () => {
         title="Access Bars в Москве - Энергетическая терапия | Гармония энергий"
         description="Профессиональные сеансы Access Bars в Москве. Телесная техника для освобождения от ментальных блоков. Опытный специалист Наталья Великая. Цена от 7000 ₽."
         keywords="Access Bars Москва, энергетическая терапия, телесные практики, ментальные блоки, трансформация сознания"
-        url="https://harmony-energies.ru/access-bars"
+        url="https://velikaya-nataliya.ru/access-bars"
+        image="https://cdn.poehali.dev/files/58c024e8-2d2e-49a9-ac0e-19692c531870.jpg"
         structuredData={breadcrumbData}
       />
       <div className="min-h-screen font-openSans relative overflow-hidden" style={{backgroundImage: `url('https://cdn.poehali.dev/files/58c024e8-2d2e-49a9-ac0e-19692c531870.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>

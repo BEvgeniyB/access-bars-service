@@ -86,6 +86,8 @@ const MassageWebsite = () => {
         title="Гармония энергий - Массаж, Access Bars, Целительство в Москве"
         description="Профессиональные услуги массажа, Access Bars, энергетического целительства и обучения в Москве. Наталья Великая - сертифицированный специалист. Записаться: +7(918) 414-1221"
         keywords="массаж Москва, Access Bars, энергетическое целительство, духовные практики, массаж спины, расслабляющий массаж, Наталья Великая"
+        url="https://velikaya-nataliya.ru"
+        image="https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg"
         structuredData={combinedStructuredData}
       />
       <div 

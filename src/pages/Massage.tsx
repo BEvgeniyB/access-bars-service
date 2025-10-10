@@ -64,11 +64,8 @@ const Massage = () => {
         title="Массаж и ароматерапия в Москве | Наталия Великая"
         description="Профессиональный массаж и ароматерапия в Москве. Классический, лечебный и расслабляющий массаж от сертифицированного массажиста с 6-летним опытом."
         keywords="массаж Москва, ароматерапия, классический массаж, лечебный массаж, расслабляющий массаж, массажист Москва, эфирные масла"
-        ogImage="https://velikaya-nataliya.ru/img/massage-og.jpg"
-        breadcrumbs={[
-          { name: 'Главная', url: 'https://velikaya-nataliya.ru/' },
-          { name: 'Массаж и ароматерапия', url: 'https://velikaya-nataliya.ru/massage' }
-        ]}
+        url="https://velikaya-nataliya.ru/massage"
+        image="https://cdn.poehali.dev/files/3d793832-1b45-412e-9e96-8322568689f1.png"
       />
       {/* Header */}
       <Header />

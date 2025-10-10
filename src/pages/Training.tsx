@@ -90,11 +90,8 @@ const Training = () => {
         title="Обучение Access Bars — курсы и сертификация | Наталия Великая"
         description="Профессиональные курсы обучения Access Bars в Москве. Получите сертификат международного образца. Индивидуальное и групповое обучение от сертифицированного фасилитатора."
         keywords="обучение access bars, курсы access bars, сертификация access bars, фасилитатор access bars, обучение энергетическим практикам, курсы целительства"
-        ogImage="https://velikaya-nataliya.ru/img/training-og.jpg"
-        breadcrumbs={[
-          { name: 'Главная', url: 'https://velikaya-nataliya.ru/' },
-          { name: 'Обучение Access Bars', url: 'https://velikaya-nataliya.ru/training' }
-        ]}
+        url="https://velikaya-nataliya.ru/training"
+        image="https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg"
       />
       <Header />
       

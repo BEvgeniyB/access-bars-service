@@ -102,7 +102,8 @@ const Healing = () => {
         title="Энергетическое целительство в Москве | Гармония энергий"
         description="Профессиональное энергетическое целительство в Москве. Работа с чакрами, аурой, восстановление баланса жизненных сил. Опытный целитель Наталья Великая. Цена от 7000 ₽."
         keywords="энергетическое целительство Москва, работа с чакрами, аура, энергетическое исцеление, духовные практики"
-        url="https://harmony-energies.ru/healing"
+        url="https://velikaya-nataliya.ru/healing"
+        image="https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg"
         structuredData={breadcrumbData}
       />
       <div className="min-h-screen relative overflow-hidden" style={{background: `url('https://cdn.poehali.dev/files/19fd920a-9d96-45d1-9b4a-8e0584e2a051.jpg') center/cover no-repeat fixed`}}>
