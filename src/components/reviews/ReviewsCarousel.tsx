@@ -38,6 +38,16 @@ const ReviewsCarousel = () => {
     fetchReviews();
   }, []);
 
+  useEffect(() => {
+    if (reviews.length === 0) return;
+    
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % reviews.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [reviews.length]);
+
   if (loading) {
     return (
       <div className="text-center py-12">
@@ -53,14 +63,6 @@ const ReviewsCarousel = () => {
       </div>
     );
   }
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % reviews.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [reviews.length]);
 
   const goToNext = () => {
     setCurrentIndex((prev) => (prev + 1) % reviews.length);
