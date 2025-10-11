@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 
 interface Review {
   id: number;
@@ -35,6 +36,9 @@ export default function ReviewModerationPanel() {
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState('pending');
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editService, setEditService] = useState('');
+  const [editRating, setEditRating] = useState(5);
   const [editText, setEditText] = useState('');
 
   useEffect(() => {
@@ -80,38 +84,46 @@ export default function ReviewModerationPanel() {
     }
   };
 
-  const updateReviewText = async (reviewId: number, newText: string) => {
+  const updateReviewFull = async (reviewId: number, name: string, service: string, rating: number, text: string) => {
     try {
       const response = await fetch(REVIEWS_API_URL, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           id: reviewId,
-          text: newText
+          name,
+          service,
+          rating,
+          text
         })
       });
 
       const data = await response.json();
 
       if (data.success) {
-        setEditingId(null);
-        setEditText('');
+        cancelEditing();
         loadReviews(currentTab);
       } else {
-        console.error('Ошибка обновления текста:', data.error);
+        console.error('Ошибка обновления отзыва:', data.error);
       }
     } catch (error) {
-      console.error('Ошибка обновления текста:', error);
+      console.error('Ошибка обновления отзыва:', error);
     }
   };
 
   const startEditing = (review: Review) => {
     setEditingId(review.id);
+    setEditName(review.name);
+    setEditService(review.service);
+    setEditRating(review.rating);
     setEditText(review.text);
   };
 
   const cancelEditing = () => {
     setEditingId(null);
+    setEditName('');
+    setEditService('');
+    setEditRating(5);
     setEditText('');
   };
 
@@ -187,16 +199,56 @@ export default function ReviewModerationPanel() {
                         </div>
                       </div>
                       {editingId === review.id ? (
-                        <div className="mb-3">
-                          <Textarea
-                            value={editText}
-                            onChange={(e) => setEditText(e.target.value)}
-                            className="w-full min-h-[100px] mb-2"
-                            placeholder="Текст отзыва"
-                          />
+                        <div className="mb-3 space-y-3 p-3 bg-gray-50 rounded-lg">
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="text-sm font-medium text-gray-700 mb-1 block">Имя</label>
+                              <Input
+                                value={editName}
+                                onChange={(e) => setEditName(e.target.value)}
+                                placeholder="Имя клиента"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-sm font-medium text-gray-700 mb-1 block">Услуга</label>
+                              <Input
+                                value={editService}
+                                onChange={(e) => setEditService(e.target.value)}
+                                placeholder="Название услуги"
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-gray-700 mb-1 block">Рейтинг</label>
+                            <div className="flex gap-2">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <button
+                                  key={star}
+                                  type="button"
+                                  onClick={() => setEditRating(star)}
+                                  className="transition-transform hover:scale-110"
+                                >
+                                  <Icon
+                                    name="Star"
+                                    size={24}
+                                    className={star <= editRating ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}
+                                  />
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-gray-700 mb-1 block">Текст отзыва</label>
+                            <Textarea
+                              value={editText}
+                              onChange={(e) => setEditText(e.target.value)}
+                              className="w-full min-h-[100px]"
+                              placeholder="Текст отзыва"
+                            />
+                          </div>
                           <div className="flex gap-2">
                             <Button
-                              onClick={() => updateReviewText(review.id, editText)}
+                              onClick={() => updateReviewFull(review.id, editName, editService, editRating, editText)}
                               size="sm"
                               className="bg-green-600 hover:bg-green-700"
                             >
@@ -221,7 +273,7 @@ export default function ReviewModerationPanel() {
                             size="sm"
                             variant="ghost"
                             className="flex-shrink-0"
-                            title="Редактировать текст"
+                            title="Редактировать отзыв"
                           >
                             <Icon name="Pencil" size={14} />
                           </Button>

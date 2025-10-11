@@ -122,6 +122,34 @@ def update_review_text(review_id: int, text: str) -> bool:
     
     return affected > 0
 
+def update_review_full(review_id: int, name: str, service: str, rating: int, text: str) -> bool:
+    '''Обновляет все поля отзыва (для полного редактирования админом)'''
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    # Экранирование одинарных кавычек
+    name = name.replace("'", "''")
+    service = service.replace("'", "''")
+    text = text.replace("'", "''")
+    
+    query = f"""
+        UPDATE reviews 
+        SET name = '{name}', 
+            service = '{service}', 
+            rating = {rating}, 
+            text = '{text}', 
+            updated_at = CURRENT_TIMESTAMP 
+        WHERE id = {review_id}
+    """
+    cur.execute(query)
+    
+    affected = cur.rowcount
+    
+    cur.close()
+    conn.close()
+    
+    return affected > 0
+
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     method: str = event.get('httpMethod', 'GET')
     
@@ -233,28 +261,55 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
     
-    # PATCH - обновить текст отзыва (редактирование админом)
+    # PATCH - обновить отзыв (редактирование админом)
     if method == 'PATCH':
         body_data = json.loads(event.get('body', '{}'))
         
         review_id = body_data.get('id')
+        
+        # Проверяем, какой тип обновления (частичное или полное)
+        name = body_data.get('name')
+        service = body_data.get('service')
+        rating = body_data.get('rating')
         text = body_data.get('text', '').strip()
         
-        if not review_id or not text:
+        if not review_id:
             return {
                 'statusCode': 400,
                 'headers': headers,
-                'body': json.dumps({'success': False, 'error': 'ID и текст обязательны'}),
+                'body': json.dumps({'success': False, 'error': 'ID обязателен'}),
                 'isBase64Encoded': False
             }
         
-        success = update_review_text(review_id, text)
+        # Полное редактирование (все поля)
+        if name and service and rating and text:
+            if rating < 1 or rating > 5:
+                return {
+                    'statusCode': 400,
+                    'headers': headers,
+                    'body': json.dumps({'success': False, 'error': 'Рейтинг должен быть от 1 до 5'}),
+                    'isBase64Encoded': False
+                }
+            
+            success = update_review_full(review_id, name.strip(), service.strip(), rating, text)
+            message = 'Отзыв обновлен'
+        # Частичное редактирование (только текст)
+        elif text:
+            success = update_review_text(review_id, text)
+            message = 'Текст отзыва обновлен'
+        else:
+            return {
+                'statusCode': 400,
+                'headers': headers,
+                'body': json.dumps({'success': False, 'error': 'Необходимо указать поля для обновления'}),
+                'isBase64Encoded': False
+            }
         
         if success:
             return {
                 'statusCode': 200,
                 'headers': headers,
-                'body': json.dumps({'success': True, 'message': 'Текст отзыва обновлен'}),
+                'body': json.dumps({'success': True, 'message': message}),
                 'isBase64Encoded': False
             }
         else:
