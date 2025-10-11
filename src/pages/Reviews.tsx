@@ -6,6 +6,9 @@ import Header from "@/components/Header";
 import SEOHead from "@/components/SEOHead";
 import ShareButton from "@/components/ShareButton";
 import { useState, useEffect } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface Review {
   id: number;
@@ -22,8 +25,18 @@ const Reviews = () => {
   const [selectedService, setSelectedService] = useState<string>("Все");
   const [allReviews, setAllReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    service: '',
+    rating: 5,
+    text: ''
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState('');
   
   const services = ["Все", "Access Bars", "Массаж", "Целительство", "Обучение"];
+  const serviceOptions = ["Access Bars", "Массаж", "Целительство", "Обучение"];
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -69,6 +82,42 @@ const Reviews = () => {
   const averageRating = allReviews.length > 0 
     ? (allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length).toFixed(1)
     : "5.0";
+
+  const handleSubmitReview = async () => {
+    if (!formData.name.trim() || !formData.service || !formData.text.trim()) {
+      setSubmitMessage('Пожалуйста, заполните все поля');
+      return;
+    }
+
+    setSubmitting(true);
+    setSubmitMessage('');
+
+    try {
+      const response = await fetch(REVIEWS_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSubmitMessage('✅ Спасибо! Ваш отзыв отправлен на модерацию.');
+        setFormData({ name: '', service: '', rating: 5, text: '' });
+        setTimeout(() => {
+          setShowForm(false);
+          setSubmitMessage('');
+        }, 3000);
+      } else {
+        setSubmitMessage('❌ ' + (data.error || 'Ошибка отправки'));
+      }
+    } catch (error) {
+      console.error('Ошибка отправки отзыва:', error);
+      setSubmitMessage('❌ Ошибка отправки. Попробуйте позже.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -220,6 +269,110 @@ const Reviews = () => {
                 </p>
               </div>
             )}
+
+            {/* Форма отзыва */}
+            <div className="mt-16 max-w-2xl mx-auto">
+              {!showForm ? (
+                <Card className="border-2 border-gold-400/50 shadow-2xl" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
+                  <CardContent className="p-8 text-center">
+                    <Icon name="MessageSquarePlus" className="mx-auto text-gold-400 mb-4" size={48} />
+                    <h2 className="font-montserrat font-bold text-2xl text-gold-200 mb-4">
+                      Поделитесь своим опытом
+                    </h2>
+                    <p className="text-emerald-100 mb-6">
+                      Ваш отзыв поможет другим людям найти путь к гармонии
+                    </p>
+                    <Button 
+                      size="lg"
+                      className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold px-10"
+                      onClick={() => setShowForm(true)}
+                    >
+                      <Icon name="Star" className="mr-2" size={20} />
+                      Оставить отзыв
+                    </Button>
+                  </CardContent>
+                </Card>
+              ) : (
+                <Card className="border-2 border-gold-400/50 shadow-2xl" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
+                  <CardContent className="p-8">
+                    <div className="flex items-center justify-between mb-6">
+                      <h2 className="font-montserrat font-bold text-2xl text-gold-200">
+                        Оставить отзыв
+                      </h2>
+                      <Button variant="ghost" size="sm" onClick={() => setShowForm(false)} className="text-gold-400">
+                        <Icon name="X" size={20} />
+                      </Button>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div>
+                        <Label className="text-emerald-100 mb-2">Ваше имя</Label>
+                        <Input 
+                          value={formData.name}
+                          onChange={(e) => setFormData({...formData, name: e.target.value})}
+                          placeholder="Как к вам обращаться?"
+                          className="bg-emerald-950/50 border-gold-400/30 text-emerald-100"
+                        />
+                      </div>
+
+                      <div>
+                        <Label className="text-emerald-100 mb-2">Услуга</Label>
+                        <select 
+                          value={formData.service}
+                          onChange={(e) => setFormData({...formData, service: e.target.value})}
+                          className="w-full h-10 px-3 rounded-md bg-emerald-950/50 border border-gold-400/30 text-emerald-100"
+                        >
+                          <option value="">Выберите услугу</option>
+                          {serviceOptions.map(s => <option key={s} value={s}>{s}</option>)}
+                        </select>
+                      </div>
+
+                      <div>
+                        <Label className="text-emerald-100 mb-2">Оценка</Label>
+                        <div className="flex gap-2">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <button
+                              key={star}
+                              onClick={() => setFormData({...formData, rating: star})}
+                              className="transition-transform hover:scale-110"
+                            >
+                              <Icon 
+                                name="Star" 
+                                size={32}
+                                className={star <= formData.rating ? "text-gold-400 fill-gold-400" : "text-gray-400"}
+                              />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label className="text-emerald-100 mb-2">Ваш отзыв</Label>
+                        <Textarea 
+                          value={formData.text}
+                          onChange={(e) => setFormData({...formData, text: e.target.value})}
+                          placeholder="Поделитесь своими впечатлениями..."
+                          rows={5}
+                          className="bg-emerald-950/50 border-gold-400/30 text-emerald-100"
+                        />
+                      </div>
+
+                      {submitMessage && (
+                        <p className="text-center text-emerald-100 font-medium">{submitMessage}</p>
+                      )}
+
+                      <Button 
+                        onClick={handleSubmitReview}
+                        disabled={submitting}
+                        className="w-full bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold"
+                      >
+                        {submitting ? 'Отправка...' : 'Отправить отзыв'}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
 
             {/* CTA */}
             <div className="text-center mt-16">

@@ -12,6 +12,7 @@ import ServicesPanel from './ServicesPanel';
 import ScheduleSettingsPanel from './ScheduleSettingsPanel';
 import YandexMetrikaWidget from './YandexMetrikaWidget';
 import DatabaseAnalytics from './DatabaseAnalytics';
+import ReviewModerationPanel from './ReviewModerationPanel';
 
 interface Booking {
   id: number;
@@ -297,7 +298,7 @@ export default function AdminPanel() {
           </div>
           
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-6">
+            <TabsList className="grid w-full grid-cols-7">
               <TabsTrigger value="bookings" className="flex items-center gap-2">
                 <Icon name="Calendar" size={16} />
                 Записи
@@ -321,6 +322,10 @@ export default function AdminPanel() {
               <TabsTrigger value="settings" className="flex items-center gap-2">
                 <Icon name="Settings" size={16} />
                 Email
+              </TabsTrigger>
+              <TabsTrigger value="reviews" className="flex items-center gap-2">
+                <Icon name="MessageSquare" size={16} />
+                Отзывы
               </TabsTrigger>
             </TabsList>
             
@@ -473,6 +478,10 @@ export default function AdminPanel() {
             
             <TabsContent value="settings" className="mt-6">
               <EmailSettingsPanel />
+            </TabsContent>
+            
+            <TabsContent value="reviews" className="mt-6">
+              <ReviewModerationPanel />
             </TabsContent>
           </Tabs>
         </div>
