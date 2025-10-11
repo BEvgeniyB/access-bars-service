@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
 
 interface Review {
   id: number;
@@ -33,6 +34,8 @@ export default function ReviewModerationPanel() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState('pending');
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editText, setEditText] = useState('');
 
   useEffect(() => {
     loadReviews(currentTab);
@@ -68,7 +71,6 @@ export default function ReviewModerationPanel() {
       const data = await response.json();
 
       if (data.success) {
-        // Перезагружаем список после обновления
         loadReviews(currentTab);
       } else {
         console.error('Ошибка обновления статуса:', data.error);
@@ -76,6 +78,41 @@ export default function ReviewModerationPanel() {
     } catch (error) {
       console.error('Ошибка обновления статуса:', error);
     }
+  };
+
+  const updateReviewText = async (reviewId: number, newText: string) => {
+    try {
+      const response = await fetch(REVIEWS_API_URL, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: reviewId,
+          text: newText
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setEditingId(null);
+        setEditText('');
+        loadReviews(currentTab);
+      } else {
+        console.error('Ошибка обновления текста:', data.error);
+      }
+    } catch (error) {
+      console.error('Ошибка обновления текста:', error);
+    }
+  };
+
+  const startEditing = (review: Review) => {
+    setEditingId(review.id);
+    setEditText(review.text);
+  };
+
+  const cancelEditing = () => {
+    setEditingId(null);
+    setEditText('');
   };
 
   const getPendingCount = async () => {
@@ -149,7 +186,47 @@ export default function ReviewModerationPanel() {
                           ))}
                         </div>
                       </div>
-                      <p className="text-gray-700 leading-relaxed mb-2">{review.text}</p>
+                      {editingId === review.id ? (
+                        <div className="mb-3">
+                          <Textarea
+                            value={editText}
+                            onChange={(e) => setEditText(e.target.value)}
+                            className="w-full min-h-[100px] mb-2"
+                            placeholder="Текст отзыва"
+                          />
+                          <div className="flex gap-2">
+                            <Button
+                              onClick={() => updateReviewText(review.id, editText)}
+                              size="sm"
+                              className="bg-green-600 hover:bg-green-700"
+                            >
+                              <Icon name="Check" size={14} className="mr-1" />
+                              Сохранить
+                            </Button>
+                            <Button
+                              onClick={cancelEditing}
+                              size="sm"
+                              variant="outline"
+                            >
+                              <Icon name="X" size={14} className="mr-1" />
+                              Отменить
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex items-start gap-2 mb-2">
+                          <p className="text-gray-700 leading-relaxed flex-1">{review.text}</p>
+                          <Button
+                            onClick={() => startEditing(review)}
+                            size="sm"
+                            variant="ghost"
+                            className="flex-shrink-0"
+                            title="Редактировать текст"
+                          >
+                            <Icon name="Pencil" size={14} />
+                          </Button>
+                        </div>
+                      )}
                       <p className="text-sm text-gray-500">
                         {new Date(review.date).toLocaleDateString('ru-RU', { 
                           day: 'numeric', 

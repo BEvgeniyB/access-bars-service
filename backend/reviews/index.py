@@ -104,6 +104,24 @@ def update_review_status(review_id: int, status: str) -> bool:
     
     return affected > 0
 
+def update_review_text(review_id: int, text: str) -> bool:
+    '''Обновляет текст отзыва (для редактирования админом)'''
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    # Экранирование одинарных кавычек
+    text = text.replace("'", "''")
+    
+    query = f"UPDATE reviews SET text = '{text}', updated_at = CURRENT_TIMESTAMP WHERE id = {review_id}"
+    cur.execute(query)
+    
+    affected = cur.rowcount
+    
+    cur.close()
+    conn.close()
+    
+    return affected > 0
+
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     method: str = event.get('httpMethod', 'GET')
     
@@ -113,7 +131,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'statusCode': 200,
             'headers': {
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
+                'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, OPTIONS',
                 'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Token',
                 'Access-Control-Max-Age': '86400'
             },
@@ -205,6 +223,38 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'statusCode': 200,
                 'headers': headers,
                 'body': json.dumps({'success': True, 'message': 'Статус обновлен'}),
+                'isBase64Encoded': False
+            }
+        else:
+            return {
+                'statusCode': 404,
+                'headers': headers,
+                'body': json.dumps({'success': False, 'error': 'Отзыв не найден'}),
+                'isBase64Encoded': False
+            }
+    
+    # PATCH - обновить текст отзыва (редактирование админом)
+    if method == 'PATCH':
+        body_data = json.loads(event.get('body', '{}'))
+        
+        review_id = body_data.get('id')
+        text = body_data.get('text', '').strip()
+        
+        if not review_id or not text:
+            return {
+                'statusCode': 400,
+                'headers': headers,
+                'body': json.dumps({'success': False, 'error': 'ID и текст обязательны'}),
+                'isBase64Encoded': False
+            }
+        
+        success = update_review_text(review_id, text)
+        
+        if success:
+            return {
+                'statusCode': 200,
+                'headers': headers,
+                'body': json.dumps({'success': True, 'message': 'Текст отзыва обновлен'}),
                 'isBase64Encoded': False
             }
         else:
