@@ -14,6 +14,8 @@ import YandexMetrikaWidget from './YandexMetrikaWidget';
 import DatabaseAnalytics from './DatabaseAnalytics';
 import ReviewModerationPanel from './ReviewModerationPanel';
 
+const REVIEWS_API_URL = 'https://functions.poehali.dev/2f5c36e4-cdb6-496c-8ca9-5aaa20079486';
+
 interface Booking {
   id: number;
   client_name: string;
@@ -51,6 +53,7 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [weekDates, setWeekDates] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState('bookings');
+  const [pendingReviewsCount, setPendingReviewsCount] = useState(0);
   
   // Тот же пароль что и в AdminButton
   const ADMIN_PASSWORD = 'K9mX#7bN2w';
@@ -76,6 +79,11 @@ export default function AdminPanel() {
     if (isAuthenticated) {
       generateWeekDates();
       loadWeekBookings();
+      loadPendingReviewsCount();
+      
+      // Обновляем счётчик каждые 30 секунд
+      const interval = setInterval(loadPendingReviewsCount, 30000);
+      return () => clearInterval(interval);
     }
   }, [isAuthenticated]);
 
@@ -218,6 +226,18 @@ export default function AdminPanel() {
     return timeString.slice(0, 5);
   };
 
+  const loadPendingReviewsCount = async () => {
+    try {
+      const response = await fetch(`${REVIEWS_API_URL}?status=pending`);
+      const data = await response.json();
+      if (data.success) {
+        setPendingReviewsCount(data.reviews?.length || 0);
+      }
+    } catch (error) {
+      console.error('Ошибка загрузки счётчика отзывов:', error);
+    }
+  };
+
   // Показать форму входа если не аутентифицирован
   if (!isAuthenticated) {
     return (
@@ -323,9 +343,14 @@ export default function AdminPanel() {
                 <Icon name="Settings" size={16} />
                 Email
               </TabsTrigger>
-              <TabsTrigger value="reviews" className="flex items-center gap-2">
+              <TabsTrigger value="reviews" className="flex items-center gap-2 relative">
                 <Icon name="MessageSquare" size={16} />
                 Отзывы
+                {pendingReviewsCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                    {pendingReviewsCount}
+                  </span>
+                )}
               </TabsTrigger>
             </TabsList>
             
