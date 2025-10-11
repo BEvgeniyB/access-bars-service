@@ -41,6 +41,13 @@ export default function ReviewModerationPanel() {
   const [editRating, setEditRating] = useState(5);
   const [editText, setEditText] = useState('');
 
+  const clearReviewsCache = () => {
+    localStorage.removeItem('reviews_cache');
+    localStorage.removeItem('reviews_cache_time');
+    localStorage.removeItem('all_reviews_cache');
+    localStorage.removeItem('all_reviews_cache_time');
+  };
+
   useEffect(() => {
     loadReviews(currentTab);
   }, [currentTab]);
@@ -75,6 +82,7 @@ export default function ReviewModerationPanel() {
       const data = await response.json();
 
       if (data.success) {
+        clearReviewsCache();
         loadReviews(currentTab);
       } else {
         console.error('Ошибка обновления статуса:', data.error);
@@ -101,6 +109,7 @@ export default function ReviewModerationPanel() {
       const data = await response.json();
 
       if (data.success) {
+        clearReviewsCache();
         cancelEditing();
         loadReviews(currentTab);
       } else {
@@ -124,6 +133,7 @@ export default function ReviewModerationPanel() {
       const data = await response.json();
 
       if (data.success) {
+        clearReviewsCache();
         loadReviews(currentTab);
       } else {
         console.error('Ошибка удаления отзыва:', data.error);

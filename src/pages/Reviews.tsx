@@ -83,6 +83,13 @@ const Reviews = () => {
     ? (allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length).toFixed(1)
     : "5.0";
 
+  const clearReviewsCache = () => {
+    localStorage.removeItem('reviews_cache');
+    localStorage.removeItem('reviews_cache_time');
+    localStorage.removeItem('all_reviews_cache');
+    localStorage.removeItem('all_reviews_cache_time');
+  };
+
   const handleSubmitReview = async () => {
     if (!formData.name.trim() || !formData.service || !formData.text.trim()) {
       setSubmitMessage('Пожалуйста, заполните все поля');
