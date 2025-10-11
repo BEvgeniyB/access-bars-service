@@ -150,6 +150,21 @@ def update_review_full(review_id: int, name: str, service: str, rating: int, tex
     
     return affected > 0
 
+def delete_review(review_id: int) -> bool:
+    '''Удаляет отзыв из базы данных'''
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    query = f"DELETE FROM reviews WHERE id = {review_id}"
+    cur.execute(query)
+    
+    affected = cur.rowcount
+    
+    cur.close()
+    conn.close()
+    
+    return affected > 0
+
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     method: str = event.get('httpMethod', 'GET')
     
@@ -159,7 +174,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'statusCode': 200,
             'headers': {
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, OPTIONS',
+                'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
                 'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Token',
                 'Access-Control-Max-Age': '86400'
             },
@@ -310,6 +325,46 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'statusCode': 200,
                 'headers': headers,
                 'body': json.dumps({'success': True, 'message': message}),
+                'isBase64Encoded': False
+            }
+        else:
+            return {
+                'statusCode': 404,
+                'headers': headers,
+                'body': json.dumps({'success': False, 'error': 'Отзыв не найден'}),
+                'isBase64Encoded': False
+            }
+    
+    # DELETE - удалить отзыв
+    if method == 'DELETE':
+        params = event.get('queryStringParameters', {}) or {}
+        review_id = params.get('id')
+        
+        if not review_id:
+            return {
+                'statusCode': 400,
+                'headers': headers,
+                'body': json.dumps({'success': False, 'error': 'ID обязателен'}),
+                'isBase64Encoded': False
+            }
+        
+        try:
+            review_id = int(review_id)
+        except ValueError:
+            return {
+                'statusCode': 400,
+                'headers': headers,
+                'body': json.dumps({'success': False, 'error': 'Неверный формат ID'}),
+                'isBase64Encoded': False
+            }
+        
+        success = delete_review(review_id)
+        
+        if success:
+            return {
+                'statusCode': 200,
+                'headers': headers,
+                'body': json.dumps({'success': True, 'message': 'Отзыв удален'}),
                 'isBase64Encoded': False
             }
         else:

@@ -111,6 +111,30 @@ export default function ReviewModerationPanel() {
     }
   };
 
+  const deleteReview = async (reviewId: number) => {
+    if (!confirm('Вы уверены, что хотите удалить этот отзыв? Это действие нельзя отменить.')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${REVIEWS_API_URL}?id=${reviewId}`, {
+        method: 'DELETE'
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        loadReviews(currentTab);
+      } else {
+        console.error('Ошибка удаления отзыва:', data.error);
+        alert('Ошибка при удалении отзыва');
+      }
+    } catch (error) {
+      console.error('Ошибка удаления отзыва:', error);
+      alert('Ошибка при удалении отзыва');
+    }
+  };
+
   const startEditing = (review: Review) => {
     setEditingId(review.id);
     setEditName(review.name);
@@ -314,6 +338,14 @@ export default function ReviewModerationPanel() {
                         <Icon name="X" size={16} className="mr-2" />
                         Отклонить
                       </Button>
+                      <Button
+                        onClick={() => deleteReview(review.id)}
+                        variant="outline"
+                        className="border-red-300 text-red-600 hover:bg-red-50"
+                        title="Удалить отзыв"
+                      >
+                        <Icon name="Trash2" size={16} />
+                      </Button>
                     </div>
                   )}
 
@@ -327,6 +359,14 @@ export default function ReviewModerationPanel() {
                         <Icon name="X" size={16} className="mr-2" />
                         Отклонить
                       </Button>
+                      <Button
+                        onClick={() => deleteReview(review.id)}
+                        variant="outline"
+                        className="border-red-300 text-red-600 hover:bg-red-50"
+                        title="Удалить отзыв"
+                      >
+                        <Icon name="Trash2" size={16} />
+                      </Button>
                     </div>
                   )}
 
@@ -339,6 +379,14 @@ export default function ReviewModerationPanel() {
                       >
                         <Icon name="Check" size={16} className="mr-2" />
                         Одобрить
+                      </Button>
+                      <Button
+                        onClick={() => deleteReview(review.id)}
+                        variant="outline"
+                        className="border-red-300 text-red-600 hover:bg-red-50"
+                        title="Удалить отзыв"
+                      >
+                        <Icon name="Trash2" size={16} />
                       </Button>
                     </div>
                   )}
