@@ -195,19 +195,19 @@ const Massage = () => {
                 Доверьтесь опытному мастеру с 6-летним стажем для восстановления 
                 вашего здоровья и гармонии
               </p>
-              <div className="flex flex-col gap-4 justify-center items-center w-full px-4">
+              <div className="flex flex-col gap-4 justify-center items-center w-full px-2">
                 <Button 
                   size="lg" 
-                  className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold px-3 py-4 text-sm shadow-xl w-full"
-                  style={{ maxWidth: '330px' }}
+                  className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold px-2 py-4 text-xs shadow-xl"
+                  style={{ width: '260px', minWidth: '260px' }}
                   onClick={() => setIsBookingOpen(true)}
                 >
-                  <Icon name="Heart" className="mr-2 flex-shrink-0" size={18} />
+                  <Icon name="Heart" className="mr-1 flex-shrink-0" size={16} />
                   <span className="whitespace-nowrap">Записаться на массаж</span>
                 </Button>
-                <PhoneLink className="w-full" style={{ maxWidth: '330px' }}>
-                  <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold px-3 py-4 text-sm backdrop-blur-sm w-full">
-                    <Icon name="Phone" className="mr-2 flex-shrink-0" size={18} />
+                <PhoneLink>
+                  <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold px-2 py-4 text-xs backdrop-blur-sm" style={{ width: '260px', minWidth: '260px' }}>
+                    <Icon name="Phone" className="mr-1 flex-shrink-0" size={16} />
                     <span className="whitespace-nowrap">+7(918) 414-1221</span>
                   </Button>
                 </PhoneLink>
