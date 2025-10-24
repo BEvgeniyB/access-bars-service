@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -9,8 +10,8 @@ import ScheduleSettingsPanel from './ScheduleSettingsPanel';
 import YandexMetrikaWidget from './YandexMetrikaWidget';
 import DatabaseAnalytics from './DatabaseAnalytics';
 import ReviewModerationPanel from './ReviewModerationPanel';
-import AdminLoginForm from './AdminLoginForm';
 import BookingsTab from './BookingsTab';
+import { logout } from '@/utils/auth';
 
 const REVIEWS_API_URL = 'https://functions.poehali.dev/2f5c36e4-cdb6-496c-8ca9-5aaa20079486';
 
@@ -28,44 +29,21 @@ interface Booking {
 }
 
 export default function AdminPanel() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [password, setPassword] = useState('');
-  const [authError, setAuthError] = useState('');
+  const navigate = useNavigate();
   const [weekBookings, setWeekBookings] = useState<{[key: string]: Booking[]}>({});
   const [loading, setLoading] = useState(true);
   const [weekDates, setWeekDates] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState('bookings');
   const [pendingReviewsCount, setPendingReviewsCount] = useState(0);
-  
-  const ADMIN_PASSWORD = 'K9mX#7bN2w';
-
-  const handlePasswordSubmit = () => {
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true);
-      setPassword('');
-      setAuthError('');
-    } else {
-      setAuthError('Неверный пароль');
-      setPassword('');
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handlePasswordSubmit();
-    }
-  };
 
   useEffect(() => {
-    if (isAuthenticated) {
-      generateWeekDates();
-      loadWeekBookings();
-      loadPendingReviewsCount();
-      
-      const interval = setInterval(loadPendingReviewsCount, 30000);
-      return () => clearInterval(interval);
-    }
-  }, [isAuthenticated]);
+    generateWeekDates();
+    loadWeekBookings();
+    loadPendingReviewsCount();
+    
+    const interval = setInterval(loadPendingReviewsCount, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const generateWeekDates = () => {
     const dates = [];
@@ -171,17 +149,7 @@ export default function AdminPanel() {
     }
   };
 
-  if (!isAuthenticated) {
-    return (
-      <AdminLoginForm
-        password={password}
-        setPassword={setPassword}
-        authError={authError}
-        onSubmit={handlePasswordSubmit}
-        onKeyPress={handleKeyPress}
-      />
-    );
-  }
+
 
   if (loading) {
     return (
@@ -199,7 +167,10 @@ export default function AdminPanel() {
             <h1 className="text-3xl font-bold text-gray-900">Админ-панель</h1>
             <div className="flex items-center gap-3">
               <Button 
-                onClick={() => setIsAuthenticated(false)}
+                onClick={() => {
+                  logout();
+                  navigate('/admin/login');
+                }}
                 variant="outline"
                 className="flex items-center gap-2"
                 title="Выйти из админки"

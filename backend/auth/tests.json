@@ -1,0 +1,24 @@
+{
+  "tests": [
+    {
+      "name": "Invalid password authentication",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "password": "wrongpassword"
+      },
+      "expectedStatus": 401,
+      "expectedBody": {
+        "success": false,
+        "error": "Invalid password"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "OPTIONS preflight request",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    }
+  ]
+}
