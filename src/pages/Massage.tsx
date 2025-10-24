@@ -195,17 +195,17 @@ const Massage = () => {
                 Доверьтесь опытному мастеру с 6-летним стажем для восстановления 
                 вашего здоровья и гармонии
               </p>
-              <div className="flex flex-col sm:flex-row gap-6 justify-center">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-stretch">
                 <Button 
                   size="lg" 
-                  className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold px-10 py-4 text-lg shadow-xl"
+                  className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold px-6 py-4 text-base sm:text-lg shadow-xl w-full sm:w-auto whitespace-nowrap"
                   onClick={() => setIsBookingOpen(true)}
                 >
-                  <Icon name="Heart" className="mr-3" size={20} />
+                  <Icon name="Heart" className="mr-2" size={18} />
                   Записаться на массаж
                 </Button>
                 <PhoneLink>
-                  <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold px-10 py-4 text-lg backdrop-blur-sm">
+                  <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold px-6 py-4 text-base sm:text-lg backdrop-blur-sm w-full sm:w-auto">
                     <Icon name="Phone" className="mr-2" size={18} />
                     +7(918) 414-1221
                   </Button>
