@@ -33,6 +33,9 @@ const AdminLogin = () => {
         navigate('/admin');
       } else {
         toast.error('Неверный пароль');
+        setTimeout(() => {
+          navigate('/');
+        }, 1500);
       }
     } catch (error) {
       toast.error('Ошибка подключения к серверу');
