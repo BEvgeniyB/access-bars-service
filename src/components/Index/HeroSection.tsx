@@ -12,7 +12,7 @@ const HeroSection = ({ setIsBookingOpen }: HeroSectionProps) => {
   return (
     <>
       <div id="hero" className="scroll-target"></div>
-      <section className="pt-16 pb-16 md:py-24 px-4 text-center relative overflow-hidden">
+      <section className="pt-24 pb-16 md:py-24 px-4 text-center relative overflow-hidden">
         <div className="container mx-auto relative z-10">
           <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-5">
             <div 
