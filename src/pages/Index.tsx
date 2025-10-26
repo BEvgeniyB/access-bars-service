@@ -3,7 +3,6 @@ import SEOHead from "@/components/SEOHead";
 import { useEffect, useState } from "react";
 import BookingForm from "@/components/BookingForm";
 import { businessStructuredData, servicesStructuredData, personStructuredData } from "@/data/structuredData";
-import AdminButton from "@/components/AdminButton";
 import ShareButton from "@/components/ShareButton";
 import NavigationMenu from "@/components/Index/NavigationMenu";
 import HeroSection from "@/components/Index/HeroSection";
@@ -88,8 +87,6 @@ const MassageWebsite = () => {
           onClose={() => setIsBookingOpen(false)}
           preselectedService={preselectedService}
         />
-        
-        <AdminButton />
       </div>
     </>
   );
