@@ -34,7 +34,8 @@ const BusinessCard = ({ onClose }: BusinessCardProps) => {
                 </div>
                 <div>
                   <h3 className="font-montserrat font-bold text-2xl text-gold-100">Духовный Наставник</h3>
-                  <p className="text-emerald-200 text-sm">Целительские практики</p>
+                  <p className="text-emerald-200 text-sm">Целительские практики
+Душа, энергия, тело</p>
                 </div>
               </div>
 
