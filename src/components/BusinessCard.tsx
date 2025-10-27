@@ -25,9 +25,7 @@ const BusinessCard = ({ onClose }: BusinessCardProps) => {
             background: `url('https://cdn.poehali.dev/files/84efec35-e1b8-4feb-94a3-2726c46b8421.jpg') center/cover`
           }}
         >
-          <div className="p-8 relative backdrop-blur-[2px] bg-emerald-900/40">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gold-400/5 rounded-full -mr-16 -mt-16"></div>
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-gold-400/5 rounded-full -ml-12 -mb-12"></div>
+          <div className="p-8 relative">
             
             <div className="relative z-10">
               <div className="flex items-center gap-4 mb-6">
