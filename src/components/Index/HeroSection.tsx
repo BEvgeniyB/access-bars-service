@@ -3,6 +3,7 @@ import Icon from "@/components/ui/icon";
 import PhoneLink from "@/components/ui/phone-link";
 import { Link } from "react-router-dom";
 import { trackEvent, YMEvents } from "@/utils/yandexMetrika";
+import { BACKGROUND_IMAGES, getBackgroundStyle } from "@/constants/images";
 
 interface HeroSectionProps {
   setIsBookingOpen: (value: boolean) => void;
@@ -37,7 +38,7 @@ const HeroSection = ({ setIsBookingOpen }: HeroSectionProps) => {
                 setIsBookingOpen(true);
               }}>ЗАПИСАТЬСЯ</Button>
               <PhoneLink>
-                <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold px-8 py-4 text-lg" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
+                <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold px-8 py-4 text-lg" style={getBackgroundStyle(BACKGROUND_IMAGES.PRIMARY)}>
                   <Icon name="Phone" className="mr-2" size={20} />
                   +7(918) 414-1221
                 </Button>

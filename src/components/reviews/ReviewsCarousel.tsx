@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
+import { BACKGROUND_IMAGES, getBackgroundStyle } from "@/constants/images";
 
 interface Review {
   id: number;
@@ -46,7 +47,7 @@ const ReviewsCarousel = () => {
           localStorage.setItem('reviews_cache_time', now.toString());
         }
       } catch (error) {
-        console.error('Ошибка загрузки отзывов:', error);
+        
       } finally {
         setLoading(false);
       }
@@ -97,7 +98,7 @@ const ReviewsCarousel = () => {
 
   return (
     <div className="relative max-w-4xl mx-auto">
-      <Card className="border-2 border-gold-400/30 shadow-2xl overflow-hidden" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
+      <Card className="border-2 border-gold-400/30 shadow-2xl overflow-hidden" style={getBackgroundStyle(BACKGROUND_IMAGES.PRIMARY)}>
         <CardContent className="p-8 md:p-12 relative min-h-[300px]">
           <div className="absolute top-4 left-4">
             <Icon name="Quote" className="text-gold-400/30" size={48} />

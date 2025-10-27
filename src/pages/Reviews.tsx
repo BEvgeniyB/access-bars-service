@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { BACKGROUND_IMAGES, getBackgroundStyle } from "@/constants/images";
 
 interface Review {
   id: number;
@@ -64,7 +65,7 @@ const Reviews = () => {
           localStorage.setItem('all_reviews_cache_time', now.toString());
         }
       } catch (error) {
-        console.error('Ошибка загрузки отзывов:', error);
+        
       } finally {
         setLoading(false);
       }
@@ -167,14 +168,12 @@ const Reviews = () => {
         description="Реальные отзывы клиентов о услугах Access Bars, массажа, целительства и обучения. Читайте истории трансформации и исцеления."
         keywords="отзывы Access Bars, отзывы массаж Москва, отзывы целительство, отзывы Наталья Великая"
         url="https://velikaya-nataliya.ru/reviews"
-        image="https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg"
+        image={BACKGROUND_IMAGES.PRIMARY}
         structuredData={structuredData}
       />
       <div 
         className="min-h-screen font-openSans relative overflow-hidden"
-        style={{
-          background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover no-repeat fixed`,
-        }}
+        style={getBackgroundStyle(BACKGROUND_IMAGES.PRIMARY, { fixed: true })}
       >
         <div className="absolute inset-0 opacity-0"></div>
         

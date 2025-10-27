@@ -2,6 +2,7 @@ import Icon from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import BusinessCard from "@/components/BusinessCard";
+import { BACKGROUND_IMAGES, getBackgroundStyle } from "@/constants/images";
 
 const AboutSection = () => {
   const [isCardOpen, setIsCardOpen] = useState(false);
@@ -10,10 +11,7 @@ const AboutSection = () => {
     <>
       <div id="about" className="scroll-target"></div>
       <section className="py-20 relative"
-        style={{
-          background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`,
-          backgroundAttachment: 'fixed'
-        }}
+        style={getBackgroundStyle(BACKGROUND_IMAGES.PRIMARY, { fixed: true })}
       >
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-12">
@@ -66,7 +64,7 @@ const AboutSection = () => {
             </div>
             
             <div className="space-y-6">
-              <div className="p-6 rounded-2xl" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
+              <div className="p-6 rounded-2xl" style={getBackgroundStyle(BACKGROUND_IMAGES.PRIMARY)}>
                 <p className="font-semibold text-center text-amber-400">
                   Позвольте себе погрузиться в мир гармонии и исцеления. Запишитесь на сеанс прямо сейчас!
                 </p>
@@ -81,8 +79,8 @@ const AboutSection = () => {
                 </div>
               </div>
               
-              <div className="p-6 rounded-2xl shadow-lg flex items-center gap-4" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
-                <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
+              <div className="p-6 rounded-2xl shadow-lg flex items-center gap-4" style={getBackgroundStyle(BACKGROUND_IMAGES.PRIMARY)}>
+                <div className="w-12 h-12 rounded-full flex items-center justify-center" style={getBackgroundStyle(BACKGROUND_IMAGES.PRIMARY)}>
                   <Icon name="Award" className="text-gold-400" size={24} />
                 </div>
                 <div>
@@ -91,8 +89,8 @@ const AboutSection = () => {
                 </div>
               </div>
               
-              <div className="p-6 rounded-2xl shadow-lg flex items-center gap-4" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
-                <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
+              <div className="p-6 rounded-2xl shadow-lg flex items-center gap-4" style={getBackgroundStyle(BACKGROUND_IMAGES.PRIMARY)}>
+                <div className="w-12 h-12 rounded-full flex items-center justify-center" style={getBackgroundStyle(BACKGROUND_IMAGES.PRIMARY)}>
                   <Icon name="Leaf" className="text-gold-400" size={24} />
                 </div>
                 <div>

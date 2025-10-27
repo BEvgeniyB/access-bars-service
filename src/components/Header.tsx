@@ -1,16 +1,17 @@
 import Navigation from "@/components/Navigation";
+import { BACKGROUND_IMAGES, getBackgroundStyle } from "@/constants/images";
 
 interface HeaderProps {
   backgroundImage?: string;
 }
 
 const Header = ({ backgroundImage }: HeaderProps) => {
-  const defaultBg = "https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg";
+  const bgImage = backgroundImage || BACKGROUND_IMAGES.PRIMARY;
   
   return (
     <header 
       className="shadow-lg fixed top-0 left-0 right-0 z-50 border-b border-gold-400/30" 
-      style={{background: `url('${backgroundImage || defaultBg}') center/cover`}}
+      style={getBackgroundStyle(bgImage)}
     >
       <div className="container mx-auto px-4 relative">
         {/* Logo Section */}
@@ -24,7 +25,7 @@ const Header = ({ backgroundImage }: HeaderProps) => {
           />
           {/* Natalia Logo in top right */}
           <img 
-            src="/img/d400ba6e-3090-41d0-afab-e8e8c2a5655b.jpg" 
+            src={BACKGROUND_IMAGES.LOGO} 
             alt="Natalia" 
             className="absolute top-1/2 right-0 -translate-y-1/2 w-10 sm:w-12 md:w-16 h-6 sm:h-8 md:h-10 opacity-95 hover:opacity-100 transition-opacity mix-blend-screen object-fill"
             style={{filter: 'invert(1) brightness(1.5) sepia(1) saturate(4) hue-rotate(15deg) contrast(1.3)'}}

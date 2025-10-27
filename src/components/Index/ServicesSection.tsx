@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 import { Link } from "react-router-dom";
+import { BACKGROUND_IMAGES, getBackgroundStyle } from "@/constants/images";
 
 const ServicesSection = () => {
   const services = [
@@ -39,10 +40,7 @@ const ServicesSection = () => {
     <>
       <div id="services" className="scroll-target"></div>
       <section className="py-20 relative"
-        style={{
-          background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`,
-          backgroundAttachment: 'fixed'
-        }}
+        style={getBackgroundStyle(BACKGROUND_IMAGES.PRIMARY, { fixed: true })}
       >
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 animate-fade-in">
@@ -52,7 +50,7 @@ const ServicesSection = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {services.map((service, index) => (
-              <Card key={index} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg hover:-translate-y-2" style={{background: `url('https://cdn.poehali.dev/files/db4ae80e-dbb8-4534-a07a-f33cfa23d35a.jpg') center/cover`}}>
+              <Card key={index} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg hover:-translate-y-2" style={getBackgroundStyle(BACKGROUND_IMAGES.PRIMARY)}>
                 <CardHeader className="pb-4">
                   <div className="flex justify-between items-start mb-2">
                     <CardTitle className="font-montserrat text-xl text-gold-200 group-hover:text-gold-400 transition-colors">
