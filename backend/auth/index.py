@@ -104,7 +104,11 @@ def handler(event, context):
             body_data = json.loads(event.get('body', '{}'))
             provided_password = body_data.get('password', '')
             
-            if secrets.compare_digest(provided_password, correct_password):
+            # Convert to bytes for comparison to support non-ASCII characters
+            provided_bytes = provided_password.encode('utf-8')
+            correct_bytes = correct_password.encode('utf-8')
+            
+            if secrets.compare_digest(provided_bytes, correct_bytes):
                 session_token = secrets.token_urlsafe(32)
                 expires_at = (datetime.utcnow() + timedelta(hours=24)).isoformat()
                 
@@ -151,6 +155,10 @@ def handler(event, context):
                 }
         
         except Exception as e:
+            print(f"ERROR in auth: {str(e)}")
+            print(f"Error type: {type(e).__name__}")
+            import traceback
+            traceback.print_exc()
             if conn:
                 conn.rollback()
             return {
