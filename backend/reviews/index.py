@@ -17,7 +17,6 @@ def get_db_connection():
         raise ValueError('DATABASE_URL not found in environment')
     
     conn = psycopg2.connect(database_url)
-    conn.autocommit = True
     return conn
 
 def get_reviews(status: Optional[str] = None, service: Optional[str] = None) -> List[Dict[str, Any]]:
@@ -25,22 +24,57 @@ def get_reviews(status: Optional[str] = None, service: Optional[str] = None) -> 
     conn = get_db_connection()
     cur = conn.cursor()
     
-    query = "SELECT id, name, service, rating, text, status, created_at FROM reviews WHERE 1=1"
+    try:
+        query = "SELECT id, name, service, rating, text, status, created_at FROM reviews WHERE 1=1"
+        params = []
+        
+        if status:
+            query += " AND status = %s"
+            params.append(status)
+        
+        if service and service.lower() != 'все':
+            query += " AND LOWER(service) LIKE %s"
+            params.append(f'%{service.lower()}%')
+        
+        query += " ORDER BY created_at DESC"
+        
+        cur.execute(query, tuple(params))
+        rows = cur.fetchall()
+        
+        reviews = []
+        for row in rows:
+            reviews.append({
+                'id': row[0],
+                'name': row[1],
+                'service': row[2],
+                'rating': row[3],
+                'text': row[4],
+                'status': row[5],
+                'date': row[6].isoformat() if row[6] else None
+            })
+        
+        return reviews
+    finally:
+        cur.close()
+        conn.close()
+
+def create_review(name: str, service: str, rating: int, text: str) -> Dict[str, Any]:
+    '''Создает новый отзыв со статусом pending'''
+    conn = get_db_connection()
+    cur = conn.cursor()
     
-    if status:
-        query += f" AND status = '{status}'"
-    
-    if service and service.lower() != 'все':
-        query += f" AND LOWER(service) LIKE '%{service.lower()}%'"
-    
-    query += " ORDER BY created_at DESC"
-    
-    cur.execute(query)
-    rows = cur.fetchall()
-    
-    reviews = []
-    for row in rows:
-        reviews.append({
+    try:
+        query = """
+            INSERT INTO reviews (name, service, rating, text, status)
+            VALUES (%s, %s, %s, %s, 'pending')
+            RETURNING id, name, service, rating, text, status, created_at
+        """
+        
+        cur.execute(query, (name, service, rating, text))
+        row = cur.fetchone()
+        conn.commit()
+        
+        review = {
             'id': row[0],
             'name': row[1],
             'service': row[2],
@@ -48,127 +82,117 @@ def get_reviews(status: Optional[str] = None, service: Optional[str] = None) -> 
             'text': row[4],
             'status': row[5],
             'date': row[6].isoformat() if row[6] else None
-        })
-    
-    cur.close()
-    conn.close()
-    
-    return reviews
-
-def create_review(name: str, service: str, rating: int, text: str) -> Dict[str, Any]:
-    '''Создает новый отзыв со статусом pending'''
-    conn = get_db_connection()
-    cur = conn.cursor()
-    
-    # Экранирование одинарных кавычек
-    name = name.replace("'", "''")
-    service = service.replace("'", "''")
-    text = text.replace("'", "''")
-    
-    query = f"""
-        INSERT INTO reviews (name, service, rating, text, status)
-        VALUES ('{name}', '{service}', {rating}, '{text}', 'pending')
-        RETURNING id, name, service, rating, text, status, created_at
-    """
-    
-    cur.execute(query)
-    row = cur.fetchone()
-    
-    review = {
-        'id': row[0],
-        'name': row[1],
-        'service': row[2],
-        'rating': row[3],
-        'text': row[4],
-        'status': row[5],
-        'date': row[6].isoformat() if row[6] else None
-    }
-    
-    cur.close()
-    conn.close()
-    
-    return review
+        }
+        
+        return review
+    except Exception as e:
+        conn.rollback()
+        raise e
+    finally:
+        cur.close()
+        conn.close()
 
 def update_review_status(review_id: int, status: str) -> bool:
     '''Обновляет статус отзыва (для модерации)'''
     conn = get_db_connection()
     cur = conn.cursor()
     
-    query = f"UPDATE reviews SET status = '{status}', updated_at = CURRENT_TIMESTAMP WHERE id = {review_id}"
-    cur.execute(query)
-    
-    affected = cur.rowcount
-    
-    cur.close()
-    conn.close()
-    
-    return affected > 0
+    try:
+        query = "UPDATE reviews SET status = %s, updated_at = CURRENT_TIMESTAMP WHERE id = %s"
+        cur.execute(query, (status, review_id))
+        conn.commit()
+        
+        affected = cur.rowcount
+        return affected > 0
+    except Exception as e:
+        conn.rollback()
+        raise e
+    finally:
+        cur.close()
+        conn.close()
 
 def update_review_text(review_id: int, text: str) -> bool:
     '''Обновляет текст отзыва (для редактирования админом)'''
     conn = get_db_connection()
     cur = conn.cursor()
     
-    # Экранирование одинарных кавычек
-    text = text.replace("'", "''")
-    
-    query = f"UPDATE reviews SET text = '{text}', updated_at = CURRENT_TIMESTAMP WHERE id = {review_id}"
-    cur.execute(query)
-    
-    affected = cur.rowcount
-    
-    cur.close()
-    conn.close()
-    
-    return affected > 0
+    try:
+        query = "UPDATE reviews SET text = %s, updated_at = CURRENT_TIMESTAMP WHERE id = %s"
+        cur.execute(query, (text, review_id))
+        conn.commit()
+        
+        affected = cur.rowcount
+        return affected > 0
+    except Exception as e:
+        conn.rollback()
+        raise e
+    finally:
+        cur.close()
+        conn.close()
 
 def update_review_full(review_id: int, name: str, service: str, rating: int, text: str) -> bool:
     '''Обновляет все поля отзыва (для полного редактирования админом)'''
     conn = get_db_connection()
     cur = conn.cursor()
     
-    # Экранирование одинарных кавычек
-    name = name.replace("'", "''")
-    service = service.replace("'", "''")
-    text = text.replace("'", "''")
-    
-    query = f"""
-        UPDATE reviews 
-        SET name = '{name}', 
-            service = '{service}', 
-            rating = {rating}, 
-            text = '{text}', 
-            updated_at = CURRENT_TIMESTAMP 
-        WHERE id = {review_id}
-    """
-    cur.execute(query)
-    
-    affected = cur.rowcount
-    
-    cur.close()
-    conn.close()
-    
-    return affected > 0
+    try:
+        query = """
+            UPDATE reviews 
+            SET name = %s, 
+                service = %s, 
+                rating = %s, 
+                text = %s, 
+                updated_at = CURRENT_TIMESTAMP 
+            WHERE id = %s
+        """
+        cur.execute(query, (name, service, rating, text, review_id))
+        conn.commit()
+        
+        affected = cur.rowcount
+        return affected > 0
+    except Exception as e:
+        conn.rollback()
+        raise e
+    finally:
+        cur.close()
+        conn.close()
 
 def delete_review(review_id: int) -> bool:
     '''Удаляет отзыв из базы данных'''
     conn = get_db_connection()
     cur = conn.cursor()
     
-    query = f"DELETE FROM reviews WHERE id = {review_id}"
-    cur.execute(query)
+    try:
+        query = "DELETE FROM reviews WHERE id = %s"
+        cur.execute(query, (review_id,))
+        conn.commit()
+        
+        affected = cur.rowcount
+        return affected > 0
+    except Exception as e:
+        conn.rollback()
+        raise e
+    finally:
+        cur.close()
+        conn.close()
+
+def verify_admin_token(event: Dict[str, Any]) -> bool:
+    '''Проверяет административный токен'''
+    headers = event.get('headers', {})
+    token = headers.get('x-admin-token') or headers.get('X-Admin-Token')
     
-    affected = cur.rowcount
+    if not token:
+        return False
     
-    cur.close()
-    conn.close()
+    expected_token = os.environ.get('ADMIN_TOKEN')
+    if not expected_token:
+        return False
     
-    return affected > 0
+    return token == expected_token
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     method: str = event.get('httpMethod', 'GET')
     
-    # CORS preflight
     if method == 'OPTIONS':
         return {
             'statusCode': 200,
@@ -187,117 +211,53 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         'Access-Control-Allow-Origin': '*'
     }
     
-    # GET - получить отзывы
-    if method == 'GET':
-        params = event.get('queryStringParameters', {}) or {}
-        status = params.get('status', 'approved')
-        service = params.get('service')
-        
-        reviews = get_reviews(status=status, service=service)
-        
-        return {
-            'statusCode': 200,
-            'headers': headers,
-            'body': json.dumps({'success': True, 'reviews': reviews}),
-            'isBase64Encoded': False
-        }
-    
-    # POST - создать новый отзыв
-    if method == 'POST':
-        body_data = json.loads(event.get('body', '{}'))
-        
-        name = body_data.get('name', '').strip()
-        service = body_data.get('service', '').strip()
-        rating = body_data.get('rating', 5)
-        text = body_data.get('text', '').strip()
-        
-        if not name or not service or not text:
-            return {
-                'statusCode': 400,
-                'headers': headers,
-                'body': json.dumps({'success': False, 'error': 'Заполните все поля'}),
-                'isBase64Encoded': False
-            }
-        
-        if rating < 1 or rating > 5:
-            return {
-                'statusCode': 400,
-                'headers': headers,
-                'body': json.dumps({'success': False, 'error': 'Рейтинг должен быть от 1 до 5'}),
-                'isBase64Encoded': False
-            }
-        
-        review = create_review(name, service, rating, text)
-        
-        return {
-            'statusCode': 201,
-            'headers': headers,
-            'body': json.dumps({'success': True, 'review': review, 'message': 'Отзыв отправлен на модерацию'}),
-            'isBase64Encoded': False
-        }
-    
-    # PUT - обновить статус (модерация)
-    if method == 'PUT':
-        body_data = json.loads(event.get('body', '{}'))
-        
-        review_id = body_data.get('id')
-        status = body_data.get('status')
-        
-        if not review_id or not status:
-            return {
-                'statusCode': 400,
-                'headers': headers,
-                'body': json.dumps({'success': False, 'error': 'ID и статус обязательны'}),
-                'isBase64Encoded': False
-            }
-        
-        if status not in ['pending', 'approved', 'rejected']:
-            return {
-                'statusCode': 400,
-                'headers': headers,
-                'body': json.dumps({'success': False, 'error': 'Неверный статус'}),
-                'isBase64Encoded': False
-            }
-        
-        success = update_review_status(review_id, status)
-        
-        if success:
+    try:
+        if method == 'GET':
+            params = event.get('queryStringParameters', {}) or {}
+            status = params.get('status', 'approved')
+            service = params.get('service')
+            
+            reviews = get_reviews(status=status, service=service)
+            
             return {
                 'statusCode': 200,
                 'headers': headers,
-                'body': json.dumps({'success': True, 'message': 'Статус обновлен'}),
-                'isBase64Encoded': False
-            }
-        else:
-            return {
-                'statusCode': 404,
-                'headers': headers,
-                'body': json.dumps({'success': False, 'error': 'Отзыв не найден'}),
-                'isBase64Encoded': False
-            }
-    
-    # PATCH - обновить отзыв (редактирование админом)
-    if method == 'PATCH':
-        body_data = json.loads(event.get('body', '{}'))
-        
-        review_id = body_data.get('id')
-        
-        # Проверяем, какой тип обновления (частичное или полное)
-        name = body_data.get('name')
-        service = body_data.get('service')
-        rating = body_data.get('rating')
-        text = body_data.get('text', '').strip()
-        
-        if not review_id:
-            return {
-                'statusCode': 400,
-                'headers': headers,
-                'body': json.dumps({'success': False, 'error': 'ID обязателен'}),
+                'body': json.dumps({'success': True, 'reviews': reviews}),
                 'isBase64Encoded': False
             }
         
-        # Полное редактирование (все поля)
-        if name and service and rating and text:
+        elif method == 'POST':
+            body_data = json.loads(event.get('body', '{}'))
+            
+            name = body_data.get('name', '').strip()
+            service = body_data.get('service', '').strip()
+            rating = body_data.get('rating', 5)
+            text = body_data.get('text', '').strip()
+            
+            if not name or not service or not text:
+                return {
+                    'statusCode': 400,
+                    'headers': headers,
+                    'body': json.dumps({'success': False, 'error': 'Заполните все поля'}),
+                    'isBase64Encoded': False
+                }
+            
+            if len(name) > 255 or len(service) > 255:
+                return {
+                    'statusCode': 400,
+                    'headers': headers,
+                    'body': json.dumps({'success': False, 'error': 'Имя и услуга не должны превышать 255 символов'}),
+                    'isBase64Encoded': False
+                }
+            
+            if len(text) > 5000:
+                return {
+                    'statusCode': 400,
+                    'headers': headers,
+                    'body': json.dumps({'success': False, 'error': 'Текст отзыва слишком длинный'}),
+                    'isBase64Encoded': False
+                }
+            
             if rating < 1 or rating > 5:
                 return {
                     'statusCode': 400,
@@ -306,78 +266,180 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
-            success = update_review_full(review_id, name.strip(), service.strip(), rating, text)
-            message = 'Отзыв обновлен'
-        # Частичное редактирование (только текст)
-        elif text:
-            success = update_review_text(review_id, text)
-            message = 'Текст отзыва обновлен'
-        else:
+            review = create_review(name, service, rating, text)
+            
             return {
-                'statusCode': 400,
+                'statusCode': 201,
                 'headers': headers,
-                'body': json.dumps({'success': False, 'error': 'Необходимо указать поля для обновления'}),
+                'body': json.dumps({'success': True, 'review': review, 'message': 'Отзыв отправлен на модерацию'}),
                 'isBase64Encoded': False
             }
         
-        if success:
-            return {
-                'statusCode': 200,
-                'headers': headers,
-                'body': json.dumps({'success': True, 'message': message}),
-                'isBase64Encoded': False
-            }
+        elif method == 'PUT':
+            if not verify_admin_token(event):
+                return {
+                    'statusCode': 401,
+                    'headers': headers,
+                    'body': json.dumps({'success': False, 'error': 'Unauthorized'}),
+                    'isBase64Encoded': False
+                }
+            
+            body_data = json.loads(event.get('body', '{}'))
+            
+            review_id = body_data.get('id')
+            status = body_data.get('status')
+            
+            if not review_id or not status:
+                return {
+                    'statusCode': 400,
+                    'headers': headers,
+                    'body': json.dumps({'success': False, 'error': 'ID и статус обязательны'}),
+                    'isBase64Encoded': False
+                }
+            
+            if status not in ['pending', 'approved', 'rejected']:
+                return {
+                    'statusCode': 400,
+                    'headers': headers,
+                    'body': json.dumps({'success': False, 'error': 'Неверный статус'}),
+                    'isBase64Encoded': False
+                }
+            
+            success = update_review_status(review_id, status)
+            
+            if success:
+                return {
+                    'statusCode': 200,
+                    'headers': headers,
+                    'body': json.dumps({'success': True, 'message': 'Статус обновлен'}),
+                    'isBase64Encoded': False
+                }
+            else:
+                return {
+                    'statusCode': 404,
+                    'headers': headers,
+                    'body': json.dumps({'success': False, 'error': 'Отзыв не найден'}),
+                    'isBase64Encoded': False
+                }
+        
+        elif method == 'PATCH':
+            if not verify_admin_token(event):
+                return {
+                    'statusCode': 401,
+                    'headers': headers,
+                    'body': json.dumps({'success': False, 'error': 'Unauthorized'}),
+                    'isBase64Encoded': False
+                }
+            
+            body_data = json.loads(event.get('body', '{}'))
+            review_id = body_data.get('id')
+            
+            if not review_id:
+                return {
+                    'statusCode': 400,
+                    'headers': headers,
+                    'body': json.dumps({'success': False, 'error': 'ID обязателен'}),
+                    'isBase64Encoded': False
+                }
+            
+            if 'text' in body_data and len(set(body_data.keys()) - {'id', 'text'}) == 0:
+                text = body_data['text']
+                if len(text) > 5000:
+                    return {
+                        'statusCode': 400,
+                        'headers': headers,
+                        'body': json.dumps({'success': False, 'error': 'Текст слишком длинный'}),
+                        'isBase64Encoded': False
+                    }
+                success = update_review_text(review_id, text)
+            else:
+                name = body_data.get('name', '').strip()
+                service = body_data.get('service', '').strip()
+                rating = body_data.get('rating')
+                text = body_data.get('text', '').strip()
+                
+                if not name or not service or not text or rating is None:
+                    return {
+                        'statusCode': 400,
+                        'headers': headers,
+                        'body': json.dumps({'success': False, 'error': 'Все поля обязательны'}),
+                        'isBase64Encoded': False
+                    }
+                
+                if rating < 1 or rating > 5:
+                    return {
+                        'statusCode': 400,
+                        'headers': headers,
+                        'body': json.dumps({'success': False, 'error': 'Рейтинг должен быть от 1 до 5'}),
+                        'isBase64Encoded': False
+                    }
+                
+                success = update_review_full(review_id, name, service, rating, text)
+            
+            if success:
+                return {
+                    'statusCode': 200,
+                    'headers': headers,
+                    'body': json.dumps({'success': True, 'message': 'Отзыв обновлен'}),
+                    'isBase64Encoded': False
+                }
+            else:
+                return {
+                    'statusCode': 404,
+                    'headers': headers,
+                    'body': json.dumps({'success': False, 'error': 'Отзыв не найден'}),
+                    'isBase64Encoded': False
+                }
+        
+        elif method == 'DELETE':
+            if not verify_admin_token(event):
+                return {
+                    'statusCode': 401,
+                    'headers': headers,
+                    'body': json.dumps({'success': False, 'error': 'Unauthorized'}),
+                    'isBase64Encoded': False
+                }
+            
+            params = event.get('queryStringParameters', {}) or {}
+            review_id = params.get('id')
+            
+            if not review_id:
+                return {
+                    'statusCode': 400,
+                    'headers': headers,
+                    'body': json.dumps({'success': False, 'error': 'ID обязателен'}),
+                    'isBase64Encoded': False
+                }
+            
+            success = delete_review(int(review_id))
+            
+            if success:
+                return {
+                    'statusCode': 200,
+                    'headers': headers,
+                    'body': json.dumps({'success': True, 'message': 'Отзыв удален'}),
+                    'isBase64Encoded': False
+                }
+            else:
+                return {
+                    'statusCode': 404,
+                    'headers': headers,
+                    'body': json.dumps({'success': False, 'error': 'Отзыв не найден'}),
+                    'isBase64Encoded': False
+                }
+        
         else:
             return {
-                'statusCode': 404,
+                'statusCode': 405,
                 'headers': headers,
-                'body': json.dumps({'success': False, 'error': 'Отзыв не найден'}),
+                'body': json.dumps({'success': False, 'error': 'Метод не поддерживается'}),
                 'isBase64Encoded': False
             }
     
-    # DELETE - удалить отзыв
-    if method == 'DELETE':
-        params = event.get('queryStringParameters', {}) or {}
-        review_id = params.get('id')
-        
-        if not review_id:
-            return {
-                'statusCode': 400,
-                'headers': headers,
-                'body': json.dumps({'success': False, 'error': 'ID обязателен'}),
-                'isBase64Encoded': False
-            }
-        
-        try:
-            review_id = int(review_id)
-        except ValueError:
-            return {
-                'statusCode': 400,
-                'headers': headers,
-                'body': json.dumps({'success': False, 'error': 'Неверный формат ID'}),
-                'isBase64Encoded': False
-            }
-        
-        success = delete_review(review_id)
-        
-        if success:
-            return {
-                'statusCode': 200,
-                'headers': headers,
-                'body': json.dumps({'success': True, 'message': 'Отзыв удален'}),
-                'isBase64Encoded': False
-            }
-        else:
-            return {
-                'statusCode': 404,
-                'headers': headers,
-                'body': json.dumps({'success': False, 'error': 'Отзыв не найден'}),
-                'isBase64Encoded': False
-            }
-    
-    return {
-        'statusCode': 405,
-        'headers': headers,
-        'body': json.dumps({'success': False, 'error': 'Метод не поддерживается'}),
-        'isBase64Encoded': False
-    }
+    except Exception as e:
+        return {
+            'statusCode': 500,
+            'headers': headers,
+            'body': json.dumps({'success': False, 'error': str(e)}),
+            'isBase64Encoded': False
+        }

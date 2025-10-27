@@ -152,35 +152,55 @@ def get_schedule(cursor, event):
     service_id = params.get('service_id')
     
     if date_str:
-        date_filter = f"ms.date = '{date_str}'"
+        cursor.execute("""
+            SELECT ms.*, 
+                   COALESCE(
+                       json_agg(
+                           json_build_object(
+                               'id', b.id,
+                               'start_time', b.start_time,
+                               'end_time', b.end_time,
+                               'service_name', s.name,
+                               'client_name', b.client_name,
+                               'client_phone', b.client_phone,
+                               'status', b.status
+                           )
+                       ) FILTER (WHERE b.id IS NOT NULL), 
+                       '[]'::json
+                   ) as bookings
+            FROM t_p89870318_access_bars_service.master_schedule ms
+            LEFT JOIN t_p89870318_access_bars_service.bookings b ON ms.date = b.booking_date
+            LEFT JOIN t_p89870318_access_bars_service.services s ON b.service_id = s.id
+            WHERE ms.date = %s AND ms.is_working = true
+            GROUP BY ms.id, ms.date, ms.start_time, ms.end_time, ms.break_start_time, ms.break_end_time, ms.notes
+            ORDER BY ms.date
+        """, (date_str,))
     else:
         today = datetime.now().date()
-        dates = [(today + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(7)]
-        date_filter = "ms.date IN ('" + "','".join(dates) + "')"
-    
-    cursor.execute(f"""
-        SELECT ms.*, 
-               COALESCE(
-                   json_agg(
-                       json_build_object(
-                           'id', b.id,
-                           'start_time', b.start_time,
-                           'end_time', b.end_time,
-                           'service_name', s.name,
-                           'client_name', b.client_name,
-                           'client_phone', b.client_phone,
-                           'status', b.status
-                       )
-                   ) FILTER (WHERE b.id IS NOT NULL), 
-                   '[]'::json
-               ) as bookings
-        FROM t_p89870318_access_bars_service.master_schedule ms
-        LEFT JOIN t_p89870318_access_bars_service.bookings b ON ms.date = b.booking_date
-        LEFT JOIN t_p89870318_access_bars_service.services s ON b.service_id = s.id
-        WHERE {date_filter} AND ms.is_working = true
-        GROUP BY ms.id, ms.date, ms.start_time, ms.end_time, ms.break_start_time, ms.break_end_time, ms.notes
-        ORDER BY ms.date
-    """)
+        dates = [(today + timedelta(days=i)) for i in range(7)]
+        cursor.execute("""
+            SELECT ms.*, 
+                   COALESCE(
+                       json_agg(
+                           json_build_object(
+                               'id', b.id,
+                               'start_time', b.start_time,
+                               'end_time', b.end_time,
+                               'service_name', s.name,
+                               'client_name', b.client_name,
+                               'client_phone', b.client_phone,
+                               'status', b.status
+                           )
+                       ) FILTER (WHERE b.id IS NOT NULL), 
+                       '[]'::json
+                   ) as bookings
+            FROM t_p89870318_access_bars_service.master_schedule ms
+            LEFT JOIN t_p89870318_access_bars_service.bookings b ON ms.date = b.booking_date
+            LEFT JOIN t_p89870318_access_bars_service.services s ON b.service_id = s.id
+            WHERE ms.date = ANY(%s) AND ms.is_working = true
+            GROUP BY ms.id, ms.date, ms.start_time, ms.end_time, ms.break_start_time, ms.break_end_time, ms.notes
+            ORDER BY ms.date
+        """, (dates,))
     
     schedule_data = cursor.fetchall()
     
