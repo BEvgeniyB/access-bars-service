@@ -16,6 +16,7 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
+      console.log('Отправка пароля на сервер...');
       const response = await fetch('https://functions.poehali.dev/27489cd4-1a5a-4783-be35-74077b1739ee', {
         method: 'POST',
         headers: {
@@ -24,7 +25,9 @@ const AdminLogin = () => {
         body: JSON.stringify({ password }),
       });
 
+      console.log('Статус ответа:', response.status);
       const data = await response.json();
+      console.log('Данные ответа:', data);
 
       if (response.ok && data.success) {
         localStorage.setItem('admin_token', data.token);
@@ -32,12 +35,14 @@ const AdminLogin = () => {
         toast.success('Вход выполнен успешно');
         navigate('/admin');
       } else {
-        toast.error('Неверный пароль');
+        console.error('Ошибка авторизации:', data);
+        toast.error(data.error || 'Неверный пароль');
         setTimeout(() => {
           navigate('/');
         }, 1500);
       }
     } catch (error) {
+      console.error('Ошибка при входе:', error);
       toast.error('Ошибка подключения к серверу');
     } finally {
       setLoading(false);
