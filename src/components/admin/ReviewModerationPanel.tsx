@@ -70,9 +70,13 @@ export default function ReviewModerationPanel() {
 
   const updateReviewStatus = async (reviewId: number, newStatus: 'approved' | 'rejected') => {
     try {
+      const adminToken = localStorage.getItem('admin_token');
       const response = await fetch(REVIEWS_API_URL, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Admin-Token': adminToken || ''
+        },
         body: JSON.stringify({
           id: reviewId,
           status: newStatus
@@ -94,9 +98,13 @@ export default function ReviewModerationPanel() {
 
   const updateReviewFull = async (reviewId: number, name: string, service: string, rating: number, text: string) => {
     try {
+      const adminToken = localStorage.getItem('admin_token');
       const response = await fetch(REVIEWS_API_URL, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Admin-Token': adminToken || ''
+        },
         body: JSON.stringify({
           id: reviewId,
           name,
@@ -126,8 +134,12 @@ export default function ReviewModerationPanel() {
     }
 
     try {
+      const adminToken = localStorage.getItem('admin_token');
       const response = await fetch(`${REVIEWS_API_URL}?id=${reviewId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+          'X-Admin-Token': adminToken || ''
+        }
       });
 
       const data = await response.json();
