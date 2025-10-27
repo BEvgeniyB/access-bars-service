@@ -53,8 +53,8 @@ const BusinessCard = ({ onClose }: BusinessCardProps) => {
                 
                 <div className="flex items-center gap-3">
                   <Icon name="Send" className="text-gold-400" size={20} />
-                  <a href="https://t.me/yourchannel" target="_blank" rel="noopener noreferrer" className="text-emerald-100 hover:text-gold-200 transition-colors">
-                    @bodyhealing
+                  <a href="https://t.me/velikaya_nataliya" target="_blank" rel="noopener noreferrer" className="text-emerald-100 hover:text-gold-200 transition-colors">
+                    @velikaya_nataliya
                   </a>
                 </div>
               </div>
