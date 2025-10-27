@@ -19,10 +19,15 @@ const BusinessCard = ({ onClose }: BusinessCardProps) => {
           <Icon name="X" size={24} />
         </Button>
 
-        <div className="business-card bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900 text-white rounded-2xl shadow-2xl overflow-hidden">
-          <div className="p-8 relative">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gold-400/10 rounded-full -mr-16 -mt-16"></div>
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-gold-400/10 rounded-full -ml-12 -mb-12"></div>
+        <div 
+          className="business-card text-white rounded-2xl shadow-2xl overflow-hidden"
+          style={{
+            background: `url('https://cdn.poehali.dev/files/84efec35-e1b8-4feb-94a3-2726c46b8421.jpg') center/cover`
+          }}
+        >
+          <div className="p-8 relative backdrop-blur-[2px] bg-emerald-900/40">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gold-400/5 rounded-full -mr-16 -mt-16"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-gold-400/5 rounded-full -ml-12 -mb-12"></div>
             
             <div className="relative z-10">
               <div className="flex items-center gap-4 mb-6">
