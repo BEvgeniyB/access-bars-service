@@ -1,0 +1,30 @@
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .business-card,
+  .business-card * {
+    visibility: visible;
+  }
+
+  .business-card {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 90mm;
+    height: 50mm;
+    margin: 0;
+    padding: 0;
+    page-break-after: avoid;
+  }
+
+  button {
+    display: none !important;
+  }
+
+  .fixed.inset-0 {
+    background: white !important;
+    position: static !important;
+  }
+}

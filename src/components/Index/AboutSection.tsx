@@ -1,6 +1,11 @@
 import Icon from "@/components/ui/icon";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import BusinessCard from "@/components/BusinessCard";
 
 const AboutSection = () => {
+  const [isCardOpen, setIsCardOpen] = useState(false);
+
   return (
     <>
       <div id="about" className="scroll-target"></div>
@@ -11,7 +16,16 @@ const AboutSection = () => {
         }}
       >
         <div className="container mx-auto px-4">
-          <h2 className="font-montserrat font-bold text-4xl text-gold-100 mb-12 text-center">Обо мне ...</h2>
+          <div className="flex justify-between items-center mb-12">
+            <h2 className="font-montserrat font-bold text-4xl text-gold-100">Обо мне ...</h2>
+            <Button
+              onClick={() => setIsCardOpen(true)}
+              className="bg-gold-400 hover:bg-gold-500 text-emerald-900 font-medium"
+            >
+              <Icon name="CreditCard" className="mr-2" size={18} />
+              Моя визитка
+            </Button>
+          </div>
           
           <div className="grid md:grid-cols-2 gap-12 items-start mb-12">
             <div className="animate-fade-in">
@@ -90,6 +104,8 @@ const AboutSection = () => {
           </div>
         </div>
       </section>
+
+      {isCardOpen && <BusinessCard onClose={() => setIsCardOpen(false)} />}
     </>
   );
 };
