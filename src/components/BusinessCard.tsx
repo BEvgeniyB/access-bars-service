@@ -38,15 +38,19 @@ const BusinessCard = ({ onClose }: BusinessCardProps) => {
 
         <div 
           className="business-card-container"
-          style={{ perspective: '1000px' }}
+          style={{ 
+            perspective: '1000px',
+            width: '400px',
+            height: '250px'
+          }}
         >
           <div 
             className={`business-card-inner ${isFlipped ? 'flipped' : ''}`}
             onClick={() => setIsFlipped(!isFlipped)}
             style={{
               position: 'relative',
-              width: '100%',
-              height: '100%',
+              width: '400px',
+              height: '250px',
               transition: 'transform 0.6s',
               transformStyle: 'preserve-3d',
               cursor: 'pointer',
