@@ -7,17 +7,11 @@ Returns: HTTP response dict с отзывами или статусом опер
 
 import json
 import os
-import psycopg2
 from typing import Dict, Any, List, Optional
 
-def get_db_connection():
-    '''Создает подключение к PostgreSQL используя простой протокол'''
-    database_url = os.environ.get('DATABASE_URL')
-    if not database_url:
-        raise ValueError('DATABASE_URL not found in environment')
-    
-    conn = psycopg2.connect(database_url)
-    return conn
+from shared_db import get_db_connection
+from shared_cors import handle_cors_options
+from shared_responses import success_response, error_response
 
 def get_reviews(status: Optional[str] = None, service: Optional[str] = None) -> List[Dict[str, Any]]:
     '''Получает отзывы из БД с фильтрацией'''
@@ -194,22 +188,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     method: str = event.get('httpMethod', 'GET')
     
     if method == 'OPTIONS':
-        return {
-            'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Token',
-                'Access-Control-Max-Age': '86400'
-            },
-            'body': '',
-            'isBase64Encoded': False
-        }
-    
-    headers = {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-    }
+        return handle_cors_options('GET, POST, PUT, PATCH, DELETE, OPTIONS')
     
     try:
         if method == 'GET':
@@ -219,12 +198,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             reviews = get_reviews(status=status, service=service)
             
-            return {
-                'statusCode': 200,
-                'headers': headers,
-                'body': json.dumps({'success': True, 'reviews': reviews}),
-                'isBase64Encoded': False
-            }
+            return success_response({'success': True, 'reviews': reviews})
         
         elif method == 'POST':
             body_data = json.loads(event.get('body', '{}'))
@@ -235,36 +209,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             text = body_data.get('text', '').strip()
             
             if not name or not service or not text:
-                return {
-                    'statusCode': 400,
-                    'headers': headers,
-                    'body': json.dumps({'success': False, 'error': 'Заполните все поля'}),
-                    'isBase64Encoded': False
-                }
+                return error_response('Заполните все поля', 400)
             
             if len(name) > 255 or len(service) > 255:
-                return {
-                    'statusCode': 400,
-                    'headers': headers,
-                    'body': json.dumps({'success': False, 'error': 'Имя и услуга не должны превышать 255 символов'}),
-                    'isBase64Encoded': False
-                }
+                return error_response('Имя и услуга не должны превышать 255 символов', 400)
             
             if len(text) > 5000:
-                return {
-                    'statusCode': 400,
-                    'headers': headers,
-                    'body': json.dumps({'success': False, 'error': 'Текст отзыва слишком длинный'}),
-                    'isBase64Encoded': False
-                }
+                return error_response('Текст отзыва слишком длинный', 400)
             
             if rating < 1 or rating > 5:
-                return {
-                    'statusCode': 400,
-                    'headers': headers,
-                    'body': json.dumps({'success': False, 'error': 'Рейтинг должен быть от 1 до 5'}),
-                    'isBase64Encoded': False
-                }
+                return error_response('Рейтинг должен быть от 1 до 5', 400)
             
             review = create_review(name, service, rating, text)
             

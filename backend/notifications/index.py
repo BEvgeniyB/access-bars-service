@@ -1,15 +1,12 @@
 import json
 import smtplib
 import os
-import psycopg2
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-def get_db_connection():
-    database_url = os.environ.get('DATABASE_URL')
-    if not database_url:
-        raise Exception('DATABASE_URL не настроен')
-    return psycopg2.connect(database_url)
+from shared_db import get_db_connection
+from shared_cors import handle_cors_options
+from shared_responses import success_response, error_response
 
 def get_email_settings():
     conn = get_db_connection()
@@ -100,16 +97,7 @@ def handler(event, context):
         
         # Handle CORS OPTIONS request
         if method == 'OPTIONS':
-            return {
-                'statusCode': 200,
-                'headers': {
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
-                    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-                    'Access-Control-Max-Age': '86400'
-                },
-                'body': ''
-            }
+            return handle_cors_options('GET, POST, PUT, OPTIONS')
         
         # Send status update notification
         if method == 'POST':

@@ -1,7 +1,10 @@
 import json
 import os
-import psycopg2
 from datetime import datetime, timedelta
+
+from shared_db import get_db_connection
+from shared_cors import handle_cors_options
+from shared_responses import success_response, error_response
 
 def handler(event, context):
     '''
@@ -13,32 +16,13 @@ def handler(event, context):
     method = event.get('httpMethod', 'GET')
     
     if method == 'OPTIONS':
-        return {
-            'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type, Authorization, User-Agent, Referer',
-                'Access-Control-Max-Age': '86400'
-            },
-            'isBase64Encoded': False,
-            'body': ''
-        }
-    
-    database_url = os.environ.get('DATABASE_URL')
-    if not database_url:
-        return {
-            'statusCode': 500,
-            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-            'isBase64Encoded': False,
-            'body': json.dumps({'error': 'DATABASE_URL not found'})
-        }
+        return handle_cors_options('GET, POST, OPTIONS')
     
     conn = None
     cursor = None
     
     try:
-        conn = psycopg2.connect(database_url)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         if method == 'POST':
@@ -69,19 +53,11 @@ def handler(event, context):
             cursor.execute(insert_query, (page_url, visitor_ip, user_agent, referrer, visit_time))
             conn.commit()
             
-            return {
-                'statusCode': 200,
-                'headers': {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
-                },
-                'isBase64Encoded': False,
-                'body': json.dumps({
-                    'success': True,
-                    'message': 'Visit recorded',
-                    'timestamp': visit_time.isoformat()
-                })
-            }
+            return success_response({
+                'success': True,
+                'message': 'Visit recorded',
+                'timestamp': visit_time.isoformat()
+            })
             
         elif method == 'GET':
             params = event.get('queryStringParameters', {}) or {}
@@ -150,40 +126,13 @@ def handler(event, context):
                 'top_referrers': top_referrers
             }
             
-            return {
-                'statusCode': 200,
-                'headers': {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
-                },
-                'isBase64Encoded': False,
-                'body': json.dumps(analytics_data)
-            }
+            return success_response(analytics_data)
         
         else:
-            return {
-                'statusCode': 405,
-                'headers': {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
-                },
-                'isBase64Encoded': False,
-                'body': json.dumps({'error': 'Method not allowed'})
-            }
+            return error_response('Method not allowed', 405)
     
     except Exception as e:
-        return {
-            'statusCode': 500,
-            'headers': {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            },
-            'isBase64Encoded': False,
-            'body': json.dumps({
-                'success': False,
-                'error': str(e)
-            })
-        }
+        return error_response(str(e), 500)
     
     finally:
         if cursor:

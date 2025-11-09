@@ -1,8 +1,11 @@
 import json
 import os
 import secrets
-import psycopg2
 from datetime import datetime, timedelta
+
+from shared_db import get_db_connection
+from shared_cors import handle_cors_options
+from shared_responses import success_response, error_response
 
 def handler(event, context):
     '''
@@ -14,30 +17,12 @@ def handler(event, context):
     method = event.get('httpMethod', 'POST')
     
     if method == 'OPTIONS':
-        return {
-            'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type, X-Auth-Token',
-                'Access-Control-Max-Age': '86400'
-            },
-            'isBase64Encoded': False,
-            'body': ''
-        }
+        return handle_cors_options('POST, OPTIONS')
     
     if method == 'POST':
         correct_password = os.environ.get('PASSWORD')
         if not correct_password:
-            return {
-                'statusCode': 500,
-                'headers': {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
-                },
-                'isBase64Encoded': False,
-                'body': json.dumps({'error': 'PASSWORD not configured'})
-            }
+            return error_response('PASSWORD not configured', 500)
         
         headers = event.get('headers', {})
         request_context = event.get('requestContext', {})
@@ -50,20 +35,11 @@ def handler(event, context):
             request_context.get('identity', {}).get('sourceIp', 'unknown')
         )
         
-        database_url = os.environ.get('DATABASE_URL')
-        if not database_url:
-            return {
-                'statusCode': 500,
-                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                'isBase64Encoded': False,
-                'body': json.dumps({'error': 'DATABASE_URL not found'})
-            }
-        
         conn = None
         cursor = None
         
         try:
-            conn = psycopg2.connect(database_url)
+            conn = get_db_connection()
             cursor = conn.cursor()
             
             one_hour_ago = datetime.utcnow() - timedelta(hours=1)
@@ -120,20 +96,12 @@ def handler(event, context):
                 
                 admin_token = os.environ.get('ADMIN_TOKEN', session_token)
                 
-                return {
-                    'statusCode': 200,
-                    'headers': {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    },
-                    'isBase64Encoded': False,
-                    'body': json.dumps({
-                        'success': True,
-                        'token': admin_token,
-                        'expires_at': expires_at,
-                        'message': 'Authentication successful'
-                    })
-                }
+                return success_response({
+                    'success': True,
+                    'token': admin_token,
+                    'expires_at': expires_at,
+                    'message': 'Authentication successful'
+                })
             else:
                 cursor.execute("""
                     INSERT INTO login_attempts (ip_address, success) 
@@ -141,18 +109,7 @@ def handler(event, context):
                 """, (client_ip,))
                 conn.commit()
                 
-                return {
-                    'statusCode': 401,
-                    'headers': {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    },
-                    'isBase64Encoded': False,
-                    'body': json.dumps({
-                        'success': False,
-                        'error': 'Invalid password'
-                    })
-                }
+                return error_response('Invalid password', 401)
         
         except Exception as e:
             print(f"ERROR in auth: {str(e)}")
@@ -161,15 +118,7 @@ def handler(event, context):
             traceback.print_exc()
             if conn:
                 conn.rollback()
-            return {
-                'statusCode': 500,
-                'headers': {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
-                },
-                'isBase64Encoded': False,
-                'body': json.dumps({'error': str(e)})
-            }
+            return error_response(str(e), 500)
         
         finally:
             if cursor:
@@ -177,12 +126,4 @@ def handler(event, context):
             if conn:
                 conn.close()
     
-    return {
-        'statusCode': 405,
-        'headers': {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-        },
-        'isBase64Encoded': False,
-        'body': json.dumps({'error': 'Method not allowed'})
-    }
+    return error_response('Method not allowed', 405)

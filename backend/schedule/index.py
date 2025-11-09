@@ -1,9 +1,11 @@
 import json
 import os
 from datetime import datetime, timedelta
-import psycopg2
-from psycopg2.extras import RealDictCursor
 import requests
+
+from shared_db import get_db_connection
+from shared_cors import handle_cors_options
+from shared_responses import success_response, error_response
 
 def handler(event, context):
     '''
@@ -17,32 +19,12 @@ def handler(event, context):
         
         # Handle CORS OPTIONS request
         if method == 'OPTIONS':
-            return {
-                'statusCode': 200,
-                'headers': {
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-                    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-                    'Access-Control-Max-Age': '86400'
-                },
-                'body': ''
-            }
+            return handle_cors_options('GET, POST, PUT, DELETE, OPTIONS')
     
         # Get schedule for specific date or settings
         if method == 'GET':
-            database_url = os.environ.get('DATABASE_URL')
-            if not database_url:
-                return {
-                    'statusCode': 500,
-                    'headers': {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    },
-                    'body': json.dumps({'error': 'Database connection not configured'})
-                }
-            
-            conn = psycopg2.connect(database_url)
-            cursor = conn.cursor(cursor_factory=RealDictCursor)
+            conn = get_db_connection(dict_cursor=True)
+            cursor = conn.cursor()
             
             try:
                 params = event.get('queryStringParameters') or {}
@@ -57,19 +39,8 @@ def handler(event, context):
         
         # Create new booking
         elif method == 'POST':
-            database_url = os.environ.get('DATABASE_URL')
-            if not database_url:
-                return {
-                    'statusCode': 500,
-                    'headers': {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    },
-                    'body': json.dumps({'error': 'Database connection not configured'})
-                }
-            
-            conn = psycopg2.connect(database_url)
-            cursor = conn.cursor(cursor_factory=RealDictCursor)
+            conn = get_db_connection(dict_cursor=True)
+            cursor = conn.cursor()
             
             try:
                 body = json.loads(event.get('body', '{}'))
@@ -87,47 +58,15 @@ def handler(event, context):
                 conn.close()
         
         else:
-            return {
-                'statusCode': 405,
-                'headers': {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
-                },
-                'body': json.dumps({'error': 'Method not allowed'})
-            }
+            return error_response('Method not allowed', 405)
             
     except Exception as e:
         print(f"Schedule function error: {str(e)}")
         import traceback
         print(f"Traceback: {traceback.format_exc()}")
-        return {
-            'statusCode': 500,
-            'headers': {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            },
-            'body': json.dumps({'error': f'Server error: {str(e)}'})
-        }
+        return error_response(f'Server error: {str(e)}', 500)
 
-def error_response(message, status_code=500):
-    return {
-        'statusCode': status_code,
-        'headers': {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-        },
-        'body': json.dumps({'error': message})
-    }
 
-def success_response(data, status_code=200):
-    return {
-        'statusCode': status_code,
-        'headers': {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-        },
-        'body': json.dumps(data, default=str)
-    }
 
 def get_schedule(cursor, event):
     params = event.get('queryStringParameters') or {}
