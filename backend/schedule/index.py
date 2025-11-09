@@ -3,9 +3,51 @@ import os
 from datetime import datetime, timedelta
 import requests
 
-from shared_db import get_db_connection
-from shared_cors import handle_cors_options
-from shared_responses import success_response, error_response
+import psycopg2
+from psycopg2.extras import RealDictCursor
+
+def get_db_connection(dict_cursor=False):
+    database_url = os.environ.get('DATABASE_URL')
+    if not database_url:
+        raise ValueError('DATABASE_URL not found in environment')
+    if dict_cursor:
+        return psycopg2.connect(database_url, cursor_factory=RealDictCursor)
+    return psycopg2.connect(database_url)
+
+def handle_cors_options(allowed_methods='GET, POST, OPTIONS'):
+    return {
+        'statusCode': 200,
+        'headers': {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': allowed_methods,
+            'Access-Control-Allow-Headers': 'Content-Type, X-Auth-Token, X-Admin-Token',
+            'Access-Control-Max-Age': '86400'
+        },
+        'body': '',
+        'isBase64Encoded': False
+    }
+
+def success_response(data, status_code=200):
+    return {
+        'statusCode': status_code,
+        'headers': {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        },
+        'body': json.dumps(data, default=str),
+        'isBase64Encoded': False
+    }
+
+def error_response(message, status_code=500):
+    return {
+        'statusCode': status_code,
+        'headers': {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        },
+        'body': json.dumps({'error': message}),
+        'isBase64Encoded': False
+    }
 
 def handler(event, context):
     '''
@@ -611,7 +653,7 @@ def update_booking_service(cursor, conn, body):
 def send_new_booking_notification(booking_data):
     """Отправляет уведомление о новой записи"""
     try:
-        notifications_url = 'https://functions.poehali.dev/eba9cd24-baee-4359-80c0-d36c5b4643ff'
+        notifications_url = 'https://functions.poehali.dev/19b63815-9352-48d4-80bd-71fc889808df?endpoint=notifications'
         
         payload = {
             'action': 'send_notification',
@@ -653,7 +695,7 @@ def send_client_booking_confirmation(booking_data):
         return
         
     try:
-        notifications_url = 'https://functions.poehali.dev/eba9cd24-baee-4359-80c0-d36c5b4643ff'
+        notifications_url = 'https://functions.poehali.dev/19b63815-9352-48d4-80bd-71fc889808df?endpoint=notifications'
         
         payload = {
             'action': 'send_client_confirmation',
@@ -694,7 +736,7 @@ def send_status_update_notification(booking_data):
         return
         
     try:
-        notifications_url = 'https://functions.poehali.dev/eba9cd24-baee-4359-80c0-d36c5b4643ff'
+        notifications_url = 'https://functions.poehali.dev/19b63815-9352-48d4-80bd-71fc889808df?endpoint=notifications'
         
         payload = {
             'action': 'send_status_update',

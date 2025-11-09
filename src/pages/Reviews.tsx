@@ -20,7 +20,7 @@ interface Review {
   date: string;
 }
 
-const REVIEWS_API_URL = 'https://functions.poehali.dev/2f5c36e4-cdb6-496c-8ca9-5aaa20079486';
+const REVIEWS_API_URL = 'https://functions.poehali.dev/19b63815-9352-48d4-80bd-71fc889808df?endpoint=reviews';
 
 const Reviews = () => {
   const [selectedService, setSelectedService] = useState<string>("Все");

@@ -10,7 +10,7 @@ import Icon from '@/components/ui/icon';
 import { SMTPSettings, EmailStatus } from '@/types/admin';
 import { getEmailSettings, saveEmailSettings, validateEmailSettings } from '@/utils/emailSettings';
 
-const EMAIL_NOTIFICATIONS_API_URL = 'https://functions.poehali.dev/eba9cd24-baee-4359-80c0-d36c5b4643ff';
+const EMAIL_NOTIFICATIONS_API_URL = 'https://functions.poehali.dev/19b63815-9352-48d4-80bd-71fc889808df?endpoint=notifications';
 
 export default function EmailSettingsPanel() {
   const [emailStatus, setEmailStatus] = useState<EmailStatus | null>(null);

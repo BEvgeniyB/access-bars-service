@@ -1,0 +1,31 @@
+{
+  "tests": [
+    {
+      "name": "Reviews OPTIONS",
+      "method": "OPTIONS",
+      "path": "/?endpoint=reviews",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Get approved reviews",
+      "method": "GET",
+      "path": "/?endpoint=reviews&status=approved",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Notifications OPTIONS",
+      "method": "OPTIONS",
+      "path": "/?endpoint=notifications",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Get email settings",
+      "method": "POST",
+      "path": "/?endpoint=notifications",
+      "body": {
+        "action": "get_email_settings"
+      },
+      "expectedStatus": 200
+    }
+  ]
+}
