@@ -1,0 +1,55 @@
+{
+  "tests": [
+    {
+      "name": "Auth OPTIONS preflight",
+      "method": "OPTIONS",
+      "path": "/?endpoint=auth",
+      "expectedStatus": 200,
+      "expectedHeaders": {
+        "Access-Control-Allow-Origin": "*"
+      }
+    },
+    {
+      "name": "Auth with invalid password",
+      "method": "POST",
+      "path": "/?endpoint=auth",
+      "body": {
+        "password": "wrongpassword"
+      },
+      "expectedStatus": 401,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Analytics OPTIONS preflight",
+      "method": "OPTIONS",
+      "path": "/?endpoint=analytics",
+      "expectedStatus": 200,
+      "expectedHeaders": {
+        "Access-Control-Allow-Origin": "*"
+      }
+    },
+    {
+      "name": "Analytics POST visit tracking",
+      "method": "POST",
+      "path": "/?endpoint=analytics",
+      "body": {
+        "page": "/"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true,
+        "message": "Visit recorded"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Analytics GET stats",
+      "method": "GET",
+      "path": "/?endpoint=analytics&days=7",
+      "expectedStatus": 200
+    }
+  ]
+}

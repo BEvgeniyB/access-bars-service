@@ -17,7 +17,7 @@ const AdminLogin = () => {
 
     try {
       console.log('Отправка пароля на сервер...');
-      const response = await fetch('https://functions.poehali.dev/27489cd4-1a5a-4783-be35-74077b1739ee', {
+      const response = await fetch('https://functions.poehali.dev/7cba2a8f-846d-42ad-8f44-ae289488325a?endpoint=auth', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

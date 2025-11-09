@@ -21,7 +21,7 @@ const Analytics = () => {
   const fetchAnalytics = async (days: number) => {
     try {
       setLoading(true);
-      const response = await fetch(`https://functions.poehali.dev/43a223b8-fdfa-4483-9a6f-a31c11205699?days=${days}`);
+      const response = await fetch(`https://functions.poehali.dev/7cba2a8f-846d-42ad-8f44-ae289488325a?endpoint=analytics&days=${days}`);
       
       if (!response.ok) {
         throw new Error('Ошибка загрузки данных');
