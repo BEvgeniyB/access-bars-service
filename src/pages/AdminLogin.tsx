@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import Icon from '@/components/ui/icon';
+import API_ENDPOINTS from '@/config/api';
 
 const AdminLogin = () => {
   const [password, setPassword] = useState('');
@@ -17,7 +18,7 @@ const AdminLogin = () => {
 
     try {
       console.log('Отправка пароля на сервер...');
-      const response = await fetch('https://functions.poehali.dev/7cba2a8f-846d-42ad-8f44-ae289488325a?endpoint=auth', {
+      const response = await fetch(API_ENDPOINTS.auth, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

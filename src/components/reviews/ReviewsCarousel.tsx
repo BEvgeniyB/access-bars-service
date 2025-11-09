@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import { BACKGROUND_IMAGES, getBackgroundStyle } from "@/constants/images";
+import API_ENDPOINTS from "@/config/api";
 
 interface Review {
   id: number;
@@ -13,7 +14,7 @@ interface Review {
   date: string;
 }
 
-const REVIEWS_API_URL = 'https://functions.poehali.dev/19b63815-9352-48d4-80bd-71fc889808df?endpoint=reviews';
+const REVIEWS_API_URL = API_ENDPOINTS.reviews;
 
 const ReviewsCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);

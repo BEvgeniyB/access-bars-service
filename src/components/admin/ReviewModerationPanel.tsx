@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
+import API_ENDPOINTS from '@/config/api';
 
 interface Review {
   id: number;
@@ -17,7 +18,7 @@ interface Review {
   date: string;
 }
 
-const REVIEWS_API_URL = 'https://functions.poehali.dev/19b63815-9352-48d4-80bd-71fc889808df?endpoint=reviews';
+const REVIEWS_API_URL = API_ENDPOINTS.reviews;
 
 const STATUS_COLORS = {
   pending: 'bg-yellow-100 text-yellow-800 border-yellow-300',

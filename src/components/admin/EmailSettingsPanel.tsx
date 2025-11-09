@@ -9,8 +9,9 @@ import { Separator } from '@/components/ui/separator';
 import Icon from '@/components/ui/icon';
 import { SMTPSettings, EmailStatus } from '@/types/admin';
 import { getEmailSettings, saveEmailSettings, validateEmailSettings } from '@/utils/emailSettings';
+import API_ENDPOINTS from '@/config/api';
 
-const EMAIL_NOTIFICATIONS_API_URL = 'https://functions.poehali.dev/19b63815-9352-48d4-80bd-71fc889808df?endpoint=notifications';
+const EMAIL_NOTIFICATIONS_API_URL = API_ENDPOINTS.notifications;
 
 export default function EmailSettingsPanel() {
   const [emailStatus, setEmailStatus] = useState<EmailStatus | null>(null);

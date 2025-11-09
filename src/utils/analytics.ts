@@ -1,3 +1,5 @@
+import API_ENDPOINTS from '@/config/api';
+
 // Analytics utility for tracking page visits
 export const trackPageVisit = async (pageUrl: string) => {
   try {
@@ -27,7 +29,7 @@ export const trackPageVisit = async (pageUrl: string) => {
     const referrer = document.referrer || '';
 
     // Send analytics data
-    const response = await fetch('https://functions.poehali.dev/43a223b8-fdfa-4483-9a6f-a31c11205699', {
+    const response = await fetch(API_ENDPOINTS.analytics, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

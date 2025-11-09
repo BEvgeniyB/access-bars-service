@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 import Header from "@/components/Header";
+import API_ENDPOINTS from "@/config/api";
 
 interface AnalyticsData {
   period_days: number;
@@ -21,7 +22,7 @@ const Analytics = () => {
   const fetchAnalytics = async (days: number) => {
     try {
       setLoading(true);
-      const response = await fetch(`https://functions.poehali.dev/7cba2a8f-846d-42ad-8f44-ae289488325a?endpoint=analytics&days=${days}`);
+      const response = await fetch(`${API_ENDPOINTS.analytics}&days=${days}`);
       
       if (!response.ok) {
         throw new Error('Ошибка загрузки данных');

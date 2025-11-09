@@ -12,8 +12,9 @@ import DatabaseAnalytics from './DatabaseAnalytics';
 import ReviewModerationPanel from './ReviewModerationPanel';
 import BookingsTab from './BookingsTab';
 import { logout } from '@/utils/auth';
+import API_ENDPOINTS from '@/config/api';
 
-const REVIEWS_API_URL = 'https://functions.poehali.dev/2f5c36e4-cdb6-496c-8ca9-5aaa20079486';
+const REVIEWS_API_URL = API_ENDPOINTS.reviews;
 
 interface Booking {
   id: number;

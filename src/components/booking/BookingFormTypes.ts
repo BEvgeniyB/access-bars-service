@@ -18,12 +18,13 @@ export interface FormErrors {
 
 // Импортируем из центрального источника
 import { SERVICES, Service } from '@/data/services';
+import API_ENDPOINTS from '@/config/api';
 
 // Экспортируем для обратной совместимости
 export { SERVICES, type Service };
 
-export const SCHEDULE_API_URL = 'https://functions.poehali.dev/162a7498-295a-4897-a0d8-695fadc8f40b';
-export const NOTIFICATIONS_API_URL = 'https://functions.poehali.dev/271b12ed-66af-4af4-bd63-b0794c0dbf1f';
+export const SCHEDULE_API_URL = API_ENDPOINTS.schedule;
+export const NOTIFICATIONS_API_URL = API_ENDPOINTS.notifications;
 
 // TIME_SLOTS теперь генерируются динамически из настроек API
 export let TIME_SLOTS = [
