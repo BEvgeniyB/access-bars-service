@@ -36,7 +36,7 @@ const ReviewsCarousel = () => {
         }
 
         // Загружаем с сервера
-        const response = await fetch(`${REVIEWS_API_URL}?status=approved`);
+        const response = await fetch(`${REVIEWS_API_URL}?endpoint=reviews&status=approved`);
         const data = await response.json();
         
         if (data.success && data.reviews) {

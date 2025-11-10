@@ -20,22 +20,32 @@
 
 ## Использование
 
+⚠️ **ВАЖНО**: Каждый endpoint требует параметр `?endpoint=ИМЯ` для роутинга внутри функции!
+
 ```typescript
 import API_ENDPOINTS from '@/config/api';
 
 // Авторизация
-fetch(API_ENDPOINTS.auth, {
+fetch(`${API_ENDPOINTS.auth}?endpoint=auth`, {
   method: 'POST',
   body: JSON.stringify({ password: '...' })
 });
 
 // Получение отзывов
-fetch(`${API_ENDPOINTS.reviews}&status=approved`);
+fetch(`${API_ENDPOINTS.reviews}?endpoint=reviews&status=approved`);
 
 // Запись на услугу
-fetch(API_ENDPOINTS.schedule, {
+fetch(`${API_ENDPOINTS.schedule}?date=2025-01-01&service_id=1`, {
+  method: 'GET'
+});
+
+// Аналитика
+fetch(`${API_ENDPOINTS.analytics}?endpoint=analytics&days=7`);
+
+// Email уведомления
+fetch(`${API_ENDPOINTS.notifications}?endpoint=notifications`, {
   method: 'POST',
-  body: JSON.stringify({ service_id: 1, ... })
+  body: JSON.stringify({ action: 'test_smtp' })
 });
 ```
 

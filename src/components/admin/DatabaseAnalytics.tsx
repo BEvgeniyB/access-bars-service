@@ -27,7 +27,7 @@ export default function DatabaseAnalytics() {
   const fetchAnalytics = async (days: number) => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_ENDPOINTS.analytics}&days=${days}`);
+      const response = await fetch(`${API_ENDPOINTS.analytics}?endpoint=analytics&days=${days}`);
       
       if (!response.ok) {
         throw new Error('Ошибка загрузки данных');

@@ -74,7 +74,7 @@ export default function EmailSettingsPanel() {
       
       console.log('Saving email settings:', requestData);
       
-      const response = await fetch(EMAIL_NOTIFICATIONS_API_URL, {
+      const response = await fetch(`${EMAIL_NOTIFICATIONS_API_URL}?endpoint=notifications`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -109,7 +109,7 @@ export default function EmailSettingsPanel() {
       // Сначала сохраняем текущие настройки
       await handleSaveSettings();
       
-      const response = await fetch(EMAIL_NOTIFICATIONS_API_URL, {
+      const response = await fetch(`${EMAIL_NOTIFICATIONS_API_URL}?endpoint=notifications`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -150,7 +150,7 @@ export default function EmailSettingsPanel() {
 
   const loadSettingsFromServer = async () => {
     try {
-      const response = await fetch(EMAIL_NOTIFICATIONS_API_URL, {
+      const response = await fetch(`${EMAIL_NOTIFICATIONS_API_URL}?endpoint=notifications`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'

@@ -140,7 +140,7 @@ export default function AdminPanel() {
 
   const loadPendingReviewsCount = async () => {
     try {
-      const response = await fetch(`${REVIEWS_API_URL}?status=pending`);
+      const response = await fetch(`${REVIEWS_API_URL}?endpoint=reviews&status=pending`);
       const data = await response.json();
       if (data.success) {
         setPendingReviewsCount(data.reviews?.length || 0);

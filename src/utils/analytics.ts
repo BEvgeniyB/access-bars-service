@@ -29,7 +29,7 @@ export const trackPageVisit = async (pageUrl: string) => {
     const referrer = document.referrer || '';
 
     // Send analytics data
-    const response = await fetch(API_ENDPOINTS.analytics, {
+    const response = await fetch(`${API_ENDPOINTS.analytics}?endpoint=analytics`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

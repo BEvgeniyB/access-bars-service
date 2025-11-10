@@ -24,15 +24,15 @@ const API_BASE_URLS = {
 } as const;
 
 export const API_ENDPOINTS = {
-  /** POST /auth - Admin authentication with rate limiting */
-  auth: `${API_BASE_URLS.api}?endpoint=auth`,
-  /** GET/POST /analytics - Visit tracking and analytics data */
-  analytics: `${API_BASE_URLS.api}?endpoint=analytics`,
-  /** GET/POST/PUT/PATCH/DELETE /reviews - Review management with moderation */
-  reviews: `${API_BASE_URLS.content}?endpoint=reviews`,
-  /** POST /notifications - Email notifications for bookings */
-  notifications: `${API_BASE_URLS.content}?endpoint=notifications`,
-  /** GET/POST /schedule - Appointment scheduling and management */
+  /** POST - Admin authentication with rate limiting */
+  auth: API_BASE_URLS.api,
+  /** GET/POST - Visit tracking and analytics data */
+  analytics: API_BASE_URLS.api,
+  /** GET/POST/PUT/PATCH/DELETE - Review management with moderation */
+  reviews: API_BASE_URLS.content,
+  /** GET/PUT/POST - Email notifications for bookings */
+  notifications: API_BASE_URLS.content,
+  /** GET/POST - Appointment scheduling and management */
   schedule: API_BASE_URLS.schedule
 } as const;
 

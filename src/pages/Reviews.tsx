@@ -55,7 +55,7 @@ const Reviews = () => {
         }
 
         // Загружаем с сервера
-        const response = await fetch(`${REVIEWS_API_URL}?status=approved`);
+        const response = await fetch(`${REVIEWS_API_URL}?endpoint=reviews&status=approved`);
         const data = await response.json();
         
         if (data.success && data.reviews) {
@@ -102,7 +102,7 @@ const Reviews = () => {
     setSubmitMessage('');
 
     try {
-      const response = await fetch(REVIEWS_API_URL, {
+      const response = await fetch(`${REVIEWS_API_URL}?endpoint=reviews`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

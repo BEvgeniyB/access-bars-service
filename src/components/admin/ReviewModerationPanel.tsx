@@ -56,7 +56,7 @@ export default function ReviewModerationPanel() {
   const loadReviews = async (status: string) => {
     setLoading(true);
     try {
-      const response = await fetch(`${REVIEWS_API_URL}?status=${status}`);
+      const response = await fetch(`${REVIEWS_API_URL}?endpoint=reviews&status=${status}`);
       const data = await response.json();
       
       if (data.success) {
@@ -72,7 +72,7 @@ export default function ReviewModerationPanel() {
   const updateReviewStatus = async (reviewId: number, newStatus: 'approved' | 'rejected') => {
     try {
       const adminToken = localStorage.getItem('admin_token');
-      const response = await fetch(REVIEWS_API_URL, {
+      const response = await fetch(`${REVIEWS_API_URL}?endpoint=reviews`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -100,7 +100,7 @@ export default function ReviewModerationPanel() {
   const updateReviewFull = async (reviewId: number, name: string, service: string, rating: number, text: string) => {
     try {
       const adminToken = localStorage.getItem('admin_token');
-      const response = await fetch(REVIEWS_API_URL, {
+      const response = await fetch(`${REVIEWS_API_URL}?endpoint=reviews`, {
         method: 'PATCH',
         headers: { 
           'Content-Type': 'application/json',
@@ -136,7 +136,7 @@ export default function ReviewModerationPanel() {
 
     try {
       const adminToken = localStorage.getItem('admin_token');
-      const response = await fetch(`${REVIEWS_API_URL}?id=${reviewId}`, {
+      const response = await fetch(`${REVIEWS_API_URL}?endpoint=reviews&id=${reviewId}`, {
         method: 'DELETE',
         headers: {
           'X-Admin-Token': adminToken || ''
@@ -176,7 +176,7 @@ export default function ReviewModerationPanel() {
 
   const getPendingCount = async () => {
     try {
-      const response = await fetch(`${REVIEWS_API_URL}?status=pending`);
+      const response = await fetch(`${REVIEWS_API_URL}?endpoint=reviews&status=pending`);
       const data = await response.json();
       return data.reviews?.length || 0;
     } catch {

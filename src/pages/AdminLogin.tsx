@@ -18,7 +18,7 @@ const AdminLogin = () => {
 
     try {
       console.log('Отправка пароля на сервер...');
-      const response = await fetch(API_ENDPOINTS.auth, {
+      const response = await fetch(`${API_ENDPOINTS.auth}?endpoint=auth`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
