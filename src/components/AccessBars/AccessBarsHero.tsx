@@ -46,7 +46,7 @@ const AccessBarsHero = () => {
               className="w-full h-96 object-cover shadow-2xl animate-slide-up rounded-full"
             />
             <img 
-              src="https://cdn.poehali.dev/files/2e7c5f05-7502-4d70-8942-b7055e5a89f5.jpg"
+              src="https://cdn.poehali.dev/files/74457f2a-f8a8-4be1-a513-8227fa4dad3e.jpg"
               alt="Консультация Access Bars"
               className="w-full h-96 object-cover shadow-2xl animate-slide-up md:block hidden rounded-full"
             />
