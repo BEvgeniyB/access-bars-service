@@ -51,7 +51,6 @@ const TrainingCourses = ({ onBookingClick }: TrainingCoursesProps) => {
               {/* Training Description Text */}
               <div className="md:col-span-2 rounded-2xl p-4 md:p-6 shadow-2xl border border-gold-400/20 relative overflow-hidden">
                 <div className="absolute inset-0 bg-cover bg-center" style={{backgroundImage: 'url(https://cdn.poehali.dev/files/4fdbdd35-c756-4807-b3b6-892fcd197a4d.jpg)'}}></div>
-                <div className="absolute inset-0 bg-emerald-900/60 backdrop-blur-sm"></div>
                 <div className="text-emerald-50 leading-snug space-y-2 relative z-10">
                   <p className="text-sm md:text-base font-semibold text-gold-200">
                     Ну что готовы к переменам? И стать создателями своей жизни?
