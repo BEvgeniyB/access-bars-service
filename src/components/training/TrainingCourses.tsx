@@ -29,6 +29,24 @@ const TrainingCourses = ({ onBookingClick }: TrainingCoursesProps) => {
     }}>
       <div className="absolute inset-0 bg-emerald-900/30"></div>
       <div className="container mx-auto px-4">
+        {/* Training Images */}
+        <div className="mb-16 relative">
+          <div className="max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-center">
+              <img 
+                src="https://cdn.poehali.dev/files/8275db6f-798b-4e88-a456-14180b05b03a.jpg"
+                alt="Обучение Access Bars"
+                className="w-full h-96 object-cover shadow-2xl animate-slide-up rounded-full"
+              />
+              <img 
+                src="https://cdn.poehali.dev/files/490dc0d3-fe4d-417d-b8ce-88a1d4a775d6.jpg"
+                alt="Сертификат Access Bars"
+                className="w-full h-96 object-cover shadow-2xl animate-slide-up rounded-full"
+              />
+            </div>
+          </div>
+        </div>
+        
         <div className="text-center mb-12">
           <h3 className="font-montserrat font-bold text-3xl text-gold-100 mb-4">Программы обучения</h3>
           <p className="text-lg text-emerald-100 max-w-2xl mx-auto">
