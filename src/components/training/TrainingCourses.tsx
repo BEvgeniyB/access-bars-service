@@ -38,12 +38,12 @@ const TrainingCourses = ({ onBookingClick }: TrainingCoursesProps) => {
                 <img 
                   src="https://cdn.poehali.dev/files/8275db6f-798b-4e88-a456-14180b05b03a.jpg"
                   alt="Обучение Access Bars"
-                  className="w-full h-64 object-cover shadow-2xl animate-slide-up rounded-full"
+                  className="w-full h-64 object-contain shadow-2xl animate-slide-up rounded-full"
                 />
                 <img 
                   src="https://cdn.poehali.dev/files/490dc0d3-fe4d-417d-b8ce-88a1d4a775d6.jpg"
                   alt="Сертификат Access Bars"
-                  className="w-full h-64 object-cover shadow-2xl animate-slide-up rounded-full"
+                  className="w-full h-64 object-contain shadow-2xl animate-slide-up rounded-full"
                 />
               </div>
               
