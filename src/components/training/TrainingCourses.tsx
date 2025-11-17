@@ -46,7 +46,7 @@ const TrainingCourses = ({ onBookingClick }: TrainingCoursesProps) => {
             </div>
             
             {/* Training Description Text */}
-            <div className="bg-emerald-800/40 backdrop-blur-md rounded-2xl p-8 md:p-10 shadow-2xl border border-gold-400/20 max-w-4xl mx-auto">
+            <div className="bg-emerald-800/40 backdrop-blur-md rounded-2xl p-8 md:p-10 shadow-2xl border border-gold-400/20 max-w-4xl mx-auto py-[30px]">
               <div className="text-emerald-50 leading-relaxed space-y-4">
                 <p className="text-lg md:text-xl font-semibold text-gold-200">
                   Ну что готовы к переменам? И стать создателями своей жизни?
