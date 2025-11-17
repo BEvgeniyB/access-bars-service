@@ -29,10 +29,26 @@ const TrainingCourses = ({ onBookingClick }: TrainingCoursesProps) => {
     }}>
       <div className="absolute inset-0 bg-emerald-900/30"></div>
       <div className="container mx-auto px-4">
-        {/* Training Description Text */}
+        {/* Training Images and Description */}
         <div className="mb-8 relative">
           <div className="mx-auto">
-              <div className="bg-emerald-800/40 backdrop-blur-md rounded-2xl p-4 md:p-6 shadow-2xl border border-gold-400/20">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+              {/* Images Column */}
+              <div className="md:col-span-1 grid grid-cols-2 md:grid-cols-1 gap-4">
+                <img 
+                  src="https://cdn.poehali.dev/files/72a2f55d-59c1-4283-8a5e-f936c817f082.jpg"
+                  alt="Сертификат Access Bars"
+                  className="w-full h-64 object-contain shadow-2xl animate-slide-up rounded-full"
+                />
+                <img 
+                  src="https://cdn.poehali.dev/files/7ced80a8-6689-43da-b615-867a0501867f.jpg"
+                  alt="Обучение Access Bars"
+                  className="w-full h-64 object-contain shadow-2xl animate-slide-up rounded-full"
+                />
+              </div>
+              
+              {/* Training Description Text */}
+              <div className="md:col-span-2 bg-emerald-800/40 backdrop-blur-md rounded-2xl p-4 md:p-6 shadow-2xl border border-gold-400/20">
                 <div className="text-emerald-50 leading-snug space-y-2">
                   <p className="text-sm md:text-base font-semibold text-gold-200">
                     Ну что готовы к переменам? И стать создателями своей жизни?
@@ -89,6 +105,7 @@ const TrainingCourses = ({ onBookingClick }: TrainingCoursesProps) => {
                   </p>
                 </div>
               </div>
+            </div>
           </div>
         </div>
         
