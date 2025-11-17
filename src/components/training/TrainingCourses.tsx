@@ -36,7 +36,7 @@ const TrainingCourses = ({ onBookingClick }: TrainingCoursesProps) => {
               {/* Images Column */}
               <div className="md:col-span-1 grid grid-cols-2 md:grid-cols-1 gap-4">
                 <img 
-                  src="https://cdn.poehali.dev/files/8275db6f-798b-4e88-a456-14180b05b03a.jpg"
+                  src="https://cdn.poehali.dev/files/7ced80a8-6689-43da-b615-867a0501867f.jpg"
                   alt="Обучение Access Bars"
                   className="w-full h-64 object-contain shadow-2xl animate-slide-up rounded-full"
                 />
