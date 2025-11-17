@@ -46,30 +46,30 @@ const TrainingCourses = ({ onBookingClick }: TrainingCoursesProps) => {
             </div>
             
             {/* Training Description Text */}
-            <div className="bg-emerald-800/40 backdrop-blur-md rounded-2xl p-8 md:p-10 shadow-2xl border border-gold-400/20 max-w-4xl mx-auto py-[30px]">
-              <div className="text-emerald-50 leading-relaxed space-y-4">
-                <p className="text-lg md:text-xl font-semibold text-gold-200">
+            <div className="bg-emerald-800/40 backdrop-blur-md rounded-2xl p-4 md:p-6 shadow-2xl border border-gold-400/20 mx-auto">
+              <div className="text-emerald-50 leading-snug space-y-2">
+                <p className="text-sm md:text-base font-semibold text-gold-200">
                   Ну что готовы к переменам? И стать создателями своей жизни?
                 </p>
                 
-                <p className="text-base md:text-lg">
+                <p className="text-xs md:text-sm">
                   Приглашаю вас на обучение <span className="text-gold-300 font-semibold">Access Bars💆‍♀️</span> Всего 1 день!
                   Что в переводе означает <span className="text-gold-300 font-semibold">Доступ к осознанности</span>
                 </p>
                 
-                <p className="text-base md:text-lg">
+                <p className="text-xs md:text-sm">
                   Где осознанность - способность постоянно открываться большим возможностям, большему выбору и большему в жизни.
                 </p>
                 
                 <div>
-                  <p className="text-base md:text-lg mb-2">
+                  <p className="text-xs md:text-sm mb-1">
                     А Бары это 32 точки на голове, которые отвечают за основные сферы жизни:
                   </p>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm md:text-base text-gold-200 pl-4">
+                  <div className="grid grid-cols-3 md:grid-cols-5 gap-1 text-xs text-gold-200 pl-2">
                     <span>• Деньги</span>
                     <span>• Контроль</span>
                     <span>• Созидание</span>
-                    <span>• Создание связей</span>
+                    <span>• Связи</span>
                     <span>• Тело</span>
                     <span>• Исцеление</span>
                     <span>• Сексуальность</span>
@@ -79,17 +79,17 @@ const TrainingCourses = ({ onBookingClick }: TrainingCoursesProps) => {
                   </div>
                 </div>
                 
-                <p className="text-base md:text-lg">
+                <p className="text-xs md:text-sm">
                   Прикасаясь к этим точкам, происходит удаление ненужных программ и ограничений...
                 </p>
                 
-                <p className="text-base md:text-lg font-semibold text-gold-200">
+                <p className="text-xs md:text-sm font-semibold text-gold-200">
                   После чего в вашей жизни происходят чудеса и все что вы хотите максимально легко и просто появляется в вашей жизни💫
                 </p>
                 
-                <div className="border-t border-gold-400/30 pt-6 mt-6">
-                  <p className="text-lg md:text-xl font-bold text-gold-300 mb-4">Обучение всего 1 день!</p>
-                  <div className="space-y-2 text-base md:text-lg">
+                <div className="border-t border-gold-400/30 pt-2 mt-2">
+                  <p className="text-sm md:text-base font-bold text-gold-300 mb-2">Обучение всего 1 день!</p>
+                  <div className="space-y-1 text-xs md:text-sm">
                     <p>✔ Вы получаете новую профессию</p>
                     <p>✔ Сертификат международного образца</p>
                     <p>✔ Учебное пособие</p>
@@ -98,7 +98,7 @@ const TrainingCourses = ({ onBookingClick }: TrainingCoursesProps) => {
                   </div>
                 </div>
                 
-                <p className="text-center text-xl md:text-2xl font-bold text-gold-300 pt-4">
+                <p className="text-center text-sm md:text-base font-bold text-gold-300 pt-2">
                   И безграничные возможности💫
                 </p>
               </div>
