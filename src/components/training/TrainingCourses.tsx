@@ -38,7 +38,8 @@ const TrainingCourses = ({ onBookingClick }: TrainingCoursesProps) => {
                 <img 
                   src="https://cdn.poehali.dev/files/72a2f55d-59c1-4283-8a5e-f936c817f082.jpg"
                   alt="Сертификат Access Bars"
-                  className="w-full h-64 object-contain shadow-2xl animate-slide-up rounded-full"
+                  className="w-full object-contain shadow-2xl animate-slide-up rounded-full"
+                  style={{height: 'calc(16rem * 1.2)'}}
                 />
                 <img 
                   src="https://cdn.poehali.dev/files/7ced80a8-6689-43da-b615-867a0501867f.jpg"
