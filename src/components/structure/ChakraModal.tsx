@@ -33,39 +33,105 @@ const ChakraModal = ({ chakra, onClose }: ChakraModalProps) => {
             <TabsTrigger value="questions">Вопросы</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview" className="space-y-4">
-            <div className="p-4 rounded-lg" style={{ backgroundColor: `${chakra.color}10` }}>
-              <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
-                <Icon name="Sparkles" size={20} />
-                Основное право
-              </h3>
-              <p className="text-lg font-medium" style={{ color: chakra.color }}>
-                {chakra.right_statement}
-              </p>
-            </div>
-
-            {chakra.continent && (
-              <div className="p-4 bg-emerald-50 rounded-lg">
-                <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
-                  <Icon name="Globe" size={20} />
+          <TabsContent value="overview" className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+              {/* Континент и Ответственный */}
+              <div className="p-2 bg-emerald-50 rounded-lg border border-emerald-200">
+                <p className="font-bold text-emerald-900 mb-1 flex items-center gap-1">
+                  <Icon name="Globe" size={14} />
                   Континент
-                </h3>
-                <p className="text-emerald-800">{chakra.continent}</p>
+                </p>
+                <p className="text-emerald-700">{chakra.continent || 'Не указан'}</p>
               </div>
-            )}
 
-            {chakra.responsible_name && (
-              <div className="p-4 bg-blue-50 rounded-lg">
-                <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
-                  <Icon name="User" size={20} />
+              <div className="p-2 bg-blue-50 rounded-lg border border-blue-200">
+                <p className="font-bold text-blue-900 mb-1 flex items-center gap-1">
+                  <Icon name="User" size={14} />
                   Ответственный
-                </h3>
-                <p className="text-blue-800">{chakra.responsible_name}</p>
+                </p>
+                <p className="text-blue-700">{chakra.responsible_name || 'Не назначен'}</p>
                 {chakra.responsible_email && (
-                  <p className="text-sm text-blue-600">{chakra.responsible_email}</p>
+                  <p className="text-blue-600">{chakra.responsible_email}</p>
                 )}
               </div>
-            )}
+
+              {/* Энергии */}
+              {chakra.concepts && chakra.concepts.length > 0 && (
+                <div className="p-2 bg-purple-50 rounded-lg border border-purple-200 md:col-span-2">
+                  <p className="font-bold text-purple-900 mb-1">⚡ Энергии</p>
+                  <div className="flex flex-wrap gap-1">
+                    {chakra.concepts.map((concept, idx) => (
+                      <span key={idx} className="text-purple-700 bg-purple-100 px-2 py-0.5 rounded">
+                        {concept.concept}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Органы */}
+              {chakra.organs && chakra.organs.length > 0 && (
+                <div className="p-2 bg-red-50 rounded-lg border border-red-200">
+                  <p className="font-bold text-red-900 mb-1 flex items-center gap-1">
+                    <Icon name="Heart" size={14} />
+                    Органы
+                  </p>
+                  <div className="space-y-0.5">
+                    {chakra.organs.map((organ, idx) => (
+                      <p key={idx} className="text-red-700">{organ.organ_name}</p>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Науки */}
+              {chakra.sciences && chakra.sciences.length > 0 && (
+                <div className="p-2 bg-blue-50 rounded-lg border border-blue-200">
+                  <p className="font-bold text-blue-900 mb-1 flex items-center gap-1">
+                    <Icon name="BookOpen" size={14} />
+                    Науки
+                  </p>
+                  <div className="space-y-0.5">
+                    {chakra.sciences.map((science, idx) => (
+                      <p key={idx} className="text-blue-700">{science.science_name}</p>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Ответственность */}
+              {chakra.responsibilities && chakra.responsibilities.length > 0 && (
+                <div className="p-2 bg-orange-50 rounded-lg border border-orange-200 md:col-span-2">
+                  <p className="font-bold text-orange-900 mb-1 flex items-center gap-1">
+                    <Icon name="Building" size={14} />
+                    Зоны ответственности
+                  </p>
+                  <div className="space-y-0.5">
+                    {chakra.responsibilities.map((resp, idx) => (
+                      <p key={idx} className="text-orange-700">{resp.responsibility}</p>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Вопросы */}
+              {chakra.questions && chakra.questions.length > 0 && (
+                <div className="p-2 bg-yellow-50 rounded-lg border border-yellow-200 md:col-span-2">
+                  <p className="font-bold text-yellow-900 mb-1 flex items-center gap-1">
+                    <Icon name="HelpCircle" size={14} />
+                    Вопросы на согласование
+                  </p>
+                  <div className="space-y-0.5">
+                    {chakra.questions.map((q, idx) => (
+                      <p key={idx} className="text-yellow-700 flex items-start gap-1">
+                        <span>{q.is_resolved ? '✓' : '○'}</span>
+                        <span>{q.question}</span>
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </TabsContent>
 
           <TabsContent value="concepts" className="space-y-3">
