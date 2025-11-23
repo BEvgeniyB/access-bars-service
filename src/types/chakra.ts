@@ -21,24 +21,34 @@ export interface Chakra {
 export interface ChakraConcept {
   concept: string;
   category?: string;
+  user_id?: number;
+  user_name?: string;
 }
 
 export interface ChakraOrgan {
   organ_name: string;
   description?: string;
+  user_id?: number;
+  user_name?: string;
 }
 
 export interface ChakraScience {
   science_name: string;
   description?: string;
+  user_id?: number;
+  user_name?: string;
 }
 
 export interface ChakraResponsibility {
   responsibility: string;
   category?: string;
+  user_id?: number;
+  user_name?: string;
 }
 
 export interface ChakraQuestion {
   question: string;
   is_resolved: boolean;
+  user_id?: number;
+  user_name?: string;
 }
