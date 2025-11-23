@@ -35,10 +35,10 @@ const ChakraBody = ({ chakras, onChakraClick }: ChakraBodyProps) => {
   const sortedChakras = [...chakras].sort((a, b) => a.position - b.position);
 
   return (
-    <div className="relative mx-auto max-w-7xl">
-      <div className="flex flex-col lg:flex-row gap-8 items-start">
+    <div className="relative mx-auto max-w-7xl px-4">
+      <div className="flex flex-col lg:flex-row gap-8 items-start justify-center">
         {/* Картинка с кружочками */}
-        <div className="relative flex-shrink-0" style={{ width: '450px', height: '500px' }}>
+        <div className="relative flex-shrink-0" style={{ width: '350px', height: '400px', maxWidth: '100%' }}>
           <div 
             className="absolute inset-0"
             style={{
