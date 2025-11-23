@@ -8,13 +8,13 @@ interface ChakraBodyProps {
 const ChakraBody = ({ chakras, onChakraClick }: ChakraBodyProps) => {
   const getChakraPosition = (position: number) => {
     const positions = [
-      { top: '85%', left: '52%' },
-      { top: '72%', left: '54%' },
-      { top: '59%', left: '56%' },
-      { top: '46%', left: '58%' },
-      { top: '33%', left: '54%' },
-      { top: '20%', left: '52%' },
-      { top: '7%', left: '28%' },
+      { top: '50%', left: '38%' },  // 1 - красная звезда (центр слева)
+      { top: '58%', left: '18%' },  // 2 - оранжевый круг (слева)
+      { top: '83%', left: '35%' },  // 3 - желтый цветок (внизу)
+      { top: '70%', left: '62%' },  // 4 - зеленый узор (справа внизу)
+      { top: '42%', left: '70%' },  // 5 - голубой узор (справа)
+      { top: '22%', left: '62%' },  // 6 - синий ромб (справа вверху)
+      { top: '10%', left: '28%' },  // 7 - фиолетовая спираль (слева вверху)
     ];
     return positions[position - 1] || { top: '50%', left: '50%' };
   };
@@ -27,7 +27,7 @@ const ChakraBody = ({ chakras, onChakraClick }: ChakraBodyProps) => {
         <div 
           className="absolute inset-0 flex items-center justify-center"
           style={{
-            backgroundImage: 'url(https://cdn.poehali.dev/files/32f04697-7984-4cb1-8706-5959678bd08d.jpg)',
+            backgroundImage: 'url(https://cdn.poehali.dev/projects/173cf2ee-3ecf-496b-86b7-63c1d22a9229/files/3deaae84-2fa0-4770-b3c9-91d5033b2a9a.jpg)',
             backgroundSize: 'contain',
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center'
