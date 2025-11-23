@@ -3,6 +3,13 @@ import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from typing import Dict, Any
+from datetime import datetime, date
+
+def json_serial(obj):
+    """JSON serializer for datetime objects"""
+    if isinstance(obj, (datetime, date)):
+        return obj.isoformat()
+    raise TypeError(f"Type {type(obj)} not serializable")
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     '''
@@ -93,7 +100,7 @@ def get_all_chakras(cur) -> Dict[str, Any]:
     return {
         'statusCode': 200,
         'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-        'body': json.dumps({'chakras': [dict(ch) for ch in chakras]}, ensure_ascii=False)
+        'body': json.dumps({'chakras': [dict(ch) for ch in chakras]}, ensure_ascii=False, default=json_serial)
     }
 
 def get_chakra_detail(cur, chakra_id: str) -> Dict[str, Any]:
@@ -136,7 +143,7 @@ def get_chakra_detail(cur, chakra_id: str) -> Dict[str, Any]:
     return {
         'statusCode': 200,
         'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-        'body': json.dumps({'chakra': chakra_dict}, ensure_ascii=False)
+        'body': json.dumps({'chakra': chakra_dict}, ensure_ascii=False, default=json_serial)
     }
 
 def update_chakra(cur, conn, chakra_id: str, data: Dict, user_id: str) -> Dict[str, Any]:
