@@ -27,7 +27,7 @@ const ChakraModal = ({ chakra, onClose }: ChakraModalProps) => {
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview">Обзор</TabsTrigger>
-            <TabsTrigger value="concepts">Концепции</TabsTrigger>
+            <TabsTrigger value="concepts">Энергии</TabsTrigger>
             <TabsTrigger value="responsibility">Ответственность</TabsTrigger>
             <TabsTrigger value="physical">Физический мир</TabsTrigger>
             <TabsTrigger value="questions">Вопросы</TabsTrigger>
@@ -69,10 +69,6 @@ const ChakraModal = ({ chakra, onClose }: ChakraModalProps) => {
           </TabsContent>
 
           <TabsContent value="concepts" className="space-y-3">
-            <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
-              <Icon name="Lightbulb" size={20} />
-              Ключевые концепции
-            </h3>
             {chakra.concepts && chakra.concepts.length > 0 ? (
               <div className="grid grid-cols-2 gap-3">
                 {chakra.concepts.map((concept, idx) => (
