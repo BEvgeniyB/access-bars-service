@@ -1,0 +1,24 @@
+{
+  "tests": [
+    {
+      "name": "Get all chakras",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "chakras": "array"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get chakra detail",
+      "method": "GET",
+      "path": "/?id=1",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "chakra": "object"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

@@ -10,6 +10,7 @@ import Training from "./pages/Training";
 import Healing from "./pages/Healing";
 import Massage from "./pages/Massage";
 import Analytics from "./pages/Analytics";
+import Structure from "./pages/Structure";
 import AdminPanel from "./components/admin/AdminPanel";
 import AdminLogin from "./pages/AdminLogin";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -36,6 +37,7 @@ const App = () => (
           <Route path="/healing" element={<Healing />} />
           <Route path="/massage" element={<Massage />} />
           <Route path="/reviews" element={<Reviews />} />
+          <Route path="/structure" element={<Structure />} />
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
