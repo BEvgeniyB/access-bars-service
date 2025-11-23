@@ -8,13 +8,13 @@ interface ChakraBodyProps {
 const ChakraBody = ({ chakras, onChakraClick }: ChakraBodyProps) => {
   const getChakraPosition = (position: number) => {
     const positions = [
-      { top: '85%', left: '50%' },
-      { top: '72%', left: '50%' },
-      { top: '58%', left: '50%' },
-      { top: '44%', left: '50%' },
-      { top: '30%', left: '50%' },
-      { top: '16%', left: '50%' },
-      { top: '2%', left: '50%' },
+      { top: '85%', left: '52%' },
+      { top: '72%', left: '54%' },
+      { top: '59%', left: '56%' },
+      { top: '46%', left: '58%' },
+      { top: '33%', left: '54%' },
+      { top: '20%', left: '52%' },
+      { top: '7%', left: '28%' },
     ];
     return positions[position - 1] || { top: '50%', left: '50%' };
   };
@@ -25,7 +25,7 @@ const ChakraBody = ({ chakras, onChakraClick }: ChakraBodyProps) => {
     <div className="relative mx-auto max-w-3xl">
       <div className="relative w-full" style={{ paddingBottom: '80%' }}>
         <div 
-          className="absolute inset-0 flex items-center justify-center opacity-30"
+          className="absolute inset-0 flex items-center justify-center"
           style={{
             backgroundImage: 'url(https://cdn.poehali.dev/files/32f04697-7984-4cb1-8706-5959678bd08d.jpg)',
             backgroundSize: 'contain',
@@ -49,16 +49,14 @@ const ChakraBody = ({ chakras, onChakraClick }: ChakraBodyProps) => {
               }}
             >
               <div 
-                className="relative w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-125"
+                className="relative w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-125"
                 style={{
                   backgroundColor: chakra.color,
-                  boxShadow: `0 0 20px ${chakra.color}80, 0 0 40px ${chakra.color}40`,
+                  boxShadow: `0 0 15px ${chakra.color}80, 0 0 30px ${chakra.color}40`,
                   animation: 'chakraGlow 3s ease-in-out infinite'
                 }}
               >
-                <div className="absolute inset-0 rounded-full border-2 border-white opacity-50 group-hover:opacity-100 transition-opacity"></div>
-                
-                <span className="text-white text-xs md:text-sm font-bold z-10">
+                <span className="text-white text-sm font-bold z-10">
                   {chakra.position}
                 </span>
               </div>
