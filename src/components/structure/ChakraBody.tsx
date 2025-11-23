@@ -11,7 +11,7 @@ const ChakraBody = ({ chakras, onChakraClick }: ChakraBodyProps) => {
       1: '#E31E24',    // Красный
       2: '#FF6B00',    // Оранжевый
       3: '#FFD700',    // Жёлтый
-      4: 'linear-gradient(90deg, #00A86B 50%, #FF69B4 50%)',  // Зелёный + Розовый
+      4: '#00A86B',    // Зелёный
       5: '#00BFFF',    // Голубой
       6: '#0066CC',    // Синий
       7: '#9370DB'     // Фиолетовый/Сиреневый
@@ -65,9 +65,7 @@ const ChakraBody = ({ chakras, onChakraClick }: ChakraBodyProps) => {
                   className="relative w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-125"
                   style={{
                     background: getChakraColor(chakra),
-                    boxShadow: chakra.position === 4 
-                      ? '0 0 15px #00A86B80, 0 0 30px #FF69B440' 
-                      : `0 0 15px ${getChakraColor(chakra)}80, 0 0 30px ${getChakraColor(chakra)}40`,
+                    boxShadow: `0 0 15px ${getChakraColor(chakra)}80, 0 0 30px ${getChakraColor(chakra)}40`,
                     animation: 'chakraGlow 3s ease-in-out infinite'
                   }}
                 >
@@ -92,8 +90,8 @@ const ChakraBody = ({ chakras, onChakraClick }: ChakraBodyProps) => {
               onClick={() => onChakraClick(chakra.id)}
               className="flex items-center gap-4 p-4 rounded-xl border-2 transition-all hover:scale-105 hover:shadow-lg"
               style={{
-                borderColor: chakra.position === 4 ? '#00A86B' : getChakraColor(chakra),
-                backgroundColor: chakra.position === 4 ? '#00A86B10' : `${getChakraColor(chakra)}10`,
+                borderColor: getChakraColor(chakra),
+                backgroundColor: `${getChakraColor(chakra)}10`,
               }}
             >
               <div 
