@@ -6,6 +6,19 @@ interface ChakraBodyProps {
 }
 
 const ChakraBody = ({ chakras, onChakraClick }: ChakraBodyProps) => {
+  const getChakraColor = (chakra: Chakra) => {
+    const colorMap: { [key: number]: string } = {
+      1: '#E31E24',    // Красный
+      2: '#FF6B00',    // Оранжевый
+      3: '#FFD700',    // Жёлтый
+      4: 'linear-gradient(90deg, #00A86B 50%, #FF69B4 50%)',  // Зелёный + Розовый
+      5: '#00BFFF',    // Голубой
+      6: '#0066CC',    // Синий
+      7: '#9370DB'     // Фиолетовый/Сиреневый
+    };
+    return colorMap[chakra.position] || chakra.color;
+  };
+
   const getChakraPosition = (position: number) => {
     const positions = [
       { top: '50%', left: '38%' },  // 1 - красная звезда (центр слева)
@@ -51,8 +64,10 @@ const ChakraBody = ({ chakras, onChakraClick }: ChakraBodyProps) => {
               <div 
                 className="relative w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-125"
                 style={{
-                  backgroundColor: chakra.color,
-                  boxShadow: `0 0 15px ${chakra.color}80, 0 0 30px ${chakra.color}40`,
+                  background: getChakraColor(chakra),
+                  boxShadow: chakra.position === 4 
+                    ? '0 0 15px #00A86B80, 0 0 30px #FF69B440' 
+                    : `0 0 15px ${getChakraColor(chakra)}80, 0 0 30px ${getChakraColor(chakra)}40`,
                   animation: 'chakraGlow 3s ease-in-out infinite'
                 }}
               >
@@ -76,13 +91,13 @@ const ChakraBody = ({ chakras, onChakraClick }: ChakraBodyProps) => {
             onClick={() => onChakraClick(chakra.id)}
             className="flex items-center gap-4 p-4 rounded-xl border-2 transition-all hover:scale-105 hover:shadow-lg"
             style={{
-              borderColor: chakra.color,
-              backgroundColor: `${chakra.color}10`,
+              borderColor: chakra.position === 4 ? '#00A86B' : getChakraColor(chakra),
+              backgroundColor: chakra.position === 4 ? '#00A86B10' : `${getChakraColor(chakra)}10`,
             }}
           >
             <div 
               className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-white shrink-0"
-              style={{ backgroundColor: chakra.color }}
+              style={{ background: getChakraColor(chakra) }}
             >
               {chakra.position}
             </div>
