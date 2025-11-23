@@ -35,80 +35,82 @@ const ChakraBody = ({ chakras, onChakraClick }: ChakraBodyProps) => {
   const sortedChakras = [...chakras].sort((a, b) => a.position - b.position);
 
   return (
-    <div className="relative mx-auto max-w-3xl">
-      <div className="relative w-full" style={{ paddingBottom: '80%' }}>
-        <div 
-          className="absolute inset-0 flex items-center justify-center"
-          style={{
-            backgroundImage: 'url(https://cdn.poehali.dev/files/2b787a8c-59d8-4041-87bc-62970b4915a7.jpg)',
-            backgroundSize: 'contain',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'center'
-          }}
-        />
+    <div className="relative mx-auto max-w-7xl">
+      <div className="flex flex-col lg:flex-row gap-8 items-start">
+        {/* Картинка с кружочками */}
+        <div className="relative flex-shrink-0" style={{ width: '450px', height: '500px' }}>
+          <div 
+            className="absolute inset-0"
+            style={{
+              backgroundImage: 'url(https://cdn.poehali.dev/files/2b787a8c-59d8-4041-87bc-62970b4915a7.jpg)',
+              backgroundSize: 'cover',
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'center'
+            }}
+          />
 
+          {sortedChakras.map((chakra) => {
+            const pos = getChakraPosition(chakra.position);
+            return (
+              <button
+                key={chakra.id}
+                onClick={() => onChakraClick(chakra.id)}
+                className="absolute transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer"
+                style={{
+                  top: pos.top,
+                  left: pos.left,
+                }}
+              >
+                <div 
+                  className="relative w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-125"
+                  style={{
+                    background: getChakraColor(chakra),
+                    boxShadow: chakra.position === 4 
+                      ? '0 0 15px #00A86B80, 0 0 30px #FF69B440' 
+                      : `0 0 15px ${getChakraColor(chakra)}80, 0 0 30px ${getChakraColor(chakra)}40`,
+                    animation: 'chakraGlow 3s ease-in-out infinite'
+                  }}
+                >
+                  <span className="text-white text-sm font-bold z-10">
+                    {chakra.position}
+                  </span>
+                </div>
+                
+                <div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-white px-3 py-1 rounded-lg shadow-lg whitespace-nowrap text-sm font-medium z-20">
+                  {chakra.name}
+                </div>
+              </button>
+            );
+          })}
+        </div>
 
-
-        {sortedChakras.map((chakra) => {
-          const pos = getChakraPosition(chakra.position);
-          return (
+        {/* Кнопки справа */}
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+          {sortedChakras.map((chakra) => (
             <button
               key={chakra.id}
               onClick={() => onChakraClick(chakra.id)}
-              className="absolute transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer"
+              className="flex items-center gap-4 p-4 rounded-xl border-2 transition-all hover:scale-105 hover:shadow-lg"
               style={{
-                top: pos.top,
-                left: pos.left,
+                borderColor: chakra.position === 4 ? '#00A86B' : getChakraColor(chakra),
+                backgroundColor: chakra.position === 4 ? '#00A86B10' : `${getChakraColor(chakra)}10`,
               }}
             >
               <div 
-                className="relative w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-125"
-                style={{
-                  background: getChakraColor(chakra),
-                  boxShadow: chakra.position === 4 
-                    ? '0 0 15px #00A86B80, 0 0 30px #FF69B440' 
-                    : `0 0 15px ${getChakraColor(chakra)}80, 0 0 30px ${getChakraColor(chakra)}40`,
-                  animation: 'chakraGlow 3s ease-in-out infinite'
-                }}
+                className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-white shrink-0"
+                style={{ background: getChakraColor(chakra) }}
               >
-                <span className="text-white text-sm font-bold z-10">
-                  {chakra.position}
-                </span>
+                {chakra.position}
               </div>
-              
-              <div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-white px-3 py-1 rounded-lg shadow-lg whitespace-nowrap text-sm font-medium z-20">
-                {chakra.name}
+              <div className="text-left flex-1">
+                <h3 className="font-bold text-lg text-emerald-900">{chakra.name}</h3>
+                {chakra.right_statement && (
+                  <p className="text-sm text-emerald-700 mt-1">{chakra.right_statement}</p>
+                )}
               </div>
             </button>
-          );
-        })}
-      </div>
-
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-        {sortedChakras.map((chakra) => (
-          <button
-            key={chakra.id}
-            onClick={() => onChakraClick(chakra.id)}
-            className="flex items-center gap-4 p-4 rounded-xl border-2 transition-all hover:scale-105 hover:shadow-lg"
-            style={{
-              borderColor: chakra.position === 4 ? '#00A86B' : getChakraColor(chakra),
-              backgroundColor: chakra.position === 4 ? '#00A86B10' : `${getChakraColor(chakra)}10`,
-            }}
-          >
-            <div 
-              className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-white shrink-0"
-              style={{ background: getChakraColor(chakra) }}
-            >
-              {chakra.position}
-            </div>
-            <div className="text-left flex-1">
-              <h3 className="font-bold text-lg text-emerald-900">{chakra.name}</h3>
-              {chakra.right_statement && (
-                <p className="text-sm text-emerald-700 mt-1">{chakra.right_statement}</p>
-              )}
-            </div>
-          </button>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
