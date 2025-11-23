@@ -14,6 +14,18 @@ const ChakraModal = ({ chakra, onClose }: ChakraModalProps) => {
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState('overview');
 
+  // Цветовая палитра для ответственных
+  const userColors = [
+    { bg: 'bg-pink-100', border: 'border-pink-300', text: 'text-pink-800', badge: 'bg-pink-200' },
+    { bg: 'bg-blue-100', border: 'border-blue-300', text: 'text-blue-800', badge: 'bg-blue-200' },
+    { bg: 'bg-green-100', border: 'border-green-300', text: 'text-green-800', badge: 'bg-green-200' },
+    { bg: 'bg-orange-100', border: 'border-orange-300', text: 'text-orange-800', badge: 'bg-orange-200' },
+    { bg: 'bg-purple-100', border: 'border-purple-300', text: 'text-purple-800', badge: 'bg-purple-200' },
+    { bg: 'bg-teal-100', border: 'border-teal-300', text: 'text-teal-800', badge: 'bg-teal-200' },
+    { bg: 'bg-red-100', border: 'border-red-300', text: 'text-red-800', badge: 'bg-red-200' },
+    { bg: 'bg-indigo-100', border: 'border-indigo-300', text: 'text-indigo-800', badge: 'bg-indigo-200' },
+  ];
+
   // Получаем список уникальных ответственных из всех данных
   const responsibleUsers = useMemo(() => {
     const userMap = new Map<number, string>();
@@ -34,8 +46,19 @@ const ChakraModal = ({ chakra, onClose }: ChakraModalProps) => {
       if (q.user_id && q.user_name) userMap.set(q.user_id, q.user_name);
     });
     
-    return Array.from(userMap.entries()).map(([id, name]) => ({ id, name }));
+    return Array.from(userMap.entries()).map(([id, name], idx) => ({ 
+      id, 
+      name, 
+      color: userColors[idx % userColors.length] 
+    }));
   }, [chakra]);
+
+  // Получить цвет по user_id
+  const getUserColor = (userId?: number) => {
+    if (!userId) return null;
+    const user = responsibleUsers.find(u => u.id === userId);
+    return user?.color || null;
+  };
 
   // Фильтрация данных по выбранному ответственному
   const filteredData = useMemo(() => {
@@ -143,15 +166,27 @@ const ChakraModal = ({ chakra, onClose }: ChakraModalProps) => {
                     </span>
                   )}
                 </p>
-                <div className="grid grid-cols-1 gap-2 text-xs">
-                  {filteredData.concepts.map((concept, idx) => (
-                    <div key={idx} className="p-2 bg-purple-50 rounded-lg border border-purple-200 flex justify-between items-center">
-                      <span className="text-purple-900 font-medium">⚡ {concept.concept}</span>
-                      {!selectedUserId && concept.user_name && (
-                        <span className="text-purple-600 text-xs">{concept.user_name}</span>
-                      )}
-                    </div>
-                  ))}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+                  {filteredData.concepts.map((concept, idx) => {
+                    const color = getUserColor(concept.user_id);
+                    return (
+                      <div 
+                        key={idx} 
+                        className={`p-2 rounded-lg border flex flex-col gap-1 ${
+                          color ? `${color.bg} ${color.border}` : 'bg-purple-50 border-purple-200'
+                        }`}
+                      >
+                        <span className={`font-medium ${color ? color.text : 'text-purple-900'}`}>
+                          ⚡ {concept.concept}
+                        </span>
+                        {!selectedUserId && concept.user_name && (
+                          <span className={`text-xs px-2 py-0.5 rounded-full w-fit ${color ? color.badge : 'bg-purple-200'}`}>
+                            {concept.user_name}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -168,15 +203,27 @@ const ChakraModal = ({ chakra, onClose }: ChakraModalProps) => {
                     </span>
                   )}
                 </p>
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  {filteredData.organs.map((organ, idx) => (
-                    <div key={idx} className="p-2 bg-red-50 rounded border border-red-200">
-                      <p className="text-red-900 font-medium">{organ.organ_name}</p>
-                      {!selectedUserId && organ.user_name && (
-                        <p className="text-red-600 text-xs">{organ.user_name}</p>
-                      )}
-                    </div>
-                  ))}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+                  {filteredData.organs.map((organ, idx) => {
+                    const color = getUserColor(organ.user_id);
+                    return (
+                      <div 
+                        key={idx} 
+                        className={`p-2 rounded border flex flex-col gap-1 ${
+                          color ? `${color.bg} ${color.border}` : 'bg-red-50 border-red-200'
+                        }`}
+                      >
+                        <p className={`font-medium ${color ? color.text : 'text-red-900'}`}>
+                          {organ.organ_name}
+                        </p>
+                        {!selectedUserId && organ.user_name && (
+                          <span className={`text-xs px-2 py-0.5 rounded-full w-fit ${color ? color.badge : 'bg-red-200'}`}>
+                            {organ.user_name}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -193,15 +240,27 @@ const ChakraModal = ({ chakra, onClose }: ChakraModalProps) => {
                     </span>
                   )}
                 </p>
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  {filteredData.sciences.map((science, idx) => (
-                    <div key={idx} className="p-2 bg-blue-50 rounded border border-blue-200">
-                      <p className="text-blue-900 font-medium">{science.science_name}</p>
-                      {!selectedUserId && science.user_name && (
-                        <p className="text-blue-600 text-xs">{science.user_name}</p>
-                      )}
-                    </div>
-                  ))}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+                  {filteredData.sciences.map((science, idx) => {
+                    const color = getUserColor(science.user_id);
+                    return (
+                      <div 
+                        key={idx} 
+                        className={`p-2 rounded border flex flex-col gap-1 ${
+                          color ? `${color.bg} ${color.border}` : 'bg-blue-50 border-blue-200'
+                        }`}
+                      >
+                        <p className={`font-medium ${color ? color.text : 'text-blue-900'}`}>
+                          {science.science_name}
+                        </p>
+                        {!selectedUserId && science.user_name && (
+                          <span className={`text-xs px-2 py-0.5 rounded-full w-fit ${color ? color.badge : 'bg-blue-200'}`}>
+                            {science.user_name}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -218,15 +277,27 @@ const ChakraModal = ({ chakra, onClose }: ChakraModalProps) => {
                     </span>
                   )}
                 </p>
-                <div className="space-y-2 text-xs">
-                  {filteredData.responsibilities.map((resp, idx) => (
-                    <div key={idx} className="p-2 bg-orange-50 rounded border border-orange-200">
-                      <p className="text-orange-900 font-medium">{resp.responsibility}</p>
-                      {!selectedUserId && resp.user_name && (
-                        <p className="text-orange-600 text-xs">{resp.user_name}</p>
-                      )}
-                    </div>
-                  ))}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+                  {filteredData.responsibilities.map((resp, idx) => {
+                    const color = getUserColor(resp.user_id);
+                    return (
+                      <div 
+                        key={idx} 
+                        className={`p-2 rounded border flex flex-col gap-1 ${
+                          color ? `${color.bg} ${color.border}` : 'bg-orange-50 border-orange-200'
+                        }`}
+                      >
+                        <p className={`font-medium ${color ? color.text : 'text-orange-900'}`}>
+                          {resp.responsibility}
+                        </p>
+                        {!selectedUserId && resp.user_name && (
+                          <span className={`text-xs px-2 py-0.5 rounded-full w-fit ${color ? color.badge : 'bg-orange-200'}`}>
+                            {resp.user_name}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -243,18 +314,28 @@ const ChakraModal = ({ chakra, onClose }: ChakraModalProps) => {
                     </span>
                   )}
                 </p>
-                <div className="space-y-2 text-xs">
-                  {filteredData.questions.map((q, idx) => (
-                    <div key={idx} className="p-2 bg-yellow-50 rounded border border-yellow-200 flex justify-between items-start">
-                      <p className="text-yellow-900 flex items-start gap-1">
-                        <span>{q.is_resolved ? '✓' : '○'}</span>
-                        <span>{q.question}</span>
-                      </p>
-                      {!selectedUserId && q.user_name && (
-                        <span className="text-yellow-600 text-xs ml-2">{q.user_name}</span>
-                      )}
-                    </div>
-                  ))}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                  {filteredData.questions.map((q, idx) => {
+                    const color = getUserColor(q.user_id);
+                    return (
+                      <div 
+                        key={idx} 
+                        className={`p-2 rounded border flex flex-col gap-1 ${
+                          color ? `${color.bg} ${color.border}` : 'bg-yellow-50 border-yellow-200'
+                        }`}
+                      >
+                        <p className={`flex items-start gap-1 ${color ? color.text : 'text-yellow-900'}`}>
+                          <span>{q.is_resolved ? '✓' : '○'}</span>
+                          <span>{q.question}</span>
+                        </p>
+                        {!selectedUserId && q.user_name && (
+                          <span className={`text-xs px-2 py-0.5 rounded-full w-fit ${color ? color.badge : 'bg-yellow-200'}`}>
+                            {q.user_name}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
