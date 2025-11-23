@@ -97,15 +97,16 @@ def get_all_chakras(cur) -> Dict[str, Any]:
     }
 
 def get_chakra_detail(cur, chakra_id: str) -> Dict[str, Any]:
-    cur.execute('''
+    query = f"""
         SELECT 
             c.*,
             u.name as responsible_name,
             u.email as responsible_email
         FROM chakras c
         LEFT JOIN users u ON c.responsible_user_id = u.id
-        WHERE c.id = %s
-    ''', (chakra_id,))
+        WHERE c.id = {chakra_id}
+    """
+    cur.execute(query)
     
     chakra = cur.fetchone()
     if not chakra:
@@ -117,19 +118,19 @@ def get_chakra_detail(cur, chakra_id: str) -> Dict[str, Any]:
     
     chakra_dict = dict(chakra)
     
-    cur.execute('SELECT concept, category FROM chakra_concepts WHERE chakra_id = %s', (chakra_id,))
+    cur.execute(f'SELECT concept, category FROM chakra_concepts WHERE chakra_id = {chakra_id}')
     chakra_dict['concepts'] = [dict(c) for c in cur.fetchall()]
     
-    cur.execute('SELECT organ_name, description FROM chakra_organs WHERE chakra_id = %s', (chakra_id,))
+    cur.execute(f'SELECT organ_name, description FROM chakra_organs WHERE chakra_id = {chakra_id}')
     chakra_dict['organs'] = [dict(o) for o in cur.fetchall()]
     
-    cur.execute('SELECT science_name, description FROM chakra_sciences WHERE chakra_id = %s', (chakra_id,))
+    cur.execute(f'SELECT science_name, description FROM chakra_sciences WHERE chakra_id = {chakra_id}')
     chakra_dict['sciences'] = [dict(s) for s in cur.fetchall()]
     
-    cur.execute('SELECT responsibility, category FROM chakra_responsibilities WHERE chakra_id = %s', (chakra_id,))
+    cur.execute(f'SELECT responsibility, category FROM chakra_responsibilities WHERE chakra_id = {chakra_id}')
     chakra_dict['responsibilities'] = [dict(r) for r in cur.fetchall()]
     
-    cur.execute('SELECT question, is_resolved FROM chakra_questions WHERE chakra_id = %s', (chakra_id,))
+    cur.execute(f'SELECT question, is_resolved FROM chakra_questions WHERE chakra_id = {chakra_id}')
     chakra_dict['questions'] = [dict(q) for q in cur.fetchall()]
     
     return {
