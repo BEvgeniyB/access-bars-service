@@ -125,19 +125,44 @@ def get_chakra_detail(cur, chakra_id: str) -> Dict[str, Any]:
     
     chakra_dict = dict(chakra)
     
-    cur.execute(f'SELECT concept, category FROM chakra_concepts WHERE chakra_id = {chakra_id}')
+    cur.execute(f'''
+        SELECT cc.concept, cc.category, cc.user_id, u.name as user_name
+        FROM chakra_concepts cc
+        LEFT JOIN users u ON cc.user_id = u.id
+        WHERE cc.chakra_id = {chakra_id}
+    ''')
     chakra_dict['concepts'] = [dict(c) for c in cur.fetchall()]
     
-    cur.execute(f'SELECT organ_name, description FROM chakra_organs WHERE chakra_id = {chakra_id}')
+    cur.execute(f'''
+        SELECT co.organ_name, co.description, co.user_id, u.name as user_name
+        FROM chakra_organs co
+        LEFT JOIN users u ON co.user_id = u.id
+        WHERE co.chakra_id = {chakra_id}
+    ''')
     chakra_dict['organs'] = [dict(o) for o in cur.fetchall()]
     
-    cur.execute(f'SELECT science_name, description FROM chakra_sciences WHERE chakra_id = {chakra_id}')
+    cur.execute(f'''
+        SELECT cs.science_name, cs.description, cs.user_id, u.name as user_name
+        FROM chakra_sciences cs
+        LEFT JOIN users u ON cs.user_id = u.id
+        WHERE cs.chakra_id = {chakra_id}
+    ''')
     chakra_dict['sciences'] = [dict(s) for s in cur.fetchall()]
     
-    cur.execute(f'SELECT responsibility, category FROM chakra_responsibilities WHERE chakra_id = {chakra_id}')
+    cur.execute(f'''
+        SELECT cr.responsibility, cr.category, cr.user_id, u.name as user_name
+        FROM chakra_responsibilities cr
+        LEFT JOIN users u ON cr.user_id = u.id
+        WHERE cr.chakra_id = {chakra_id}
+    ''')
     chakra_dict['responsibilities'] = [dict(r) for r in cur.fetchall()]
     
-    cur.execute(f'SELECT question, is_resolved FROM chakra_questions WHERE chakra_id = {chakra_id}')
+    cur.execute(f'''
+        SELECT cq.question, cq.is_resolved, cq.user_id, u.name as user_name
+        FROM chakra_questions cq
+        LEFT JOIN users u ON cq.user_id = u.id
+        WHERE cq.chakra_id = {chakra_id}
+    ''')
     chakra_dict['questions'] = [dict(q) for q in cur.fetchall()]
     
     return {
