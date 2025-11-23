@@ -30,9 +30,24 @@ const Structure = () => {
 
   const fetchChakraDetail = async (id: number) => {
     try {
+      console.log('Fetching chakra detail for id:', id);
       const response = await fetch(`https://functions.poehali.dev/802474e6-54c0-4040-a65f-71d604777df5?id=${id}`);
+      console.log('Response status:', response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        return;
+      }
+      
       const data = await response.json();
-      setSelectedChakra(data.chakra);
+      console.log('Received data:', data);
+      
+      if (data.chakra) {
+        setSelectedChakra(data.chakra);
+      } else {
+        console.error('No chakra data in response');
+      }
     } catch (error) {
       console.error('Error fetching chakra detail:', error);
     }
