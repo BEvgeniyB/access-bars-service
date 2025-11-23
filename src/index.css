@@ -113,4 +113,16 @@
   .pp-badge {
     display: none !important;
   }
+
+  @keyframes chakraGlow {
+    0%,
+    100% {
+      filter: brightness(1) saturate(1);
+      opacity: 0.9;
+    }
+    50% {
+      filter: brightness(1.3) saturate(1.2);
+      opacity: 1;
+    }
+  }
 }

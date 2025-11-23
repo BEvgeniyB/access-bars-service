@@ -22,10 +22,10 @@ const ChakraBody = ({ chakras, onChakraClick }: ChakraBodyProps) => {
   const sortedChakras = [...chakras].sort((a, b) => a.position - b.position);
 
   return (
-    <div className="relative mx-auto max-w-4xl">
-      <div className="relative w-full" style={{ paddingBottom: '150%' }}>
+    <div className="relative mx-auto max-w-3xl">
+      <div className="relative w-full" style={{ paddingBottom: '80%' }}>
         <div 
-          className="absolute inset-0 flex items-center justify-center opacity-10"
+          className="absolute inset-0 flex items-center justify-center opacity-30"
           style={{
             backgroundImage: 'url(https://cdn.poehali.dev/files/32f04697-7984-4cb1-8706-5959678bd08d.jpg)',
             backgroundSize: 'contain',
@@ -34,22 +34,7 @@ const ChakraBody = ({ chakras, onChakraClick }: ChakraBodyProps) => {
           }}
         />
 
-        <svg
-          className="absolute inset-0 w-full h-full"
-          viewBox="0 0 400 600"
-          style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))' }}
-        >
-          <ellipse cx="200" cy="100" rx="45" ry="60" fill="#E8F5E9" opacity="0.3" />
-          
-          <ellipse cx="200" cy="200" rx="60" ry="80" fill="#E8F5E9" opacity="0.3" />
-          
-          <ellipse cx="200" cy="320" rx="55" ry="75" fill="#E8F5E9" opacity="0.3" />
-          
-          <ellipse cx="150" cy="410" rx="25" ry="90" fill="#E8F5E9" opacity="0.3" />
-          <ellipse cx="250" cy="410" rx="25" ry="90" fill="#E8F5E9" opacity="0.3" />
-          
-          <line x1="200" y1="150" x2="200" y2="500" stroke="#10B981" strokeWidth="2" opacity="0.2" strokeDasharray="5,5" />
-        </svg>
+
 
         {sortedChakras.map((chakra) => {
           const pos = getChakraPosition(chakra.position);
@@ -64,10 +49,11 @@ const ChakraBody = ({ chakras, onChakraClick }: ChakraBodyProps) => {
               }}
             >
               <div 
-                className="relative w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-125 animate-pulse"
+                className="relative w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-125"
                 style={{
                   backgroundColor: chakra.color,
                   boxShadow: `0 0 20px ${chakra.color}80, 0 0 40px ${chakra.color}40`,
+                  animation: 'chakraGlow 3s ease-in-out infinite'
                 }}
               >
                 <div className="absolute inset-0 rounded-full border-2 border-white opacity-50 group-hover:opacity-100 transition-opacity"></div>
