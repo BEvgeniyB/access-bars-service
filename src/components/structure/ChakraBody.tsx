@@ -27,7 +27,7 @@ const ChakraBody = ({ chakras, onChakraClick }: ChakraBodyProps) => {
         <div 
           className="absolute inset-0 flex items-center justify-center"
           style={{
-            backgroundImage: 'url(https://cdn.poehali.dev/projects/173cf2ee-3ecf-496b-86b7-63c1d22a9229/files/3deaae84-2fa0-4770-b3c9-91d5033b2a9a.jpg)',
+            backgroundImage: 'url(https://cdn.poehali.dev/files/afd33c78-1aed-4f66-b116-9d10298d0ec5.jpg)',
             backgroundSize: 'contain',
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center'
