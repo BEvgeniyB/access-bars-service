@@ -3,14 +3,14 @@ import NavigationMenu from '@/components/Index/NavigationMenu';
 import Footer from '@/components/Index/Footer';
 import ChakraBody from '@/components/structure/ChakraBody';
 import ChakraModal from '@/components/structure/ChakraModal';
-import ChakraFilters from '@/components/structure/ChakraFilters';
+
 import { Chakra } from '@/types/chakra';
 
 const Structure = () => {
   const [chakras, setChakras] = useState<Chakra[]>([]);
   const [selectedChakra, setSelectedChakra] = useState<Chakra | null>(null);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<string>('');
+
 
   useEffect(() => {
     fetchChakras();
@@ -38,12 +38,7 @@ const Structure = () => {
     }
   };
 
-  const filteredChakras = filter 
-    ? chakras.filter(ch => 
-        ch.continent?.includes(filter) || 
-        ch.name.includes(filter)
-      )
-    : chakras;
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-purple-50">
@@ -59,19 +54,13 @@ const Structure = () => {
           </p>
         </div>
 
-        <ChakraFilters 
-          filter={filter} 
-          onFilterChange={setFilter} 
-          chakras={chakras}
-        />
-
         {loading ? (
           <div className="flex justify-center items-center h-96">
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-emerald-600"></div>
           </div>
         ) : (
           <ChakraBody 
-            chakras={filteredChakras}
+            chakras={chakras}
             onChakraClick={fetchChakraDetail}
           />
         )}
