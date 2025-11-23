@@ -73,9 +73,12 @@ const ChakraModal = ({ chakra, onClose }: ChakraModalProps) => {
               <div className="grid grid-cols-2 gap-3">
                 {chakra.concepts.map((concept, idx) => (
                   <div key={idx} className="p-3 bg-purple-50 rounded-lg border border-purple-200">
-                    <p className="text-purple-900 font-medium">{concept.concept}</p>
+                    <p className="text-purple-900 font-medium flex items-center gap-2">
+                      <span>⚡</span>
+                      {concept.concept}
+                    </p>
                     {concept.category && (
-                      <p className="text-xs text-purple-600 mt-1">{concept.category}</p>
+                      <p className="text-xs text-purple-600 mt-1 ml-6">{concept.category}</p>
                     )}
                   </div>
                 ))}
