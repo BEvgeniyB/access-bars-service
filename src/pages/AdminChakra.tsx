@@ -106,6 +106,18 @@ const AdminChakra = () => {
   const [showNewConceptForm, setShowNewConceptForm] = useState(false);
   const [selectedExistingConceptId, setSelectedExistingConceptId] = useState<number | null>(null);
 
+  const [allOrgans, setAllOrgans] = useState<ChakraOrgan[]>([]);
+  const [showNewOrganForm, setShowNewOrganForm] = useState(false);
+  const [selectedExistingOrganId, setSelectedExistingOrganId] = useState<number | null>(null);
+
+  const [allSciences, setAllSciences] = useState<ChakraScience[]>([]);
+  const [showNewScienceForm, setShowNewScienceForm] = useState(false);
+  const [selectedExistingScienceId, setSelectedExistingScienceId] = useState<number | null>(null);
+
+  const [allResponsibilities, setAllResponsibilities] = useState<ChakraResponsibility[]>([]);
+  const [showNewResponsibilityForm, setShowNewResponsibilityForm] = useState(false);
+  const [selectedExistingResponsibilityId, setSelectedExistingResponsibilityId] = useState<number | null>(null);
+
   const handleLogin = async () => {
     if (!telegramId.trim() || !telegramGroupId.trim()) {
       setError('Введите Telegram ID и Group ID');
@@ -199,6 +211,54 @@ const AdminChakra = () => {
       }
     } catch (err) {
       console.error('Ошибка загрузки всех энергий:', err);
+    }
+  };
+
+  const loadAllOrgans = async () => {
+    if (!token) return;
+
+    try {
+      const response = await fetch(`${ADMIN_API_URL}?table=chakra_organs`, {
+        headers: { 'X-Auth-Token': token },
+      });
+      const data = await response.json();
+      if (data.chakra_organs) {
+        setAllOrgans(data.chakra_organs);
+      }
+    } catch (err) {
+      console.error('Ошибка загрузки всех органов:', err);
+    }
+  };
+
+  const loadAllSciences = async () => {
+    if (!token) return;
+
+    try {
+      const response = await fetch(`${ADMIN_API_URL}?table=chakra_sciences`, {
+        headers: { 'X-Auth-Token': token },
+      });
+      const data = await response.json();
+      if (data.chakra_sciences) {
+        setAllSciences(data.chakra_sciences);
+      }
+    } catch (err) {
+      console.error('Ошибка загрузки всех наук:', err);
+    }
+  };
+
+  const loadAllResponsibilities = async () => {
+    if (!token) return;
+
+    try {
+      const response = await fetch(`${ADMIN_API_URL}?table=chakra_responsibilities`, {
+        headers: { 'X-Auth-Token': token },
+      });
+      const data = await response.json();
+      if (data.chakra_responsibilities) {
+        setAllResponsibilities(data.chakra_responsibilities);
+      }
+    } catch (err) {
+      console.error('Ошибка загрузки всех ответственностей:', err);
     }
   };
 
@@ -333,11 +393,20 @@ const AdminChakra = () => {
     } else if (type === 'organ') {
       newItem.organ_name = '';
       newItem.description = '';
+      setShowNewOrganForm(false);
+      setSelectedExistingOrganId(null);
+      loadAllOrgans();
     } else if (type === 'science') {
       newItem.science_name = '';
       newItem.description = '';
+      setShowNewScienceForm(false);
+      setSelectedExistingScienceId(null);
+      loadAllSciences();
     } else if (type === 'responsibility') {
       newItem.responsibility = '';
+      setShowNewResponsibilityForm(false);
+      setSelectedExistingResponsibilityId(null);
+      loadAllResponsibilities();
     }
 
     setEditItem(newItem);
@@ -368,6 +437,45 @@ const AdminChakra = () => {
       }
     }
 
+    if (editType === 'organ' && (editMode === 'create' && showNewOrganForm || editMode === 'edit')) {
+      const duplicate = allOrgans.find(
+        (o) => 
+          o.id !== editItem.id &&
+          o.organ_name.toLowerCase().trim() === editItem.organ_name.toLowerCase().trim()
+      );
+
+      if (duplicate) {
+        alert(`Орган "${editItem.organ_name}" уже существует в базе данных.`);
+        return;
+      }
+    }
+
+    if (editType === 'science' && (editMode === 'create' && showNewScienceForm || editMode === 'edit')) {
+      const duplicate = allSciences.find(
+        (s) => 
+          s.id !== editItem.id &&
+          s.science_name.toLowerCase().trim() === editItem.science_name.toLowerCase().trim()
+      );
+
+      if (duplicate) {
+        alert(`Наука "${editItem.science_name}" уже существует в базе данных.`);
+        return;
+      }
+    }
+
+    if (editType === 'responsibility' && (editMode === 'create' && showNewResponsibilityForm || editMode === 'edit')) {
+      const duplicate = allResponsibilities.find(
+        (r) => 
+          r.id !== editItem.id &&
+          r.responsibility.toLowerCase().trim() === editItem.responsibility.toLowerCase().trim()
+      );
+
+      if (duplicate) {
+        alert(`Ответственность "${editItem.responsibility}" уже существует в базе данных.`);
+        return;
+      }
+    }
+
     if (editType === 'concept' && editMode === 'create' && !showNewConceptForm && selectedExistingConceptId) {
       const existingConcept = allConcepts.find((c) => c.id === selectedExistingConceptId);
       if (!existingConcept) return;
@@ -387,6 +495,107 @@ const AdminChakra = () => {
             'X-Auth-Token': token,
           },
           body: JSON.stringify({ table: 'chakra_concepts', data: newItem }),
+        });
+
+        if (response.ok) {
+          setEditDialog(false);
+          await loadUserData();
+        } else {
+          const data = await response.json();
+          alert(data.error || 'Ошибка сохранения');
+        }
+      } catch (err) {
+        console.error('Ошибка сохранения:', err);
+      }
+      return;
+    }
+
+    if (editType === 'organ' && editMode === 'create' && !showNewOrganForm && selectedExistingOrganId) {
+      const existingOrgan = allOrgans.find((o) => o.id === selectedExistingOrganId);
+      if (!existingOrgan) return;
+
+      const newItem = {
+        chakra_id: editItem.chakra_id,
+        user_id: editItem.user_id,
+        organ_name: existingOrgan.organ_name,
+        description: existingOrgan.description,
+      };
+
+      try {
+        const response = await fetch(ADMIN_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Auth-Token': token,
+          },
+          body: JSON.stringify({ table: 'chakra_organs', data: newItem }),
+        });
+
+        if (response.ok) {
+          setEditDialog(false);
+          await loadUserData();
+        } else {
+          const data = await response.json();
+          alert(data.error || 'Ошибка сохранения');
+        }
+      } catch (err) {
+        console.error('Ошибка сохранения:', err);
+      }
+      return;
+    }
+
+    if (editType === 'science' && editMode === 'create' && !showNewScienceForm && selectedExistingScienceId) {
+      const existingScience = allSciences.find((s) => s.id === selectedExistingScienceId);
+      if (!existingScience) return;
+
+      const newItem = {
+        chakra_id: editItem.chakra_id,
+        user_id: editItem.user_id,
+        science_name: existingScience.science_name,
+        description: existingScience.description,
+      };
+
+      try {
+        const response = await fetch(ADMIN_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Auth-Token': token,
+          },
+          body: JSON.stringify({ table: 'chakra_sciences', data: newItem }),
+        });
+
+        if (response.ok) {
+          setEditDialog(false);
+          await loadUserData();
+        } else {
+          const data = await response.json();
+          alert(data.error || 'Ошибка сохранения');
+        }
+      } catch (err) {
+        console.error('Ошибка сохранения:', err);
+      }
+      return;
+    }
+
+    if (editType === 'responsibility' && editMode === 'create' && !showNewResponsibilityForm && selectedExistingResponsibilityId) {
+      const existingResponsibility = allResponsibilities.find((r) => r.id === selectedExistingResponsibilityId);
+      if (!existingResponsibility) return;
+
+      const newItem = {
+        chakra_id: editItem.chakra_id,
+        user_id: editItem.user_id,
+        responsibility: existingResponsibility.responsibility,
+      };
+
+      try {
+        const response = await fetch(ADMIN_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Auth-Token': token,
+          },
+          body: JSON.stringify({ table: 'chakra_responsibilities', data: newItem }),
         });
 
         if (response.ok) {
@@ -485,6 +694,9 @@ const AdminChakra = () => {
       loadUsers();
       loadChakras();
       loadAllConcepts();
+      loadAllOrgans();
+      loadAllSciences();
+      loadAllResponsibilities();
     }
   }, [isAuthenticated, token]);
 
@@ -988,7 +1200,76 @@ const AdminChakra = () => {
               </>
             )}
 
-            {editType === 'organ' && editItem && (
+            {editType === 'organ' && editItem && editMode === 'create' && (
+              <>
+                {!showNewOrganForm ? (
+                  <>
+                    <div className="space-y-2">
+                      <Label>Выбрать существующий орган</Label>
+                      <Select
+                        value={selectedExistingOrganId?.toString() || ''}
+                        onValueChange={(val) => setSelectedExistingOrganId(parseInt(val))}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Поиск органа..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <div className="max-h-[300px] overflow-y-auto">
+                            {allOrgans
+                              .sort((a, b) => a.organ_name.localeCompare(b.organ_name))
+                              .map((organ) => (
+                                <SelectItem key={organ.id} value={organ.id.toString()}>
+                                  {organ.organ_name}
+                                </SelectItem>
+                              ))}
+                          </div>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowNewOrganForm(true)}
+                      className="w-full"
+                    >
+                      <Icon name="Plus" size={16} className="mr-2" />
+                      Создать новый орган
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center justify-between mb-2">
+                      <Label>Создание нового органа</Label>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowNewOrganForm(false)}
+                      >
+                        <Icon name="ArrowLeft" size={16} className="mr-1" />
+                        Назад
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Название органа</Label>
+                      <Input
+                        value={editItem.organ_name || ''}
+                        onChange={(e) => setEditItem({ ...editItem, organ_name: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Описание</Label>
+                      <Textarea
+                        value={editItem.description || ''}
+                        onChange={(e) => setEditItem({ ...editItem, description: e.target.value })}
+                      />
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+
+            {editType === 'organ' && editItem && editMode === 'edit' && (
               <>
                 <div className="space-y-2">
                   <Label>Название органа</Label>
@@ -1007,7 +1288,76 @@ const AdminChakra = () => {
               </>
             )}
 
-            {editType === 'science' && editItem && (
+            {editType === 'science' && editItem && editMode === 'create' && (
+              <>
+                {!showNewScienceForm ? (
+                  <>
+                    <div className="space-y-2">
+                      <Label>Выбрать существующую науку</Label>
+                      <Select
+                        value={selectedExistingScienceId?.toString() || ''}
+                        onValueChange={(val) => setSelectedExistingScienceId(parseInt(val))}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Поиск науки..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <div className="max-h-[300px] overflow-y-auto">
+                            {allSciences
+                              .sort((a, b) => a.science_name.localeCompare(b.science_name))
+                              .map((science) => (
+                                <SelectItem key={science.id} value={science.id.toString()}>
+                                  {science.science_name}
+                                </SelectItem>
+                              ))}
+                          </div>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowNewScienceForm(true)}
+                      className="w-full"
+                    >
+                      <Icon name="Plus" size={16} className="mr-2" />
+                      Создать новую науку
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center justify-between mb-2">
+                      <Label>Создание новой науки</Label>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowNewScienceForm(false)}
+                      >
+                        <Icon name="ArrowLeft" size={16} className="mr-1" />
+                        Назад
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Название науки</Label>
+                      <Input
+                        value={editItem.science_name || ''}
+                        onChange={(e) => setEditItem({ ...editItem, science_name: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Описание</Label>
+                      <Textarea
+                        value={editItem.description || ''}
+                        onChange={(e) => setEditItem({ ...editItem, description: e.target.value })}
+                      />
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+
+            {editType === 'science' && editItem && editMode === 'edit' && (
               <>
                 <div className="space-y-2">
                   <Label>Название науки</Label>
@@ -1026,7 +1376,69 @@ const AdminChakra = () => {
               </>
             )}
 
-            {editType === 'responsibility' && editItem && (
+            {editType === 'responsibility' && editItem && editMode === 'create' && (
+              <>
+                {!showNewResponsibilityForm ? (
+                  <>
+                    <div className="space-y-2">
+                      <Label>Выбрать существующую ответственность</Label>
+                      <Select
+                        value={selectedExistingResponsibilityId?.toString() || ''}
+                        onValueChange={(val) => setSelectedExistingResponsibilityId(parseInt(val))}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Поиск..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <div className="max-h-[300px] overflow-y-auto">
+                            {allResponsibilities
+                              .sort((a, b) => a.responsibility.localeCompare(b.responsibility))
+                              .map((resp) => (
+                                <SelectItem key={resp.id} value={resp.id.toString()}>
+                                  {resp.responsibility}
+                                </SelectItem>
+                              ))}
+                          </div>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowNewResponsibilityForm(true)}
+                      className="w-full"
+                    >
+                      <Icon name="Plus" size={16} className="mr-2" />
+                      Создать новую ответственность
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center justify-between mb-2">
+                      <Label>Создание новой ответственности</Label>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowNewResponsibilityForm(false)}
+                      >
+                        <Icon name="ArrowLeft" size={16} className="mr-1" />
+                        Назад
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Ответственность</Label>
+                      <Textarea
+                        value={editItem.responsibility || ''}
+                        onChange={(e) => setEditItem({ ...editItem, responsibility: e.target.value })}
+                      />
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+
+            {editType === 'responsibility' && editItem && editMode === 'edit' && (
               <div className="space-y-2">
                 <Label>Ответственность</Label>
                 <Textarea
@@ -1044,10 +1456,10 @@ const AdminChakra = () => {
             <Button 
               onClick={handleSave}
               disabled={
-                editType === 'concept' && 
-                editMode === 'create' && 
-                !showNewConceptForm && 
-                !selectedExistingConceptId
+                (editType === 'concept' && editMode === 'create' && !showNewConceptForm && !selectedExistingConceptId) ||
+                (editType === 'organ' && editMode === 'create' && !showNewOrganForm && !selectedExistingOrganId) ||
+                (editType === 'science' && editMode === 'create' && !showNewScienceForm && !selectedExistingScienceId) ||
+                (editType === 'responsibility' && editMode === 'create' && !showNewResponsibilityForm && !selectedExistingResponsibilityId)
               }
             >
               Сохранить
