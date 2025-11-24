@@ -1,7 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import Icon from '@/components/ui/icon';
 import {
   Dialog,
   DialogContent,
@@ -9,14 +6,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import UserEditForm from './forms/UserEditForm';
+import ConceptEditForm from './forms/ConceptEditForm';
+import ChakraDataEditForm from './forms/ChakraDataEditForm';
 
 interface Chakra {
   id: number;
@@ -120,426 +112,78 @@ const ChakraEditDialog = ({
   setSelectedExistingResponsibilityId,
   onSave,
 }: ChakraEditDialogProps) => {
+  const getDialogTitle = () => {
+    const action = editMode === 'create' ? 'Создать' : 'Редактировать';
+    const entityMap = {
+      concept: 'энергию',
+      organ: 'орган',
+      science: 'науку',
+      responsibility: 'ответственность',
+      user: 'пользователя',
+    };
+    return `${action} ${entityMap[editType]}`;
+  };
+
+  const isSaveDisabled = () => {
+    return (
+      (editType === 'concept' && editMode === 'create' && !showNewConceptForm && !selectedExistingConceptId) ||
+      (editType === 'organ' && editMode === 'create' && !showNewOrganForm && !selectedExistingOrganId) ||
+      (editType === 'science' && editMode === 'create' && !showNewScienceForm && !selectedExistingScienceId) ||
+      (editType === 'responsibility' && editMode === 'create' && !showNewResponsibilityForm && !selectedExistingResponsibilityId)
+    );
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>
-            {editMode === 'create' ? 'Создать' : 'Редактировать'}{' '}
-            {editType === 'concept' && 'энергию'}
-            {editType === 'organ' && 'орган'}
-            {editType === 'science' && 'науку'}
-            {editType === 'responsibility' && 'ответственность'}
-            {editType === 'user' && 'пользователя'}
-          </DialogTitle>
+          <DialogTitle>{getDialogTitle()}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          {editType === 'user' && editItem && (
-            <>
-              <div className="space-y-2">
-                <Label>Имя</Label>
-                <Input
-                  value={editItem.name || ''}
-                  onChange={(e) => setEditItem({ ...editItem, name: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Email</Label>
-                <Input
-                  type="email"
-                  value={editItem.email || ''}
-                  onChange={(e) => setEditItem({ ...editItem, email: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Telegram ID</Label>
-                <Input
-                  value={editItem.telegram_id || ''}
-                  onChange={(e) => setEditItem({ ...editItem, telegram_id: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Telegram Username</Label>
-                <Input
-                  value={editItem.telegram_username || ''}
-                  onChange={(e) => setEditItem({ ...editItem, telegram_username: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Чакра</Label>
-                <Select
-                  value={editItem.chakra_id?.toString() || 'none'}
-                  onValueChange={(val) =>
-                    setEditItem({ ...editItem, chakra_id: val === 'none' ? null : parseInt(val) })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Выберите чакру" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">Не назначена</SelectItem>
-                    {chakras.map((chakra) => (
-                      <SelectItem key={chakra.id} value={chakra.id.toString()}>
-                        {chakra.position} - {chakra.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </>
+          {editType === 'user' && (
+            <UserEditForm
+              editItem={editItem}
+              setEditItem={setEditItem}
+              chakras={chakras}
+            />
           )}
 
-          {editType === 'concept' && editItem && editMode === 'create' && (
-            <>
-              {!showNewConceptForm ? (
-                <>
-                  <div className="space-y-2">
-                    <Label>Выбрать существующую энергию</Label>
-                    <Select
-                      value={selectedExistingConceptId?.toString() || ''}
-                      onValueChange={(val) => setSelectedExistingConceptId(parseInt(val))}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Поиск энергии..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <div className="max-h-[300px] overflow-y-auto">
-                          {allConcepts
-                            .sort((a, b) => a.concept.localeCompare(b.concept))
-                            .map((concept) => (
-                              <SelectItem key={concept.id} value={concept.id.toString()}>
-                                {concept.concept} ({concept.category})
-                              </SelectItem>
-                            ))}
-                        </div>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setShowNewConceptForm(true)}
-                    className="w-full"
-                  >
-                    <Icon name="Plus" size={16} className="mr-2" />
-                    Создать новую энергию
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center justify-between mb-2">
-                    <Label>Создание новой энергии</Label>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowNewConceptForm(false)}
-                    >
-                      <Icon name="ArrowLeft" size={16} className="mr-1" />
-                      Назад
-                    </Button>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Энергия</Label>
-                    <Input
-                      value={editItem.concept || ''}
-                      onChange={(e) => setEditItem({ ...editItem, concept: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Категория</Label>
-                    <Select
-                      value={editItem.category || ''}
-                      onValueChange={(val) => setEditItem({ ...editItem, category: val })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Выберите категорию" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Основная">Основная</SelectItem>
-                        <SelectItem value="Дополнительная">Дополнительная</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </>
-              )}
-            </>
+          {editType === 'concept' && (
+            <ConceptEditForm
+              editMode={editMode}
+              editItem={editItem}
+              setEditItem={setEditItem}
+              allConcepts={allConcepts}
+              showNewConceptForm={showNewConceptForm}
+              setShowNewConceptForm={setShowNewConceptForm}
+              selectedExistingConceptId={selectedExistingConceptId}
+              setSelectedExistingConceptId={setSelectedExistingConceptId}
+            />
           )}
 
-          {editType === 'concept' && editItem && editMode === 'edit' && (
-            <>
-              <div className="space-y-2">
-                <Label>Энергия</Label>
-                <Input
-                  value={editItem.concept || ''}
-                  onChange={(e) => setEditItem({ ...editItem, concept: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Категория</Label>
-                <Select
-                  value={editItem.category || ''}
-                  onValueChange={(val) => setEditItem({ ...editItem, category: val })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Выберите категорию" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Основная">Основная</SelectItem>
-                    <SelectItem value="Дополнительная">Дополнительная</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </>
-          )}
-
-          {editType === 'organ' && editItem && editMode === 'create' && (
-            <>
-              {!showNewOrganForm ? (
-                <>
-                  <div className="space-y-2">
-                    <Label>Выбрать существующий орган</Label>
-                    <Select
-                      value={selectedExistingOrganId?.toString() || ''}
-                      onValueChange={(val) => setSelectedExistingOrganId(parseInt(val))}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Поиск органа..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <div className="max-h-[300px] overflow-y-auto">
-                          {allOrgans
-                            .sort((a, b) => a.organ_name.localeCompare(b.organ_name))
-                            .map((organ) => (
-                              <SelectItem key={organ.id} value={organ.id.toString()}>
-                                {organ.organ_name}
-                              </SelectItem>
-                            ))}
-                        </div>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setShowNewOrganForm(true)}
-                    className="w-full"
-                  >
-                    <Icon name="Plus" size={16} className="mr-2" />
-                    Создать новый орган
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center justify-between mb-2">
-                    <Label>Создание нового органа</Label>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowNewOrganForm(false)}
-                    >
-                      <Icon name="ArrowLeft" size={16} className="mr-1" />
-                      Назад
-                    </Button>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Название органа</Label>
-                    <Input
-                      value={editItem.organ_name || ''}
-                      onChange={(e) => setEditItem({ ...editItem, organ_name: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Описание</Label>
-                    <Textarea
-                      value={editItem.description || ''}
-                      onChange={(e) => setEditItem({ ...editItem, description: e.target.value })}
-                    />
-                  </div>
-                </>
-              )}
-            </>
-          )}
-
-          {editType === 'organ' && editItem && editMode === 'edit' && (
-            <>
-              <div className="space-y-2">
-                <Label>Название органа</Label>
-                <Input
-                  value={editItem.organ_name || ''}
-                  onChange={(e) => setEditItem({ ...editItem, organ_name: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Описание</Label>
-                <Textarea
-                  value={editItem.description || ''}
-                  onChange={(e) => setEditItem({ ...editItem, description: e.target.value })}
-                />
-              </div>
-            </>
-          )}
-
-          {editType === 'science' && editItem && editMode === 'create' && (
-            <>
-              {!showNewScienceForm ? (
-                <>
-                  <div className="space-y-2">
-                    <Label>Выбрать существующую науку</Label>
-                    <Select
-                      value={selectedExistingScienceId?.toString() || ''}
-                      onValueChange={(val) => setSelectedExistingScienceId(parseInt(val))}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Поиск науки..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <div className="max-h-[300px] overflow-y-auto">
-                          {allSciences
-                            .sort((a, b) => a.science_name.localeCompare(b.science_name))
-                            .map((science) => (
-                              <SelectItem key={science.id} value={science.id.toString()}>
-                                {science.science_name}
-                              </SelectItem>
-                            ))}
-                        </div>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setShowNewScienceForm(true)}
-                    className="w-full"
-                  >
-                    <Icon name="Plus" size={16} className="mr-2" />
-                    Создать новую науку
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center justify-between mb-2">
-                    <Label>Создание новой науки</Label>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowNewScienceForm(false)}
-                    >
-                      <Icon name="ArrowLeft" size={16} className="mr-1" />
-                      Назад
-                    </Button>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Название науки</Label>
-                    <Input
-                      value={editItem.science_name || ''}
-                      onChange={(e) => setEditItem({ ...editItem, science_name: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Описание</Label>
-                    <Textarea
-                      value={editItem.description || ''}
-                      onChange={(e) => setEditItem({ ...editItem, description: e.target.value })}
-                    />
-                  </div>
-                </>
-              )}
-            </>
-          )}
-
-          {editType === 'science' && editItem && editMode === 'edit' && (
-            <>
-              <div className="space-y-2">
-                <Label>Название науки</Label>
-                <Input
-                  value={editItem.science_name || ''}
-                  onChange={(e) => setEditItem({ ...editItem, science_name: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Описание</Label>
-                <Textarea
-                  value={editItem.description || ''}
-                  onChange={(e) => setEditItem({ ...editItem, description: e.target.value })}
-                />
-              </div>
-            </>
-          )}
-
-          {editType === 'responsibility' && editItem && editMode === 'create' && (
-            <>
-              {!showNewResponsibilityForm ? (
-                <>
-                  <div className="space-y-2">
-                    <Label>Выбрать существующую ответственность</Label>
-                    <Select
-                      value={selectedExistingResponsibilityId?.toString() || ''}
-                      onValueChange={(val) => setSelectedExistingResponsibilityId(parseInt(val))}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Поиск..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <div className="max-h-[300px] overflow-y-auto">
-                          {allResponsibilities
-                            .sort((a, b) => a.responsibility.localeCompare(b.responsibility))
-                            .map((resp) => (
-                              <SelectItem key={resp.id} value={resp.id.toString()}>
-                                {resp.responsibility}
-                              </SelectItem>
-                            ))}
-                        </div>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setShowNewResponsibilityForm(true)}
-                    className="w-full"
-                  >
-                    <Icon name="Plus" size={16} className="mr-2" />
-                    Создать новую ответственность
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center justify-between mb-2">
-                    <Label>Создание новой ответственности</Label>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowNewResponsibilityForm(false)}
-                    >
-                      <Icon name="ArrowLeft" size={16} className="mr-1" />
-                      Назад
-                    </Button>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Ответственность</Label>
-                    <Textarea
-                      value={editItem.responsibility || ''}
-                      onChange={(e) => setEditItem({ ...editItem, responsibility: e.target.value })}
-                    />
-                  </div>
-                </>
-              )}
-            </>
-          )}
-
-          {editType === 'responsibility' && editItem && editMode === 'edit' && (
-            <div className="space-y-2">
-              <Label>Ответственность</Label>
-              <Textarea
-                value={editItem.responsibility || ''}
-                onChange={(e) => setEditItem({ ...editItem, responsibility: e.target.value })}
-              />
-            </div>
+          {(editType === 'organ' || editType === 'science' || editType === 'responsibility') && (
+            <ChakraDataEditForm
+              editType={editType}
+              editMode={editMode}
+              editItem={editItem}
+              setEditItem={setEditItem}
+              allOrgans={allOrgans}
+              showNewOrganForm={showNewOrganForm}
+              setShowNewOrganForm={setShowNewOrganForm}
+              selectedExistingOrganId={selectedExistingOrganId}
+              setSelectedExistingOrganId={setSelectedExistingOrganId}
+              allSciences={allSciences}
+              showNewScienceForm={showNewScienceForm}
+              setShowNewScienceForm={setShowNewScienceForm}
+              selectedExistingScienceId={selectedExistingScienceId}
+              setSelectedExistingScienceId={setSelectedExistingScienceId}
+              allResponsibilities={allResponsibilities}
+              showNewResponsibilityForm={showNewResponsibilityForm}
+              setShowNewResponsibilityForm={setShowNewResponsibilityForm}
+              selectedExistingResponsibilityId={selectedExistingResponsibilityId}
+              setSelectedExistingResponsibilityId={setSelectedExistingResponsibilityId}
+            />
           )}
         </div>
 
@@ -547,15 +191,7 @@ const ChakraEditDialog = ({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Отмена
           </Button>
-          <Button 
-            onClick={onSave}
-            disabled={
-              (editType === 'concept' && editMode === 'create' && !showNewConceptForm && !selectedExistingConceptId) ||
-              (editType === 'organ' && editMode === 'create' && !showNewOrganForm && !selectedExistingOrganId) ||
-              (editType === 'science' && editMode === 'create' && !showNewScienceForm && !selectedExistingScienceId) ||
-              (editType === 'responsibility' && editMode === 'create' && !showNewResponsibilityForm && !selectedExistingResponsibilityId)
-            }
-          >
+          <Button onClick={onSave} disabled={isSaveDisabled()}>
             Сохранить
           </Button>
         </DialogFooter>
