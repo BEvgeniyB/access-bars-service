@@ -354,9 +354,10 @@ const AdminChakra = () => {
   const handleSave = async () => {
     if (!token || !editItem) return;
 
-    if (editType === 'concept' && editMode === 'create' && showNewConceptForm) {
+    if (editType === 'concept' && (editMode === 'create' && showNewConceptForm || editMode === 'edit')) {
       const duplicate = allConcepts.find(
         (c) => 
+          c.id !== editItem.id &&
           c.concept.toLowerCase().trim() === editItem.concept.toLowerCase().trim() && 
           c.category === editItem.category
       );
