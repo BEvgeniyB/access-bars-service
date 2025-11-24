@@ -184,17 +184,18 @@ const AdminChakra = () => {
     }
 
     try {
+      const chakraId = selectedUser.chakra_id;
       const [conceptsRes, organsRes, sciencesRes, responsibilitiesRes] = await Promise.all([
-        fetch(`${ADMIN_API_URL}?table=chakra_concepts&user_id=${selectedUserId}`, {
+        fetch(`${ADMIN_API_URL}?table=chakra_concepts&chakra_id=${chakraId}&user_id=${selectedUserId}`, {
           headers: { 'X-Auth-Token': token },
         }),
-        fetch(`${ADMIN_API_URL}?table=chakra_organs&user_id=${selectedUserId}`, {
+        fetch(`${ADMIN_API_URL}?table=chakra_organs&chakra_id=${chakraId}&user_id=${selectedUserId}`, {
           headers: { 'X-Auth-Token': token },
         }),
-        fetch(`${ADMIN_API_URL}?table=chakra_sciences&user_id=${selectedUserId}`, {
+        fetch(`${ADMIN_API_URL}?table=chakra_sciences&chakra_id=${chakraId}&user_id=${selectedUserId}`, {
           headers: { 'X-Auth-Token': token },
         }),
-        fetch(`${ADMIN_API_URL}?table=chakra_responsibilities&user_id=${selectedUserId}`, {
+        fetch(`${ADMIN_API_URL}?table=chakra_responsibilities&chakra_id=${chakraId}&user_id=${selectedUserId}`, {
           headers: { 'X-Auth-Token': token },
         }),
       ]);
@@ -462,39 +463,65 @@ const AdminChakra = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {users.map((user) => (
-                  <div
-                    key={user.id}
-                    className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                      selectedUserId === user.id
-                        ? 'border-emerald-500 bg-emerald-50'
-                        : 'border-gray-200 hover:border-emerald-300'
-                    }`}
-                    onClick={() => setSelectedUserId(user.id)}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-sm truncate">{user.name}</p>
-                        <p className="text-xs text-gray-600 truncate">{user.email}</p>
-                        {user.chakra_id && (
-                          <Badge variant="secondary" className="mt-1 text-xs">
-                            Чакра {chakras.find((c) => c.id === user.chakra_id)?.position}
-                          </Badge>
-                        )}
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEditUser(user);
-                        }}
+                {users
+                  .sort((a, b) => {
+                    const chakraA = chakras.find((c) => c.id === a.chakra_id);
+                    const chakraB = chakras.find((c) => c.id === b.chakra_id);
+                    const posA = chakraA?.position ?? 999;
+                    const posB = chakraB?.position ?? 999;
+                    return posA - posB;
+                  })
+                  .map((user) => {
+                    const userChakra = chakras.find((c) => c.id === user.chakra_id);
+                    return (
+                      <div
+                        key={user.id}
+                        className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                          selectedUserId === user.id
+                            ? 'border-emerald-500 bg-emerald-50'
+                            : 'border-gray-200 hover:border-emerald-300'
+                        }`}
+                        onClick={() => setSelectedUserId(user.id)}
                       >
-                        <Icon name="Edit" size={14} />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+                        <div className="flex justify-between items-start">
+                          <div className="flex items-center gap-3 flex-1 min-w-0">
+                            {userChakra && (
+                              <div
+                                className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0"
+                                style={{ backgroundColor: userChakra.color }}
+                              >
+                                {userChakra.position}
+                              </div>
+                            )}
+                            {!userChakra && (
+                              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-300 text-gray-600 font-bold flex-shrink-0">
+                                ?
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="font-semibold text-base truncate">{user.name}</p>
+                              {userChakra && (
+                                <p className="text-xs text-gray-600 truncate">{userChakra.name}</p>
+                              )}
+                              {!userChakra && (
+                                <p className="text-xs text-orange-600">Чакра не назначена</p>
+                              )}
+                            </div>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEditUser(user);
+                            }}
+                          >
+                            <Icon name="Edit" size={16} />
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
               </div>
             </CardContent>
           </Card>
