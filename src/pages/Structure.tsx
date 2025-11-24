@@ -17,9 +17,31 @@ const Structure = () => {
   }, []);
 
   const fetchChakras = async () => {
+    const CACHE_KEY = 'chakras_list_cache';
+    const CACHE_DURATION = 60 * 60 * 1000;
+    
     try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        const isExpired = Date.now() - timestamp > CACHE_DURATION;
+        
+        if (!isExpired && data?.chakras) {
+          console.log('Using cached chakras data');
+          setChakras(data.chakras);
+          setLoading(false);
+          return;
+        }
+      }
+      
       const response = await fetch('https://functions.poehali.dev/802474e6-54c0-4040-a65f-71d604777df5');
       const data = await response.json();
+      
+      localStorage.setItem(CACHE_KEY, JSON.stringify({
+        data,
+        timestamp: Date.now()
+      }));
+      
       setChakras(data.chakras || []);
     } catch (error) {
       console.error('Error fetching chakras:', error);

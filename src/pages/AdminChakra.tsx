@@ -138,31 +138,12 @@ const AdminChakra = () => {
     }
   };
 
-  const loadUsers = async () => {
+  const loadAllData = async () => {
     if (!token) return;
 
     try {
-      const response = await fetch(`${ADMIN_API_URL}?table=users`, {
+      const response = await fetch(`${ADMIN_API_URL}?action=get_all_data`, {
         headers: { 'X-Auth-Token': token },
-      });
-      const data = await response.json();
-      console.log('Loaded users:', data.users?.length || 0, data.users);
-      if (data.users) {
-        setUsers(data.users);
-      }
-    } catch (err) {
-      console.error('Ошибка загрузки пользователей:', err);
-    }
-  };
-
-  const loadChakras = async () => {
-    if (!token) return;
-
-    try {
-      const response = await fetch(`${ADMIN_API_URL}?table=chakras`, {
-        headers: { 
-          'X-Auth-Token': token
-        },
       });
       
       if (!response.ok) {
@@ -170,78 +151,34 @@ const AdminChakra = () => {
       }
       
       const data = await response.json();
-      console.log('Loaded chakras:', data.chakras?.length || 0, data.chakras);
+      console.log('Loaded all data:', data);
+      
+      if (data.users) {
+        setUsers(data.users);
+      }
+      
       if (data.chakras) {
         const sorted = data.chakras.sort((a: Chakra, b: Chakra) => a.position - b.position);
-        console.log('Sorted chakras:', sorted);
         setChakras(sorted);
       }
-    } catch (err: any) {
-      console.error('Ошибка загрузки чакр:', err.message || err);
-    }
-  };
-
-  const loadAllConcepts = async () => {
-    if (!token) return;
-
-    try {
-      const response = await fetch(`${ADMIN_API_URL}?table=chakra_concepts`, {
-        headers: { 'X-Auth-Token': token },
-      });
-      const data = await response.json();
+      
       if (data.chakra_concepts) {
         setAllConcepts(data.chakra_concepts);
       }
-    } catch (err) {
-      console.error('Ошибка загрузки всех энергий:', err);
-    }
-  };
-
-  const loadAllOrgans = async () => {
-    if (!token) return;
-
-    try {
-      const response = await fetch(`${ADMIN_API_URL}?table=chakra_organs`, {
-        headers: { 'X-Auth-Token': token },
-      });
-      const data = await response.json();
+      
       if (data.chakra_organs) {
         setAllOrgans(data.chakra_organs);
       }
-    } catch (err) {
-      console.error('Ошибка загрузки всех органов:', err);
-    }
-  };
-
-  const loadAllSciences = async () => {
-    if (!token) return;
-
-    try {
-      const response = await fetch(`${ADMIN_API_URL}?table=chakra_sciences`, {
-        headers: { 'X-Auth-Token': token },
-      });
-      const data = await response.json();
+      
       if (data.chakra_sciences) {
         setAllSciences(data.chakra_sciences);
       }
-    } catch (err) {
-      console.error('Ошибка загрузки всех наук:', err);
-    }
-  };
-
-  const loadAllResponsibilities = async () => {
-    if (!token) return;
-
-    try {
-      const response = await fetch(`${ADMIN_API_URL}?table=chakra_responsibilities`, {
-        headers: { 'X-Auth-Token': token },
-      });
-      const data = await response.json();
+      
       if (data.chakra_responsibilities) {
         setAllResponsibilities(data.chakra_responsibilities);
       }
-    } catch (err) {
-      console.error('Ошибка загрузки всех ответственностей:', err);
+    } catch (err: any) {
+      console.error('Ошибка загрузки данных:', err.message || err);
     }
   };
 
@@ -712,12 +649,7 @@ const AdminChakra = () => {
 
   useEffect(() => {
     if (isAuthenticated && token) {
-      loadUsers();
-      loadChakras();
-      loadAllConcepts();
-      loadAllOrgans();
-      loadAllSciences();
-      loadAllResponsibilities();
+      loadAllData();
     }
   }, [isAuthenticated, token]);
 

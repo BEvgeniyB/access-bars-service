@@ -130,6 +130,45 @@ def handle_get(cur, event: Dict[str, Any], user_id: int, is_admin: bool) -> Dict
     params = event.get('queryStringParameters', {}) or {}
     table = params.get('table')
     target_user_id = params.get('user_id')
+    action = params.get('action')
+    
+    if action == 'get_all_data' and is_admin:
+        cur.execute(f'SELECT id, name, email, role, is_admin, telegram_id, telegram_username, chakra_id FROM {SCHEMA}.users')
+        users_rows = cur.fetchall()
+        users = [{'id': u[0], 'name': u[1], 'email': u[2], 'role': u[3], 'is_admin': u[4], 'telegram_id': u[5], 'telegram_username': u[6], 'chakra_id': u[7]} for u in users_rows]
+        
+        cur.execute(f'SELECT id, name, position, color, right_statement FROM {SCHEMA}.chakras')
+        chakras_rows = cur.fetchall()
+        chakras = [{'id': c[0], 'name': c[1], 'position': c[2], 'color': c[3], 'right_statement': c[4]} for c in chakras_rows]
+        
+        cur.execute(f'SELECT id, chakra_id, concept, category, user_id FROM {SCHEMA}.chakra_concepts')
+        concepts_rows = cur.fetchall()
+        concepts = [{'id': c[0], 'chakra_id': c[1], 'concept': c[2], 'category': c[3], 'user_id': c[4]} for c in concepts_rows]
+        
+        cur.execute(f'SELECT id, chakra_id, organ_name, description, user_id FROM {SCHEMA}.chakra_organs')
+        organs_rows = cur.fetchall()
+        organs = [{'id': o[0], 'chakra_id': o[1], 'organ_name': o[2], 'description': o[3], 'user_id': o[4]} for o in organs_rows]
+        
+        cur.execute(f'SELECT id, chakra_id, science_name, description, user_id FROM {SCHEMA}.chakra_sciences')
+        sciences_rows = cur.fetchall()
+        sciences = [{'id': s[0], 'chakra_id': s[1], 'science_name': s[2], 'description': s[3], 'user_id': s[4]} for s in sciences_rows]
+        
+        cur.execute(f'SELECT id, chakra_id, responsibility, user_id FROM {SCHEMA}.chakra_responsibilities')
+        responsibilities_rows = cur.fetchall()
+        responsibilities = [{'id': r[0], 'chakra_id': r[1], 'responsibility': r[2], 'user_id': r[3]} for r in responsibilities_rows]
+        
+        return {
+            'statusCode': 200,
+            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({
+                'users': users,
+                'chakras': chakras,
+                'chakra_concepts': concepts,
+                'chakra_organs': organs,
+                'chakra_sciences': sciences,
+                'chakra_responsibilities': responsibilities
+            })
+        }
     
     if table == 'users' and is_admin:
         cur.execute(f'SELECT id, name, email, role, is_admin, telegram_id, telegram_username, chakra_id FROM {SCHEMA}.users')
