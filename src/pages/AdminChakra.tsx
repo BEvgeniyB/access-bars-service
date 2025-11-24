@@ -231,7 +231,11 @@ const AdminChakra = () => {
     setEditDialog(true);
   };
 
-  const handleEditUser = (user: User) => {
+  const handleEditUser = () => {
+    if (!selectedUserId) return;
+    const user = users.find((u) => u.id === selectedUserId);
+    if (!user) return;
+    
     setEditType('user');
     setEditMode('edit');
     setEditItem({ ...user });
@@ -245,7 +249,6 @@ const AdminChakra = () => {
       return;
     }
 
-    console.log('handleCreate called, type:', type);
     setEditType(type);
     setEditMode('create');
 
@@ -268,17 +271,13 @@ const AdminChakra = () => {
     }
 
     setEditItem(newItem);
-    console.log('Opening dialog with item:', newItem);
     setEditDialog(true);
-    console.log('Dialog state set to true');
   };
 
   const handleEdit = (type: 'concept' | 'organ' | 'science' | 'responsibility', item: any) => {
-    console.log('handleEdit called, type:', type, 'item:', item);
     setEditType(type);
     setEditMode('edit');
     setEditItem({ ...item });
-    console.log('Opening edit dialog');
     setEditDialog(true);
   };
 
@@ -314,9 +313,9 @@ const AdminChakra = () => {
       if (response.ok) {
         setEditDialog(false);
         if (editType === 'user') {
-          loadUsers();
+          await loadUsers();
         } else {
-          loadUserData();
+          await loadUserData();
         }
       } else {
         const data = await response.json();
@@ -426,6 +425,15 @@ const AdminChakra = () => {
     ? chakras.find((c) => c.id === selectedUser.chakra_id)
     : null;
 
+  const sortedUsers = [...users].sort((a, b) => {
+    const chakraA = chakras.find((c) => c.id === a.chakra_id);
+    const chakraB = chakras.find((c) => c.id === b.chakra_id);
+    const posA = chakraA?.position ?? 999;
+    const posB = chakraB?.position ?? 999;
+    if (posA !== posB) return posA - posB;
+    return a.name.localeCompare(b.name);
+  });
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-teal-50 pb-20">
       <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b shadow-sm">
@@ -458,471 +466,376 @@ const AdminChakra = () => {
         {currentUser?.is_admin && (
           <Card>
             <CardHeader className="pb-3">
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-base">Пользователи</CardTitle>
-                <Button size="sm" onClick={handleCreateUser}>
-                  <Icon name="Plus" size={16} className="mr-1" />
-                  Добавить
-                </Button>
-              </div>
+              <CardTitle className="text-base">Выбор пользователя</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
-                {users
-                  .sort((a, b) => {
-                    const chakraA = chakras.find((c) => c.id === a.chakra_id);
-                    const chakraB = chakras.find((c) => c.id === b.chakra_id);
-                    const posA = chakraA?.position ?? 999;
-                    const posB = chakraB?.position ?? 999;
-                    return posA - posB;
-                  })
-                  .map((user) => {
-                    const userChakra = chakras.find((c) => c.id === user.chakra_id);
-                    return (
-                      <div
-                        key={user.id}
-                        className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                          selectedUserId === user.id
-                            ? 'border-emerald-500 bg-emerald-50'
-                            : 'border-gray-200 hover:border-emerald-300'
-                        }`}
-                        onClick={() => setSelectedUserId(user.id)}
-                      >
-                        <div className="flex justify-between items-start">
-                          <div className="flex items-center gap-3 flex-1 min-w-0">
-                            {userChakra && (
-                              <div
-                                className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0"
-                                style={{ backgroundColor: userChakra.color }}
-                              >
-                                {userChakra.position}
-                              </div>
-                            )}
-                            {!userChakra && (
-                              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-300 text-gray-600 font-bold flex-shrink-0">
-                                ?
-                              </div>
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <p className="font-semibold text-base truncate">{user.name}</p>
-                              {userChakra && (
-                                <p className="text-xs text-gray-600 truncate">{userChakra.name}</p>
-                              )}
-                              {!userChakra && (
-                                <p className="text-xs text-orange-600">Чакра не назначена</p>
-                              )}
-                            </div>
-                          </div>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex gap-2 order-2 sm:order-1">
+                  <Button size="sm" onClick={handleCreateUser} className="flex-1 sm:flex-none">
+                    <Icon name="Plus" size={16} className="mr-1" />
+                    Добавить
+                  </Button>
+                  {selectedUserId && (
+                    <Button size="sm" variant="outline" onClick={handleEditUser} className="flex-1 sm:flex-none">
+                      <Icon name="Edit" size={16} className="mr-1" />
+                      Редактировать
+                    </Button>
+                  )}
+                </div>
+                <div className="flex-1 order-1 sm:order-2">
+                  <Select
+                    value={selectedUserId?.toString() || ''}
+                    onValueChange={(val) => setSelectedUserId(parseInt(val))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Выберите пользователя" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {sortedUsers.map((user) => {
+                        const chakra = chakras.find((c) => c.id === user.chakra_id);
+                        return (
+                          <SelectItem key={user.id} value={user.id.toString()}>
+                            {chakra ? `${chakra.position} - ${user.name}` : user.name}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {selectedUserId && selectedUser && (
+          <Tabs defaultValue="concepts" className="w-full">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="concepts" className="text-xs">Концепции</TabsTrigger>
+              <TabsTrigger value="organs" className="text-xs">Органы</TabsTrigger>
+              <TabsTrigger value="sciences" className="text-xs">Науки</TabsTrigger>
+              <TabsTrigger value="responsibilities" className="text-xs">За что отвечает</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="concepts" className="mt-4">
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-base">Концепции</CardTitle>
+                    <Button size="sm" onClick={() => handleCreate('concept')}>
+                      <Icon name="Plus" size={16} />
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {concepts.map((item) => (
+                      <div key={item.id} className="flex justify-between items-start p-3 bg-white rounded border">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{item.concept}</p>
+                          <Badge variant="secondary" className="text-xs mt-1">{item.category}</Badge>
+                        </div>
+                        <div className="flex gap-2 ml-2">
                           <Button
                             size="sm"
                             variant="ghost"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleEditUser(user);
-                            }}
+                            onClick={() => handleEdit('concept', item)}
                           >
                             <Icon name="Edit" size={16} />
                           </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleDelete('concept', item.id)}
+                          >
+                            <Icon name="Trash2" size={16} />
+                          </Button>
                         </div>
                       </div>
-                    );
-                  })}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {selectedUser && userChakra && (
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Чакра пользователя {selectedUser.name}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center gap-2">
-                  <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm"
-                    style={{ backgroundColor: userChakra.color }}
-                  >
-                    {userChakra.position}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold truncate">{userChakra.name}</p>
-                    {userChakra.continent && (
-                      <p className="text-xs text-gray-600">{userChakra.continent}</p>
+                    ))}
+                    {concepts.length === 0 && (
+                      <p className="text-sm text-gray-500 text-center py-4">Нет данных</p>
                     )}
                   </div>
-                </div>
-                {userChakra.right_statement && (
-                  <div className="mt-2 p-2 bg-emerald-50 rounded text-xs italic">
-                    {userChakra.right_statement}
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-        {selectedUser && userChakra && (
-          <>
-            <Card>
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-center">
-                  <CardTitle className="text-base">Энергии (Понятия)</CardTitle>
-                  <Button size="sm" onClick={() => handleCreate('concept')}>
-                    <Icon name="Plus" size={16} />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {concepts.length === 0 ? (
-                  <p className="text-sm text-gray-500 text-center py-4">Нет данных</p>
-                ) : (
+            <TabsContent value="organs" className="mt-4">
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-base">Органы</CardTitle>
+                    <Button size="sm" onClick={() => handleCreate('organ')}>
+                      <Icon name="Plus" size={16} />
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
                   <div className="space-y-2">
-                    {concepts.map((concept) => (
-                      <div key={concept.id} className="p-3 border rounded-lg">
-                        <div className="flex justify-between items-start gap-2 mb-2">
-                          <Badge variant="secondary" className="text-xs">{concept.category}</Badge>
-                          <div className="flex gap-1">
-                            <Button size="sm" variant="ghost" onClick={() => handleEdit('concept', concept)}>
-                              <Icon name="Edit" size={14} />
-                            </Button>
-                            <Button size="sm" variant="ghost" onClick={() => handleDelete('concept', concept.id)}>
-                              <Icon name="Trash2" size={14} />
-                            </Button>
-                          </div>
+                    {organs.map((item) => (
+                      <div key={item.id} className="flex justify-between items-start p-3 bg-white rounded border">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium">{item.organ_name}</p>
+                          <p className="text-xs text-gray-600 mt-1">{item.description}</p>
                         </div>
-                        <p className="text-sm">{concept.concept}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-center">
-                  <CardTitle className="text-base">Органы</CardTitle>
-                  <Button size="sm" onClick={() => handleCreate('organ')}>
-                    <Icon name="Plus" size={16} />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {organs.length === 0 ? (
-                  <p className="text-sm text-gray-500 text-center py-4">Нет данных</p>
-                ) : (
-                  <div className="space-y-2">
-                    {organs.map((organ) => (
-                      <div key={organ.id} className="p-3 border rounded-lg">
-                        <div className="flex justify-between items-start gap-2 mb-2">
-                          <h4 className="font-semibold text-sm flex-1">{organ.organ_name}</h4>
-                          <div className="flex gap-1">
-                            <Button size="sm" variant="ghost" onClick={() => handleEdit('organ', organ)}>
-                              <Icon name="Edit" size={14} />
-                            </Button>
-                            <Button size="sm" variant="ghost" onClick={() => handleDelete('organ', organ.id)}>
-                              <Icon name="Trash2" size={14} />
-                            </Button>
-                          </div>
-                        </div>
-                        <p className="text-sm text-gray-600">{organ.description}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-center">
-                  <CardTitle className="text-base">Науки</CardTitle>
-                  <Button size="sm" onClick={() => handleCreate('science')}>
-                    <Icon name="Plus" size={16} />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {sciences.length === 0 ? (
-                  <p className="text-sm text-gray-500 text-center py-4">Нет данных</p>
-                ) : (
-                  <div className="space-y-2">
-                    {sciences.map((science) => (
-                      <div key={science.id} className="p-3 border rounded-lg">
-                        <div className="flex justify-between items-start gap-2 mb-2">
-                          <h4 className="font-semibold text-sm flex-1">{science.science_name}</h4>
-                          <div className="flex gap-1">
-                            <Button size="sm" variant="ghost" onClick={() => handleEdit('science', science)}>
-                              <Icon name="Edit" size={14} />
-                            </Button>
-                            <Button size="sm" variant="ghost" onClick={() => handleDelete('science', science.id)}>
-                              <Icon name="Trash2" size={14} />
-                            </Button>
-                          </div>
-                        </div>
-                        <p className="text-sm text-gray-600">{science.description}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-center">
-                  <CardTitle className="text-base">Ответственности</CardTitle>
-                  <Button size="sm" onClick={() => handleCreate('responsibility')}>
-                    <Icon name="Plus" size={16} />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {responsibilities.length === 0 ? (
-                  <p className="text-sm text-gray-500 text-center py-4">Нет данных</p>
-                ) : (
-                  <div className="space-y-2">
-                    {responsibilities.map((resp) => (
-                      <div key={resp.id} className="p-3 border rounded-lg">
-                        <div className="flex justify-between items-start gap-2">
-                          <p className="text-sm flex-1">{resp.responsibility}</p>
-                          <div className="flex gap-1">
-                            <Button size="sm" variant="ghost" onClick={() => handleEdit('responsibility', resp)}>
-                              <Icon name="Edit" size={14} />
-                            </Button>
-                            <Button size="sm" variant="ghost" onClick={() => handleDelete('responsibility', resp.id)}>
-                              <Icon name="Trash2" size={14} />
-                            </Button>
-                          </div>
+                        <div className="flex gap-2 ml-2">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleEdit('organ', item)}
+                          >
+                            <Icon name="Edit" size={16} />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleDelete('organ', item.id)}
+                          >
+                            <Icon name="Trash2" size={16} />
+                          </Button>
                         </div>
                       </div>
                     ))}
+                    {organs.length === 0 && (
+                      <p className="text-sm text-gray-500 text-center py-4">Нет данных</p>
+                    )}
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          </>
-        )}
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-        {selectedUser && !userChakra && (
-          <Card>
-            <CardContent className="py-8">
-              <div className="text-center text-sm text-gray-500">
-                <Icon name="AlertCircle" size={32} className="mx-auto mb-2 text-orange-500" />
-                <p>Пользователю не назначена чакра</p>
-                <Button
-                  size="sm"
-                  className="mt-4"
-                  onClick={() => handleEditUser(selectedUser)}
-                >
-                  Назначить чакру
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+            <TabsContent value="sciences" className="mt-4">
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-base">Науки</CardTitle>
+                    <Button size="sm" onClick={() => handleCreate('science')}>
+                      <Icon name="Plus" size={16} />
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {sciences.map((item) => (
+                      <div key={item.id} className="flex justify-between items-start p-3 bg-white rounded border">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium">{item.science_name}</p>
+                          <p className="text-xs text-gray-600 mt-1">{item.description}</p>
+                        </div>
+                        <div className="flex gap-2 ml-2">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleEdit('science', item)}
+                          >
+                            <Icon name="Edit" size={16} />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleDelete('science', item.id)}
+                          >
+                            <Icon name="Trash2" size={16} />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                    {sciences.length === 0 && (
+                      <p className="text-sm text-gray-500 text-center py-4">Нет данных</p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="responsibilities" className="mt-4">
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-base">За что отвечает</CardTitle>
+                    <Button size="sm" onClick={() => handleCreate('responsibility')}>
+                      <Icon name="Plus" size={16} />
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {responsibilities.map((item) => (
+                      <div key={item.id} className="flex justify-between items-start p-3 bg-white rounded border">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm">{item.responsibility}</p>
+                        </div>
+                        <div className="flex gap-2 ml-2">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleEdit('responsibility', item)}
+                          >
+                            <Icon name="Edit" size={16} />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleDelete('responsibility', item.id)}
+                          >
+                            <Icon name="Trash2" size={16} />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                    {responsibilities.length === 0 && (
+                      <p className="text-sm text-gray-500 text-center py-4">Нет данных</p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         )}
       </div>
 
       <Dialog open={editDialog} onOpenChange={setEditDialog}>
-        <DialogContent className="max-w-[95vw] sm:max-w-lg max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-base">
-              {editMode === 'create' ? 'Добавить' : 'Редактировать'}
+            <DialogTitle>
+              {editMode === 'create' ? 'Создать' : 'Редактировать'}{' '}
+              {editType === 'concept' && 'концепцию'}
+              {editType === 'organ' && 'орган'}
+              {editType === 'science' && 'науку'}
+              {editType === 'responsibility' && 'ответственность'}
+              {editType === 'user' && 'пользователя'}
             </DialogTitle>
-            <DialogDescription className="text-sm">
-              {editType === 'concept' && 'Энергия (Понятие)'}
-              {editType === 'organ' && 'Орган'}
-              {editType === 'science' && 'Наука'}
-              {editType === 'responsibility' && 'Ответственность'}
-              {editType === 'user' && 'Пользователь'}
-            </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            {editItem && editType === 'user' && (
+
+          <div className="space-y-4 py-4">
+            {editType === 'user' && editItem && (
               <>
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-sm">Имя</Label>
+                  <Label>Имя</Label>
                   <Input
-                    id="name"
                     value={editItem.name || ''}
                     onChange={(e) => setEditItem({ ...editItem, name: e.target.value })}
-                    className="text-base"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm">Email</Label>
+                  <Label>Email</Label>
                   <Input
-                    id="email"
                     type="email"
                     value={editItem.email || ''}
                     onChange={(e) => setEditItem({ ...editItem, email: e.target.value })}
-                    className="text-base"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="telegram_id" className="text-sm">Telegram ID</Label>
+                  <Label>Telegram ID</Label>
                   <Input
-                    id="telegram_id"
                     value={editItem.telegram_id || ''}
                     onChange={(e) => setEditItem({ ...editItem, telegram_id: e.target.value })}
-                    className="text-base"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="telegram_username" className="text-sm">Telegram Username</Label>
+                  <Label>Telegram Username</Label>
                   <Input
-                    id="telegram_username"
                     value={editItem.telegram_username || ''}
                     onChange={(e) => setEditItem({ ...editItem, telegram_username: e.target.value })}
-                    className="text-base"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm">Назначить чакру</Label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {chakras
-                      .filter((chakra) => chakra.position % 2 === 0)
-                      .map((chakra) => (
-                        <Button
-                          key={chakra.id}
-                          variant="outline"
-                          type="button"
-                          className="text-center h-12 px-2"
-                          style={{
-                            borderColor: chakra.color,
-                            borderWidth: '2px',
-                            backgroundColor: editItem?.chakra_id === chakra.id ? `${chakra.color}20` : 'transparent',
-                          }}
-                          onClick={() => {
-                            setEditItem({ ...editItem, chakra_id: chakra.id });
-                          }}
-                        >
-                          <div
-                            className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm mx-auto"
-                            style={{ backgroundColor: chakra.color }}
-                          >
-                            {chakra.position}
-                          </div>
-                        </Button>
+                  <Label>Чакра</Label>
+                  <Select
+                    value={editItem.chakra_id?.toString() || ''}
+                    onValueChange={(val) =>
+                      setEditItem({ ...editItem, chakra_id: val ? parseInt(val) : null })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Выберите чакру" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Не назначена</SelectItem>
+                      {chakras.map((chakra) => (
+                        <SelectItem key={chakra.id} value={chakra.id.toString()}>
+                          {chakra.position} - {chakra.name}
+                        </SelectItem>
                       ))}
-                    {chakras
-                      .filter((chakra) => chakra.position % 2 !== 0)
-                      .map((chakra) => (
-                        <Button
-                          key={chakra.id}
-                          variant="outline"
-                          type="button"
-                          className="text-center h-12 px-2"
-                          style={{
-                            borderColor: chakra.color,
-                            borderWidth: '2px',
-                            backgroundColor: editItem?.chakra_id === chakra.id ? `${chakra.color}20` : 'transparent',
-                          }}
-                          onClick={() => {
-                            setEditItem({ ...editItem, chakra_id: chakra.id });
-                          }}
-                        >
-                          <div
-                            className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm mx-auto"
-                            style={{ backgroundColor: chakra.color }}
-                          >
-                            {chakra.position}
-                          </div>
-                        </Button>
-                      ))}
-                  </div>
+                    </SelectContent>
+                  </Select>
                 </div>
               </>
             )}
 
-            {editItem && editType === 'concept' && (
+            {editType === 'concept' && editItem && (
               <>
                 <div className="space-y-2">
-                  <Label htmlFor="concept" className="text-sm">Понятие</Label>
-                  <Textarea
-                    id="concept"
+                  <Label>Концепция</Label>
+                  <Input
                     value={editItem.concept || ''}
                     onChange={(e) => setEditItem({ ...editItem, concept: e.target.value })}
-                    className="text-base min-h-[80px]"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="category" className="text-sm">Категория</Label>
+                  <Label>Категория</Label>
                   <Input
-                    id="category"
                     value={editItem.category || ''}
                     onChange={(e) => setEditItem({ ...editItem, category: e.target.value })}
-                    className="text-base"
                   />
                 </div>
               </>
             )}
 
-            {editItem && editType === 'organ' && (
+            {editType === 'organ' && editItem && (
               <>
                 <div className="space-y-2">
-                  <Label htmlFor="organ_name" className="text-sm">Название органа</Label>
+                  <Label>Название органа</Label>
                   <Input
-                    id="organ_name"
                     value={editItem.organ_name || ''}
                     onChange={(e) => setEditItem({ ...editItem, organ_name: e.target.value })}
-                    className="text-base"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="description" className="text-sm">Описание</Label>
+                  <Label>Описание</Label>
                   <Textarea
-                    id="description"
                     value={editItem.description || ''}
                     onChange={(e) => setEditItem({ ...editItem, description: e.target.value })}
-                    className="text-base min-h-[80px]"
                   />
                 </div>
               </>
             )}
 
-            {editItem && editType === 'science' && (
+            {editType === 'science' && editItem && (
               <>
                 <div className="space-y-2">
-                  <Label htmlFor="science_name" className="text-sm">Название науки</Label>
+                  <Label>Название науки</Label>
                   <Input
-                    id="science_name"
                     value={editItem.science_name || ''}
                     onChange={(e) => setEditItem({ ...editItem, science_name: e.target.value })}
-                    className="text-base"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="description" className="text-sm">Описание</Label>
+                  <Label>Описание</Label>
                   <Textarea
-                    id="description"
                     value={editItem.description || ''}
                     onChange={(e) => setEditItem({ ...editItem, description: e.target.value })}
-                    className="text-base min-h-[80px]"
                   />
                 </div>
               </>
             )}
 
-            {editItem && editType === 'responsibility' && (
+            {editType === 'responsibility' && editItem && (
               <div className="space-y-2">
-                <Label htmlFor="responsibility" className="text-sm">Ответственность</Label>
+                <Label>Ответственность</Label>
                 <Textarea
-                  id="responsibility"
                   value={editItem.responsibility || ''}
                   onChange={(e) => setEditItem({ ...editItem, responsibility: e.target.value })}
-                  className="text-base min-h-[80px]"
                 />
               </div>
             )}
           </div>
-          <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setEditDialog(false)} className="flex-1">
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditDialog(false)}>
               Отмена
             </Button>
-            <Button onClick={handleSave} className="flex-1">Сохранить</Button>
+            <Button onClick={handleSave}>Сохранить</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
