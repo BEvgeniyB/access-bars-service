@@ -15,7 +15,7 @@ from datetime import datetime
 SCHEMA = 't_p89870318_access_bars_service'
 
 TABLES = {
-    'chakras': ['id', 'name', 'color', 'position', 'right_statement', 'description'],
+    'chakras': ['id', 'name', 'position', 'color', 'right_statement', 'description'],
     'chakra_concepts': ['id', 'chakra_id', 'concept', 'category', 'user_id'],
     'chakra_questions': ['id', 'chakra_id', 'question', 'question_type', 'user_id'],
     'chakra_responsibilities': ['id', 'chakra_id', 'responsibility', 'user_id'],
@@ -176,32 +176,34 @@ def handle_get(cur, event: Dict[str, Any], user_id: int, is_admin: bool) -> Dict
     columns = TABLES[table]
     chakra_id_param = params.get('chakra_id')
     
+    select_cols = ', '.join(columns)
+    
     if is_admin and target_user_id and chakra_id_param:
         if 'user_id' in columns and 'chakra_id' in columns:
-            cur.execute(f'SELECT * FROM {SCHEMA}.{table} WHERE user_id = %s AND chakra_id = %s', (target_user_id, chakra_id_param))
+            cur.execute(f'SELECT {select_cols} FROM {SCHEMA}.{table} WHERE user_id = %s AND chakra_id = %s', (target_user_id, chakra_id_param))
         elif 'user_id' in columns:
-            cur.execute(f'SELECT * FROM {SCHEMA}.{table} WHERE user_id = %s', (target_user_id,))
+            cur.execute(f'SELECT {select_cols} FROM {SCHEMA}.{table} WHERE user_id = %s', (target_user_id,))
         elif 'chakra_id' in columns:
-            cur.execute(f'SELECT * FROM {SCHEMA}.{table} WHERE chakra_id = %s', (chakra_id_param,))
+            cur.execute(f'SELECT {select_cols} FROM {SCHEMA}.{table} WHERE chakra_id = %s', (chakra_id_param,))
         else:
-            cur.execute(f'SELECT * FROM {SCHEMA}.{table}')
+            cur.execute(f'SELECT {select_cols} FROM {SCHEMA}.{table}')
     elif is_admin and target_user_id:
         if 'user_id' in columns:
-            cur.execute(f'SELECT * FROM {SCHEMA}.{table} WHERE user_id = %s', (target_user_id,))
+            cur.execute(f'SELECT {select_cols} FROM {SCHEMA}.{table} WHERE user_id = %s', (target_user_id,))
         else:
-            cur.execute(f'SELECT * FROM {SCHEMA}.{table}')
+            cur.execute(f'SELECT {select_cols} FROM {SCHEMA}.{table}')
     elif is_admin and chakra_id_param:
         if 'chakra_id' in columns:
-            cur.execute(f'SELECT * FROM {SCHEMA}.{table} WHERE chakra_id = %s', (chakra_id_param,))
+            cur.execute(f'SELECT {select_cols} FROM {SCHEMA}.{table} WHERE chakra_id = %s', (chakra_id_param,))
         else:
-            cur.execute(f'SELECT * FROM {SCHEMA}.{table}')
+            cur.execute(f'SELECT {select_cols} FROM {SCHEMA}.{table}')
     elif is_admin:
-        cur.execute(f'SELECT * FROM {SCHEMA}.{table}')
+        cur.execute(f'SELECT {select_cols} FROM {SCHEMA}.{table}')
     else:
         if 'user_id' in columns:
-            cur.execute(f'SELECT * FROM {SCHEMA}.{table} WHERE user_id = %s OR user_id IS NULL', (user_id,))
+            cur.execute(f'SELECT {select_cols} FROM {SCHEMA}.{table} WHERE user_id = %s OR user_id IS NULL', (user_id,))
         else:
-            cur.execute(f'SELECT * FROM {SCHEMA}.{table}')
+            cur.execute(f'SELECT {select_cols} FROM {SCHEMA}.{table}')
     
     rows = cur.fetchall()
     result = []
