@@ -354,6 +354,19 @@ const AdminChakra = () => {
   const handleSave = async () => {
     if (!token || !editItem) return;
 
+    if (editType === 'concept' && editMode === 'create' && showNewConceptForm) {
+      const duplicate = allConcepts.find(
+        (c) => 
+          c.concept.toLowerCase().trim() === editItem.concept.toLowerCase().trim() && 
+          c.category === editItem.category
+      );
+
+      if (duplicate) {
+        alert(`Энергия "${editItem.concept}" с категорией "${editItem.category}" уже существует в базе данных.`);
+        return;
+      }
+    }
+
     if (editType === 'concept' && editMode === 'create' && !showNewConceptForm && selectedExistingConceptId) {
       const existingConcept = allConcepts.find((c) => c.id === selectedExistingConceptId);
       if (!existingConcept) return;
@@ -929,10 +942,18 @@ const AdminChakra = () => {
                     </div>
                     <div className="space-y-2">
                       <Label>Категория</Label>
-                      <Input
+                      <Select
                         value={editItem.category || ''}
-                        onChange={(e) => setEditItem({ ...editItem, category: e.target.value })}
-                      />
+                        onValueChange={(val) => setEditItem({ ...editItem, category: val })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Выберите категорию" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Основная">Основная</SelectItem>
+                          <SelectItem value="Дополнительная">Дополнительная</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </>
                 )}
@@ -950,10 +971,18 @@ const AdminChakra = () => {
                 </div>
                 <div className="space-y-2">
                   <Label>Категория</Label>
-                  <Input
+                  <Select
                     value={editItem.category || ''}
-                    onChange={(e) => setEditItem({ ...editItem, category: e.target.value })}
-                  />
+                    onValueChange={(val) => setEditItem({ ...editItem, category: val })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Выберите категорию" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Основная">Основная</SelectItem>
+                      <SelectItem value="Дополнительная">Дополнительная</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </>
             )}
