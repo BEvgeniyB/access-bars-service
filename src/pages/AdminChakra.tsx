@@ -463,6 +463,17 @@ const AdminChakra = () => {
       const existingConcept = allConcepts.find((c) => c.id === selectedExistingConceptId);
       if (!existingConcept) return;
 
+      const duplicateForUser = concepts.find(
+        (c) => 
+          c.concept.toLowerCase().trim() === existingConcept.concept.toLowerCase().trim() && 
+          c.category === existingConcept.category
+      );
+
+      if (duplicateForUser) {
+        alert(`Энергия "${existingConcept.concept}" с категорией "${existingConcept.category}" уже добавлена для этого пользователя.`);
+        return;
+      }
+
       const newItem = {
         chakra_id: editItem.chakra_id,
         user_id: editItem.user_id,
@@ -496,6 +507,15 @@ const AdminChakra = () => {
     if (editType === 'organ' && editMode === 'create' && !showNewOrganForm && selectedExistingOrganId) {
       const existingOrgan = allOrgans.find((o) => o.id === selectedExistingOrganId);
       if (!existingOrgan) return;
+
+      const duplicateForUser = organs.find(
+        (o) => o.organ_name.toLowerCase().trim() === existingOrgan.organ_name.toLowerCase().trim()
+      );
+
+      if (duplicateForUser) {
+        alert(`Орган "${existingOrgan.organ_name}" уже добавлен для этого пользователя.`);
+        return;
+      }
 
       const newItem = {
         chakra_id: editItem.chakra_id,
@@ -531,6 +551,15 @@ const AdminChakra = () => {
       const existingScience = allSciences.find((s) => s.id === selectedExistingScienceId);
       if (!existingScience) return;
 
+      const duplicateForUser = sciences.find(
+        (s) => s.science_name.toLowerCase().trim() === existingScience.science_name.toLowerCase().trim()
+      );
+
+      if (duplicateForUser) {
+        alert(`Наука "${existingScience.science_name}" уже добавлена для этого пользователя.`);
+        return;
+      }
+
       const newItem = {
         chakra_id: editItem.chakra_id,
         user_id: editItem.user_id,
@@ -564,6 +593,15 @@ const AdminChakra = () => {
     if (editType === 'responsibility' && editMode === 'create' && !showNewResponsibilityForm && selectedExistingResponsibilityId) {
       const existingResponsibility = allResponsibilities.find((r) => r.id === selectedExistingResponsibilityId);
       if (!existingResponsibility) return;
+
+      const duplicateForUser = responsibilities.find(
+        (r) => r.responsibility.toLowerCase().trim() === existingResponsibility.responsibility.toLowerCase().trim()
+      );
+
+      if (duplicateForUser) {
+        alert(`Ответственность "${existingResponsibility.responsibility}" уже добавлена для этого пользователя.`);
+        return;
+      }
 
       const newItem = {
         chakra_id: editItem.chakra_id,
