@@ -245,6 +245,7 @@ const AdminChakra = () => {
       return;
     }
 
+    console.log('handleCreate called, type:', type);
     setEditType(type);
     setEditMode('create');
 
@@ -267,13 +268,17 @@ const AdminChakra = () => {
     }
 
     setEditItem(newItem);
+    console.log('Opening dialog with item:', newItem);
     setEditDialog(true);
+    console.log('Dialog state set to true');
   };
 
   const handleEdit = (type: 'concept' | 'organ' | 'science' | 'responsibility', item: any) => {
+    console.log('handleEdit called, type:', type, 'item:', item);
     setEditType(type);
     setEditMode('edit');
     setEditItem({ ...item });
+    console.log('Opening edit dialog');
     setEditDialog(true);
   };
 
@@ -775,23 +780,59 @@ const AdminChakra = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="chakra_id" className="text-sm">Назначить чакру</Label>
-                  <Select
-                    value={editItem.chakra_id?.toString() || ''}
-                    onValueChange={(val) => setEditItem({ ...editItem, chakra_id: val ? parseInt(val) : null })}
-                  >
-                    <SelectTrigger className="text-base">
-                      <SelectValue placeholder="Выберите чакру" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">Не назначена</SelectItem>
-                      {chakras.map((chakra) => (
-                        <SelectItem key={chakra.id} value={chakra.id.toString()}>
-                          {chakra.position}. {chakra.name}
-                        </SelectItem>
+                  <Label className="text-sm">Назначить чакру</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {chakras
+                      .filter((chakra) => chakra.position % 2 === 0)
+                      .map((chakra) => (
+                        <Button
+                          key={chakra.id}
+                          variant="outline"
+                          type="button"
+                          className="text-center h-12 px-2"
+                          style={{
+                            borderColor: chakra.color,
+                            borderWidth: '2px',
+                            backgroundColor: editItem?.chakra_id === chakra.id ? `${chakra.color}20` : 'transparent',
+                          }}
+                          onClick={() => {
+                            setEditItem({ ...editItem, chakra_id: chakra.id });
+                          }}
+                        >
+                          <div
+                            className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm mx-auto"
+                            style={{ backgroundColor: chakra.color }}
+                          >
+                            {chakra.position}
+                          </div>
+                        </Button>
                       ))}
-                    </SelectContent>
-                  </Select>
+                    {chakras
+                      .filter((chakra) => chakra.position % 2 !== 0)
+                      .map((chakra) => (
+                        <Button
+                          key={chakra.id}
+                          variant="outline"
+                          type="button"
+                          className="text-center h-12 px-2"
+                          style={{
+                            borderColor: chakra.color,
+                            borderWidth: '2px',
+                            backgroundColor: editItem?.chakra_id === chakra.id ? `${chakra.color}20` : 'transparent',
+                          }}
+                          onClick={() => {
+                            setEditItem({ ...editItem, chakra_id: chakra.id });
+                          }}
+                        >
+                          <div
+                            className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm mx-auto"
+                            style={{ backgroundColor: chakra.color }}
+                          >
+                            {chakra.position}
+                          </div>
+                        </Button>
+                      ))}
+                  </div>
                 </div>
               </>
             )}
