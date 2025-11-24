@@ -172,10 +172,14 @@ const AdminChakra = () => {
   };
 
   const loadUserData = async () => {
+    console.log('loadUserData called, token:', !!token, 'selectedUserId:', selectedUserId);
     if (!token || !selectedUserId) return;
 
     const selectedUser = users.find((u) => u.id === selectedUserId);
+    console.log('selectedUser:', selectedUser);
+    
     if (!selectedUser?.chakra_id) {
+      console.log('User has no chakra_id assigned');
       setConcepts([]);
       setOrgans([]);
       setSciences([]);
@@ -185,17 +189,19 @@ const AdminChakra = () => {
 
     try {
       const chakraId = selectedUser.chakra_id;
+      console.log('Loading data for chakraId:', chakraId, 'userId:', selectedUserId);
+      
       const [conceptsRes, organsRes, sciencesRes, responsibilitiesRes] = await Promise.all([
-        fetch(`${ADMIN_API_URL}?table=chakra_concepts&chakra_id=${chakraId}&user_id=${selectedUserId}`, {
+        fetch(`${ADMIN_API_URL}?table=chakra_concepts&chakra_id=${chakraId}`, {
           headers: { 'X-Auth-Token': token },
         }),
-        fetch(`${ADMIN_API_URL}?table=chakra_organs&chakra_id=${chakraId}&user_id=${selectedUserId}`, {
+        fetch(`${ADMIN_API_URL}?table=chakra_organs&chakra_id=${chakraId}`, {
           headers: { 'X-Auth-Token': token },
         }),
-        fetch(`${ADMIN_API_URL}?table=chakra_sciences&chakra_id=${chakraId}&user_id=${selectedUserId}`, {
+        fetch(`${ADMIN_API_URL}?table=chakra_sciences&chakra_id=${chakraId}`, {
           headers: { 'X-Auth-Token': token },
         }),
-        fetch(`${ADMIN_API_URL}?table=chakra_responsibilities&chakra_id=${chakraId}&user_id=${selectedUserId}`, {
+        fetch(`${ADMIN_API_URL}?table=chakra_responsibilities&chakra_id=${chakraId}`, {
           headers: { 'X-Auth-Token': token },
         }),
       ]);
@@ -207,16 +213,36 @@ const AdminChakra = () => {
         responsibilitiesRes.json(),
       ]);
 
-      setConcepts(conceptsData.chakra_concepts || []);
-      setOrgans(organsData.chakra_organs || []);
-      setSciences(sciencesData.chakra_sciences || []);
-      setResponsibilities(responsibilitiesData.chakra_responsibilities || []);
+      console.log('Loaded data:', {
+        concepts: conceptsData.chakra_concepts?.length || 0,
+        organs: organsData.chakra_organs?.length || 0,
+        sciences: sciencesData.chakra_sciences?.length || 0,
+        responsibilities: responsibilitiesData.chakra_responsibilities?.length || 0
+      });
+
+      const userConcepts = (conceptsData.chakra_concepts || []).filter((c: ChakraConcept) => c.user_id === selectedUserId);
+      const userOrgans = (organsData.chakra_organs || []).filter((o: ChakraOrgan) => o.user_id === selectedUserId);
+      const userSciences = (sciencesData.chakra_sciences || []).filter((s: ChakraScience) => s.user_id === selectedUserId);
+      const userResponsibilities = (responsibilitiesData.chakra_responsibilities || []).filter((r: ChakraResponsibility) => r.user_id === selectedUserId);
+
+      console.log('Filtered for user:', {
+        concepts: userConcepts.length,
+        organs: userOrgans.length,
+        sciences: userSciences.length,
+        responsibilities: userResponsibilities.length
+      });
+
+      setConcepts(userConcepts);
+      setOrgans(userOrgans);
+      setSciences(userSciences);
+      setResponsibilities(userResponsibilities);
     } catch (err) {
       console.error('Ошибка загрузки данных пользователя:', err);
     }
   };
 
   const handleCreateUser = () => {
+    console.log('handleCreateUser called');
     setEditType('user');
     setEditMode('create');
     setEditItem({
@@ -229,17 +255,27 @@ const AdminChakra = () => {
       is_admin: false,
     });
     setEditDialog(true);
+    console.log('Dialog should open now');
   };
 
   const handleEditUser = () => {
-    if (!selectedUserId) return;
+    console.log('handleEditUser called, selectedUserId:', selectedUserId);
+    if (!selectedUserId) {
+      console.log('No user selected');
+      return;
+    }
     const user = users.find((u) => u.id === selectedUserId);
-    if (!user) return;
+    console.log('Found user:', user);
+    if (!user) {
+      console.log('User not found in array');
+      return;
+    }
     
     setEditType('user');
     setEditMode('edit');
     setEditItem({ ...user });
     setEditDialog(true);
+    console.log('Dialog should open now for edit');
   };
 
   const handleCreate = (type: 'concept' | 'organ' | 'science' | 'responsibility') => {
