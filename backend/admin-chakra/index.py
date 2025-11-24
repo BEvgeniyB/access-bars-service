@@ -15,7 +15,7 @@ from datetime import datetime
 SCHEMA = 't_p89870318_access_bars_service'
 
 TABLES = {
-    'chakras': ['id', 'name', 'position', 'color', 'right_statement', 'description'],
+    'chakras': ['id', 'name', 'position', 'color', 'right_statement'],
     'chakra_concepts': ['id', 'chakra_id', 'concept', 'category', 'user_id'],
     'chakra_questions': ['id', 'chakra_id', 'question', 'question_type', 'user_id'],
     'chakra_responsibilities': ['id', 'chakra_id', 'responsibility', 'user_id'],
