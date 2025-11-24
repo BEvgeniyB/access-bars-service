@@ -160,8 +160,12 @@ const AdminChakra = () => {
     if (!token) return;
 
     try {
-      const response = await fetch(`${ADMIN_API_URL}?table=chakras`, {
-        headers: { 'X-Auth-Token': token },
+      const timestamp = Date.now();
+      const response = await fetch(`${ADMIN_API_URL}?table=chakras&_t=${timestamp}`, {
+        headers: { 
+          'X-Auth-Token': token,
+          'Cache-Control': 'no-cache'
+        },
       });
       const data = await response.json();
       console.log('Loaded chakras:', data.chakras?.length || 0, data.chakras);
