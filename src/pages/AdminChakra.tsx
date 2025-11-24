@@ -16,6 +16,13 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const TELEGRAM_AUTH_URL = 'https://functions.poehali.dev/81142751-b500-40dc-91f2-9318b9f48791';
 const ADMIN_API_URL = 'https://functions.poehali.dev/9471e2dc-0dfa-4927-9d58-74f7dc75819c';
@@ -28,13 +35,16 @@ interface User {
   is_admin: boolean;
   telegram_id: string;
   telegram_username?: string;
+  chakra_id?: number;
 }
 
 interface Chakra {
   id: number;
   name: string;
   position: number;
+  color: string;
   continent?: string;
+  right_statement?: string;
   responsible_user_id?: number;
 }
 
@@ -80,7 +90,6 @@ const AdminChakra = () => {
 
   const [users, setUsers] = useState<User[]>([]);
   const [chakras, setChakras] = useState<Chakra[]>([]);
-  const [selectedChakraId, setSelectedChakraId] = useState<number | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
 
   const [concepts, setConcepts] = useState<ChakraConcept[]>([]);
@@ -89,7 +98,7 @@ const AdminChakra = () => {
   const [responsibilities, setResponsibilities] = useState<ChakraResponsibility[]>([]);
 
   const [editDialog, setEditDialog] = useState(false);
-  const [editType, setEditType] = useState<'concept' | 'organ' | 'science' | 'responsibility'>('concept');
+  const [editType, setEditType] = useState<'concept' | 'organ' | 'science' | 'responsibility' | 'user'>('concept');
   const [editItem, setEditItem] = useState<any>(null);
   const [editMode, setEditMode] = useState<'create' | 'edit'>('create');
 
@@ -156,32 +165,36 @@ const AdminChakra = () => {
       const data = await response.json();
       if (data.chakras) {
         setChakras(data.chakras.sort((a: Chakra, b: Chakra) => a.position - b.position));
-        if (!selectedChakraId && data.chakras.length > 0) {
-          setSelectedChakraId(data.chakras[0].id);
-        }
       }
     } catch (err) {
       console.error('Ошибка загрузки чакр:', err);
     }
   };
 
-  const loadChakraData = async () => {
-    if (!token || !selectedChakraId) return;
+  const loadUserData = async () => {
+    if (!token || !selectedUserId) return;
 
-    const userParam = selectedUserId ? `&user_id=${selectedUserId}` : '';
+    const selectedUser = users.find((u) => u.id === selectedUserId);
+    if (!selectedUser?.chakra_id) {
+      setConcepts([]);
+      setOrgans([]);
+      setSciences([]);
+      setResponsibilities([]);
+      return;
+    }
 
     try {
       const [conceptsRes, organsRes, sciencesRes, responsibilitiesRes] = await Promise.all([
-        fetch(`${ADMIN_API_URL}?table=chakra_concepts${userParam}`, {
+        fetch(`${ADMIN_API_URL}?table=chakra_concepts&user_id=${selectedUserId}`, {
           headers: { 'X-Auth-Token': token },
         }),
-        fetch(`${ADMIN_API_URL}?table=chakra_organs${userParam}`, {
+        fetch(`${ADMIN_API_URL}?table=chakra_organs&user_id=${selectedUserId}`, {
           headers: { 'X-Auth-Token': token },
         }),
-        fetch(`${ADMIN_API_URL}?table=chakra_sciences${userParam}`, {
+        fetch(`${ADMIN_API_URL}?table=chakra_sciences&user_id=${selectedUserId}`, {
           headers: { 'X-Auth-Token': token },
         }),
-        fetch(`${ADMIN_API_URL}?table=chakra_responsibilities${userParam}`, {
+        fetch(`${ADMIN_API_URL}?table=chakra_responsibilities&user_id=${selectedUserId}`, {
           headers: { 'X-Auth-Token': token },
         }),
       ]);
@@ -193,22 +206,50 @@ const AdminChakra = () => {
         responsibilitiesRes.json(),
       ]);
 
-      setConcepts((conceptsData.chakra_concepts || []).filter((c: ChakraConcept) => c.chakra_id === selectedChakraId));
-      setOrgans((organsData.chakra_organs || []).filter((o: ChakraOrgan) => o.chakra_id === selectedChakraId));
-      setSciences((sciencesData.chakra_sciences || []).filter((s: ChakraScience) => s.chakra_id === selectedChakraId));
-      setResponsibilities((responsibilitiesData.chakra_responsibilities || []).filter((r: ChakraResponsibility) => r.chakra_id === selectedChakraId));
+      setConcepts(conceptsData.chakra_concepts || []);
+      setOrgans(organsData.chakra_organs || []);
+      setSciences(sciencesData.chakra_sciences || []);
+      setResponsibilities(responsibilitiesData.chakra_responsibilities || []);
     } catch (err) {
-      console.error('Ошибка загрузки данных чакры:', err);
+      console.error('Ошибка загрузки данных пользователя:', err);
     }
   };
 
+  const handleCreateUser = () => {
+    setEditType('user');
+    setEditMode('create');
+    setEditItem({
+      name: '',
+      email: '',
+      telegram_id: '',
+      telegram_username: '',
+      chakra_id: null,
+      role: 'responsible',
+      is_admin: false,
+    });
+    setEditDialog(true);
+  };
+
+  const handleEditUser = (user: User) => {
+    setEditType('user');
+    setEditMode('edit');
+    setEditItem({ ...user });
+    setEditDialog(true);
+  };
+
   const handleCreate = (type: 'concept' | 'organ' | 'science' | 'responsibility') => {
+    const selectedUser = users.find((u) => u.id === selectedUserId);
+    if (!selectedUser?.chakra_id) {
+      alert('Сначала назначьте пользователю чакру');
+      return;
+    }
+
     setEditType(type);
     setEditMode('create');
-    
+
     const newItem: any = {
-      chakra_id: selectedChakraId,
-      user_id: currentUser?.id
+      chakra_id: selectedUser.chakra_id,
+      user_id: selectedUserId,
     };
 
     if (type === 'concept') {
@@ -243,6 +284,7 @@ const AdminChakra = () => {
       organ: 'chakra_organs',
       science: 'chakra_sciences',
       responsibility: 'chakra_responsibilities',
+      user: 'users',
     };
 
     const table = tableMap[editType];
@@ -265,7 +307,11 @@ const AdminChakra = () => {
 
       if (response.ok) {
         setEditDialog(false);
-        loadChakraData();
+        if (editType === 'user') {
+          loadUsers();
+        } else {
+          loadUserData();
+        }
       } else {
         const data = await response.json();
         alert(data.error || 'Ошибка сохранения');
@@ -294,7 +340,7 @@ const AdminChakra = () => {
       });
 
       if (response.ok) {
-        loadChakraData();
+        loadUserData();
       }
     } catch (err) {
       console.error('Ошибка удаления:', err);
@@ -319,43 +365,45 @@ const AdminChakra = () => {
   }, [isAuthenticated, token]);
 
   useEffect(() => {
-    if (isAuthenticated && token && selectedChakraId) {
-      loadChakraData();
+    if (isAuthenticated && token && selectedUserId) {
+      loadUserData();
     }
-  }, [selectedChakraId, selectedUserId, isAuthenticated, token]);
+  }, [selectedUserId, isAuthenticated, token]);
 
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-teal-50 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle className="text-2xl text-center">Админ-панель ChakraCraft</CardTitle>
-            <CardDescription className="text-center">
+            <CardTitle className="text-xl text-center">Админ-панель ChakraCraft</CardTitle>
+            <CardDescription className="text-center text-sm">
               Войдите через Telegram ID
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {error && (
               <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
+                <AlertDescription className="text-sm">{error}</AlertDescription>
               </Alert>
             )}
             <div className="space-y-2">
-              <Label htmlFor="telegram_id">Telegram ID</Label>
+              <Label htmlFor="telegram_id" className="text-sm">Telegram ID</Label>
               <Input
                 id="telegram_id"
                 placeholder="123456789"
                 value={telegramId}
                 onChange={(e) => setTelegramId(e.target.value)}
+                className="text-base"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="telegram_group_id">Telegram Group ID</Label>
+              <Label htmlFor="telegram_group_id" className="text-sm">Telegram Group ID</Label>
               <Input
                 id="telegram_group_id"
                 placeholder="-1001234567890"
                 value={telegramGroupId}
                 onChange={(e) => setTelegramGroupId(e.target.value)}
+                className="text-base"
               />
             </div>
             <Button onClick={handleLogin} disabled={loading} className="w-full">
@@ -367,314 +415,449 @@ const AdminChakra = () => {
     );
   }
 
-  const selectedChakra = chakras.find((c) => c.id === selectedChakraId);
-  const responsibleUser = selectedChakra?.responsible_user_id 
-    ? users.find((u) => u.id === selectedChakra.responsible_user_id)
+  const selectedUser = users.find((u) => u.id === selectedUserId);
+  const userChakra = selectedUser?.chakra_id
+    ? chakras.find((c) => c.id === selectedUser.chakra_id)
     : null;
 
-  const getUserName = (userId: number) => {
-    const user = users.find((u) => u.id === userId);
-    return user?.name || `ID ${userId}`;
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-teal-50 p-4">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-emerald-900">Управление чакрами</h1>
-            <p className="text-emerald-700">
-              {currentUser?.name} {currentUser?.is_admin ? '(Администратор)' : '(Пользователь)'}
-            </p>
-          </div>
-          <Button
-            variant="outline"
-            onClick={() => {
-              localStorage.removeItem('admin_token');
-              localStorage.removeItem('admin_user');
-              setIsAuthenticated(false);
-              setToken(null);
-              setCurrentUser(null);
-            }}
-          >
-            <Icon name="LogOut" className="mr-2" />
-            Выйти
-          </Button>
-        </div>
-
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Выбор чакры</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
-              {chakras.map((chakra) => (
-                <Button
-                  key={chakra.id}
-                  variant={selectedChakraId === chakra.id ? 'default' : 'outline'}
-                  onClick={() => setSelectedChakraId(chakra.id)}
-                  className="h-auto flex flex-col items-center py-3"
-                >
-                  <div className="text-2xl font-bold">{chakra.position}</div>
-                  <div className="text-xs mt-1">{chakra.name}</div>
-                </Button>
-              ))}
+    <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-teal-50 pb-20">
+      <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b shadow-sm">
+        <div className="p-4">
+          <div className="flex justify-between items-center">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-lg font-bold text-emerald-900 truncate">ChakraCraft</h1>
+              <p className="text-xs text-emerald-700 truncate">
+                {currentUser?.name} {currentUser?.is_admin && '(Админ)'}
+              </p>
             </div>
-          </CardContent>
-        </Card>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                localStorage.removeItem('admin_token');
+                localStorage.removeItem('admin_user');
+                setIsAuthenticated(false);
+                setToken(null);
+                setCurrentUser(null);
+              }}
+            >
+              <Icon name="LogOut" size={16} />
+            </Button>
+          </div>
+        </div>
+      </div>
 
-        {selectedChakra && (
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>{selectedChakra.name}</CardTitle>
-              <CardDescription>
-                {selectedChakra.continent && (
-                  <span className="mr-4">Континент: {selectedChakra.continent}</span>
-                )}
-                {responsibleUser && (
-                  <span>Ответственный: {responsibleUser.name}</span>
-                )}
-              </CardDescription>
+      <div className="p-4 space-y-4">
+        {currentUser?.is_admin && (
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex justify-between items-center">
+                <CardTitle className="text-base">Пользователи</CardTitle>
+                <Button size="sm" onClick={handleCreateUser}>
+                  <Icon name="Plus" size={16} className="mr-1" />
+                  Добавить
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
-              <Tabs value={selectedUserId?.toString() || 'all'} onValueChange={(val) => setSelectedUserId(val === 'all' ? null : parseInt(val))}>
-                <TabsList className="mb-4">
-                  <TabsTrigger value="all">Все</TabsTrigger>
-                  {users.map((user) => (
-                    <TabsTrigger key={user.id} value={user.id.toString()}>
-                      {user.name}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-
-                <TabsContent value={selectedUserId?.toString() || 'all'}>
-                  <div className="space-y-6">
-                    <div>
-                      <div className="flex justify-between items-center mb-3">
-                        <h3 className="text-lg font-semibold">Энергии (Понятия)</h3>
-                        <Button size="sm" onClick={() => handleCreate('concept')}>
-                          <Icon name="Plus" className="mr-1" size={16} />
-                          Добавить
-                        </Button>
+              <div className="space-y-2">
+                {users.map((user) => (
+                  <div
+                    key={user.id}
+                    className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                      selectedUserId === user.id
+                        ? 'border-emerald-500 bg-emerald-50'
+                        : 'border-gray-200 hover:border-emerald-300'
+                    }`}
+                    onClick={() => setSelectedUserId(user.id)}
+                  >
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-sm truncate">{user.name}</p>
+                        <p className="text-xs text-gray-600 truncate">{user.email}</p>
+                        {user.chakra_id && (
+                          <Badge variant="secondary" className="mt-1 text-xs">
+                            Чакра {chakras.find((c) => c.id === user.chakra_id)?.position}
+                          </Badge>
+                        )}
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                        {concepts.map((concept) => (
-                          <Card key={concept.id}>
-                            <CardContent className="pt-4">
-                              <div className="flex justify-between items-start mb-2">
-                                <Badge variant="secondary">{concept.category}</Badge>
-                                <div className="flex gap-1">
-                                  <Button size="sm" variant="ghost" onClick={() => handleEdit('concept', concept)}>
-                                    <Icon name="Edit" size={14} />
-                                  </Button>
-                                  <Button size="sm" variant="ghost" onClick={() => handleDelete('concept', concept.id)}>
-                                    <Icon name="Trash2" size={14} />
-                                  </Button>
-                                </div>
-                              </div>
-                              <p className="text-sm mb-2">{concept.concept}</p>
-                              <p className="text-xs text-gray-500">Автор: {getUserName(concept.user_id)}</p>
-                            </CardContent>
-                          </Card>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="flex justify-between items-center mb-3">
-                        <h3 className="text-lg font-semibold">Органы</h3>
-                        <Button size="sm" onClick={() => handleCreate('organ')}>
-                          <Icon name="Plus" className="mr-1" size={16} />
-                          Добавить
-                        </Button>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {organs.map((organ) => (
-                          <Card key={organ.id}>
-                            <CardContent className="pt-4">
-                              <div className="flex justify-between items-start mb-2">
-                                <h4 className="font-semibold">{organ.organ_name}</h4>
-                                <div className="flex gap-1">
-                                  <Button size="sm" variant="ghost" onClick={() => handleEdit('organ', organ)}>
-                                    <Icon name="Edit" size={14} />
-                                  </Button>
-                                  <Button size="sm" variant="ghost" onClick={() => handleDelete('organ', organ.id)}>
-                                    <Icon name="Trash2" size={14} />
-                                  </Button>
-                                </div>
-                              </div>
-                              <p className="text-sm mb-2">{organ.description}</p>
-                              <p className="text-xs text-gray-500">Автор: {getUserName(organ.user_id)}</p>
-                            </CardContent>
-                          </Card>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="flex justify-between items-center mb-3">
-                        <h3 className="text-lg font-semibold">Науки</h3>
-                        <Button size="sm" onClick={() => handleCreate('science')}>
-                          <Icon name="Plus" className="mr-1" size={16} />
-                          Добавить
-                        </Button>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {sciences.map((science) => (
-                          <Card key={science.id}>
-                            <CardContent className="pt-4">
-                              <div className="flex justify-between items-start mb-2">
-                                <h4 className="font-semibold">{science.science_name}</h4>
-                                <div className="flex gap-1">
-                                  <Button size="sm" variant="ghost" onClick={() => handleEdit('science', science)}>
-                                    <Icon name="Edit" size={14} />
-                                  </Button>
-                                  <Button size="sm" variant="ghost" onClick={() => handleDelete('science', science.id)}>
-                                    <Icon name="Trash2" size={14} />
-                                  </Button>
-                                </div>
-                              </div>
-                              <p className="text-sm mb-2">{science.description}</p>
-                              <p className="text-xs text-gray-500">Автор: {getUserName(science.user_id)}</p>
-                            </CardContent>
-                          </Card>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="flex justify-between items-center mb-3">
-                        <h3 className="text-lg font-semibold">Ответственности</h3>
-                        <Button size="sm" onClick={() => handleCreate('responsibility')}>
-                          <Icon name="Plus" className="mr-1" size={16} />
-                          Добавить
-                        </Button>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                        {responsibilities.map((resp) => (
-                          <Card key={resp.id}>
-                            <CardContent className="pt-4">
-                              <div className="flex justify-between items-start mb-2">
-                                <p className="text-sm flex-1">{resp.responsibility}</p>
-                                <div className="flex gap-1 ml-2">
-                                  <Button size="sm" variant="ghost" onClick={() => handleEdit('responsibility', resp)}>
-                                    <Icon name="Edit" size={14} />
-                                  </Button>
-                                  <Button size="sm" variant="ghost" onClick={() => handleDelete('responsibility', resp.id)}>
-                                    <Icon name="Trash2" size={14} />
-                                  </Button>
-                                </div>
-                              </div>
-                              <p className="text-xs text-gray-500">Автор: {getUserName(resp.user_id)}</p>
-                            </CardContent>
-                          </Card>
-                        ))}
-                      </div>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditUser(user);
+                        }}
+                      >
+                        <Icon name="Edit" size={14} />
+                      </Button>
                     </div>
                   </div>
-                </TabsContent>
-              </Tabs>
+                ))}
+              </div>
             </CardContent>
           </Card>
         )}
 
-        <Dialog open={editDialog} onOpenChange={setEditDialog}>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>
-                {editMode === 'create' ? 'Добавить' : 'Редактировать'}
-              </DialogTitle>
-              <DialogDescription>
-                {editType === 'concept' && 'Энергия (Понятие)'}
-                {editType === 'organ' && 'Орган'}
-                {editType === 'science' && 'Наука'}
-                {editType === 'responsibility' && 'Ответственность'}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              {editItem && editType === 'concept' && (
-                <>
-                  <div className="space-y-2">
-                    <Label htmlFor="concept">Понятие</Label>
-                    <Textarea
-                      id="concept"
-                      value={editItem.concept || ''}
-                      onChange={(e) => setEditItem({ ...editItem, concept: e.target.value })}
-                    />
+        {selectedUser && userChakra && (
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Чакра пользователя {selectedUser.name}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center gap-2">
+                  <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm"
+                    style={{ backgroundColor: userChakra.color }}
+                  >
+                    {userChakra.position}
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="category">Категория</Label>
-                    <Input
-                      id="category"
-                      value={editItem.category || ''}
-                      onChange={(e) => setEditItem({ ...editItem, category: e.target.value })}
-                    />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold truncate">{userChakra.name}</p>
+                    {userChakra.continent && (
+                      <p className="text-xs text-gray-600">{userChakra.continent}</p>
+                    )}
                   </div>
-                </>
-              )}
+                </div>
+                {userChakra.right_statement && (
+                  <div className="mt-2 p-2 bg-emerald-50 rounded text-xs italic">
+                    {userChakra.right_statement}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-              {editItem && editType === 'organ' && (
-                <>
+        {selectedUser && userChakra && (
+          <>
+            <Card>
+              <CardHeader className="pb-3">
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-base">Энергии (Понятия)</CardTitle>
+                  <Button size="sm" onClick={() => handleCreate('concept')}>
+                    <Icon name="Plus" size={16} />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {concepts.length === 0 ? (
+                  <p className="text-sm text-gray-500 text-center py-4">Нет данных</p>
+                ) : (
                   <div className="space-y-2">
-                    <Label htmlFor="organ_name">Название органа</Label>
-                    <Input
-                      id="organ_name"
-                      value={editItem.organ_name || ''}
-                      onChange={(e) => setEditItem({ ...editItem, organ_name: e.target.value })}
-                    />
+                    {concepts.map((concept) => (
+                      <div key={concept.id} className="p-3 border rounded-lg">
+                        <div className="flex justify-between items-start gap-2 mb-2">
+                          <Badge variant="secondary" className="text-xs">{concept.category}</Badge>
+                          <div className="flex gap-1">
+                            <Button size="sm" variant="ghost" onClick={() => handleEdit('concept', concept)}>
+                              <Icon name="Edit" size={14} />
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => handleDelete('concept', concept.id)}>
+                              <Icon name="Trash2" size={14} />
+                            </Button>
+                          </div>
+                        </div>
+                        <p className="text-sm">{concept.concept}</p>
+                      </div>
+                    ))}
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="description">Описание</Label>
-                    <Textarea
-                      id="description"
-                      value={editItem.description || ''}
-                      onChange={(e) => setEditItem({ ...editItem, description: e.target.value })}
-                    />
-                  </div>
-                </>
-              )}
+                )}
+              </CardContent>
+            </Card>
 
-              {editItem && editType === 'science' && (
-                <>
+            <Card>
+              <CardHeader className="pb-3">
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-base">Органы</CardTitle>
+                  <Button size="sm" onClick={() => handleCreate('organ')}>
+                    <Icon name="Plus" size={16} />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {organs.length === 0 ? (
+                  <p className="text-sm text-gray-500 text-center py-4">Нет данных</p>
+                ) : (
                   <div className="space-y-2">
-                    <Label htmlFor="science_name">Название науки</Label>
-                    <Input
-                      id="science_name"
-                      value={editItem.science_name || ''}
-                      onChange={(e) => setEditItem({ ...editItem, science_name: e.target.value })}
-                    />
+                    {organs.map((organ) => (
+                      <div key={organ.id} className="p-3 border rounded-lg">
+                        <div className="flex justify-between items-start gap-2 mb-2">
+                          <h4 className="font-semibold text-sm flex-1">{organ.organ_name}</h4>
+                          <div className="flex gap-1">
+                            <Button size="sm" variant="ghost" onClick={() => handleEdit('organ', organ)}>
+                              <Icon name="Edit" size={14} />
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => handleDelete('organ', organ.id)}>
+                              <Icon name="Trash2" size={14} />
+                            </Button>
+                          </div>
+                        </div>
+                        <p className="text-sm text-gray-600">{organ.description}</p>
+                      </div>
+                    ))}
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="description">Описание</Label>
-                    <Textarea
-                      id="description"
-                      value={editItem.description || ''}
-                      onChange={(e) => setEditItem({ ...editItem, description: e.target.value })}
-                    />
-                  </div>
-                </>
-              )}
+                )}
+              </CardContent>
+            </Card>
 
-              {editItem && editType === 'responsibility' && (
+            <Card>
+              <CardHeader className="pb-3">
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-base">Науки</CardTitle>
+                  <Button size="sm" onClick={() => handleCreate('science')}>
+                    <Icon name="Plus" size={16} />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {sciences.length === 0 ? (
+                  <p className="text-sm text-gray-500 text-center py-4">Нет данных</p>
+                ) : (
+                  <div className="space-y-2">
+                    {sciences.map((science) => (
+                      <div key={science.id} className="p-3 border rounded-lg">
+                        <div className="flex justify-between items-start gap-2 mb-2">
+                          <h4 className="font-semibold text-sm flex-1">{science.science_name}</h4>
+                          <div className="flex gap-1">
+                            <Button size="sm" variant="ghost" onClick={() => handleEdit('science', science)}>
+                              <Icon name="Edit" size={14} />
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => handleDelete('science', science.id)}>
+                              <Icon name="Trash2" size={14} />
+                            </Button>
+                          </div>
+                        </div>
+                        <p className="text-sm text-gray-600">{science.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-base">Ответственности</CardTitle>
+                  <Button size="sm" onClick={() => handleCreate('responsibility')}>
+                    <Icon name="Plus" size={16} />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {responsibilities.length === 0 ? (
+                  <p className="text-sm text-gray-500 text-center py-4">Нет данных</p>
+                ) : (
+                  <div className="space-y-2">
+                    {responsibilities.map((resp) => (
+                      <div key={resp.id} className="p-3 border rounded-lg">
+                        <div className="flex justify-between items-start gap-2">
+                          <p className="text-sm flex-1">{resp.responsibility}</p>
+                          <div className="flex gap-1">
+                            <Button size="sm" variant="ghost" onClick={() => handleEdit('responsibility', resp)}>
+                              <Icon name="Edit" size={14} />
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => handleDelete('responsibility', resp.id)}>
+                              <Icon name="Trash2" size={14} />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </>
+        )}
+
+        {selectedUser && !userChakra && (
+          <Card>
+            <CardContent className="py-8">
+              <div className="text-center text-sm text-gray-500">
+                <Icon name="AlertCircle" size={32} className="mx-auto mb-2 text-orange-500" />
+                <p>Пользователю не назначена чакра</p>
+                <Button
+                  size="sm"
+                  className="mt-4"
+                  onClick={() => handleEditUser(selectedUser)}
+                >
+                  Назначить чакру
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      <Dialog open={editDialog} onOpenChange={setEditDialog}>
+        <DialogContent className="max-w-[95vw] sm:max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-base">
+              {editMode === 'create' ? 'Добавить' : 'Редактировать'}
+            </DialogTitle>
+            <DialogDescription className="text-sm">
+              {editType === 'concept' && 'Энергия (Понятие)'}
+              {editType === 'organ' && 'Орган'}
+              {editType === 'science' && 'Наука'}
+              {editType === 'responsibility' && 'Ответственность'}
+              {editType === 'user' && 'Пользователь'}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {editItem && editType === 'user' && (
+              <>
                 <div className="space-y-2">
-                  <Label htmlFor="responsibility">Ответственность</Label>
-                  <Textarea
-                    id="responsibility"
-                    value={editItem.responsibility || ''}
-                    onChange={(e) => setEditItem({ ...editItem, responsibility: e.target.value })}
+                  <Label htmlFor="name" className="text-sm">Имя</Label>
+                  <Input
+                    id="name"
+                    value={editItem.name || ''}
+                    onChange={(e) => setEditItem({ ...editItem, name: e.target.value })}
+                    className="text-base"
                   />
                 </div>
-              )}
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setEditDialog(false)}>
-                Отмена
-              </Button>
-              <Button onClick={handleSave}>Сохранить</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-sm">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={editItem.email || ''}
+                    onChange={(e) => setEditItem({ ...editItem, email: e.target.value })}
+                    className="text-base"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="telegram_id" className="text-sm">Telegram ID</Label>
+                  <Input
+                    id="telegram_id"
+                    value={editItem.telegram_id || ''}
+                    onChange={(e) => setEditItem({ ...editItem, telegram_id: e.target.value })}
+                    className="text-base"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="telegram_username" className="text-sm">Telegram Username</Label>
+                  <Input
+                    id="telegram_username"
+                    value={editItem.telegram_username || ''}
+                    onChange={(e) => setEditItem({ ...editItem, telegram_username: e.target.value })}
+                    className="text-base"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="chakra_id" className="text-sm">Назначить чакру</Label>
+                  <Select
+                    value={editItem.chakra_id?.toString() || ''}
+                    onValueChange={(val) => setEditItem({ ...editItem, chakra_id: val ? parseInt(val) : null })}
+                  >
+                    <SelectTrigger className="text-base">
+                      <SelectValue placeholder="Выберите чакру" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Не назначена</SelectItem>
+                      {chakras.map((chakra) => (
+                        <SelectItem key={chakra.id} value={chakra.id.toString()}>
+                          {chakra.position}. {chakra.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </>
+            )}
+
+            {editItem && editType === 'concept' && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="concept" className="text-sm">Понятие</Label>
+                  <Textarea
+                    id="concept"
+                    value={editItem.concept || ''}
+                    onChange={(e) => setEditItem({ ...editItem, concept: e.target.value })}
+                    className="text-base min-h-[80px]"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="category" className="text-sm">Категория</Label>
+                  <Input
+                    id="category"
+                    value={editItem.category || ''}
+                    onChange={(e) => setEditItem({ ...editItem, category: e.target.value })}
+                    className="text-base"
+                  />
+                </div>
+              </>
+            )}
+
+            {editItem && editType === 'organ' && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="organ_name" className="text-sm">Название органа</Label>
+                  <Input
+                    id="organ_name"
+                    value={editItem.organ_name || ''}
+                    onChange={(e) => setEditItem({ ...editItem, organ_name: e.target.value })}
+                    className="text-base"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="description" className="text-sm">Описание</Label>
+                  <Textarea
+                    id="description"
+                    value={editItem.description || ''}
+                    onChange={(e) => setEditItem({ ...editItem, description: e.target.value })}
+                    className="text-base min-h-[80px]"
+                  />
+                </div>
+              </>
+            )}
+
+            {editItem && editType === 'science' && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="science_name" className="text-sm">Название науки</Label>
+                  <Input
+                    id="science_name"
+                    value={editItem.science_name || ''}
+                    onChange={(e) => setEditItem({ ...editItem, science_name: e.target.value })}
+                    className="text-base"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="description" className="text-sm">Описание</Label>
+                  <Textarea
+                    id="description"
+                    value={editItem.description || ''}
+                    onChange={(e) => setEditItem({ ...editItem, description: e.target.value })}
+                    className="text-base min-h-[80px]"
+                  />
+                </div>
+              </>
+            )}
+
+            {editItem && editType === 'responsibility' && (
+              <div className="space-y-2">
+                <Label htmlFor="responsibility" className="text-sm">Ответственность</Label>
+                <Textarea
+                  id="responsibility"
+                  value={editItem.responsibility || ''}
+                  onChange={(e) => setEditItem({ ...editItem, responsibility: e.target.value })}
+                  className="text-base min-h-[80px]"
+                />
+              </div>
+            )}
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setEditDialog(false)} className="flex-1">
+              Отмена
+            </Button>
+            <Button onClick={handleSave} className="flex-1">Сохранить</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
