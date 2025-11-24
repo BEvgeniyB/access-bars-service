@@ -48,6 +48,18 @@ interface TableData {
   [key: string]: any[];
 }
 
+interface HistoryItem {
+  id: number;
+  chakra_id: number;
+  chakra_name: string;
+  user_id: number;
+  user_name: string;
+  field_name: string;
+  old_value: string;
+  new_value: string;
+  edited_at: string;
+}
+
 const TABLES = [
   { key: 'chakras', label: 'Чакры', fields: ['id', 'name', 'color', 'position', 'right_statement', 'description'] },
   { key: 'chakra_concepts', label: 'Понятия', fields: ['id', 'chakra_id', 'concept', 'category', 'user_id'] },
@@ -74,6 +86,8 @@ const AdminChakra = () => {
   const [editDialog, setEditDialog] = useState(false);
   const [editItem, setEditItem] = useState<any>(null);
   const [editMode, setEditMode] = useState<'create' | 'edit'>('create');
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
 
   const handleLogin = async () => {
     if (!telegramId.trim() || !telegramGroupId.trim()) {
@@ -143,6 +157,22 @@ const AdminChakra = () => {
       setTableData((prev) => ({ ...prev, [table]: data[table] || [] }));
     } catch (err) {
       console.error(`Ошибка загрузки ${table}:`, err);
+    }
+  };
+
+  const loadHistory = async () => {
+    if (!token || !currentUser?.is_admin) return;
+
+    try {
+      const response = await fetch(`${ADMIN_API_URL}?table=history&limit=200`, {
+        headers: { 'X-Auth-Token': token },
+      });
+      const data = await response.json();
+      if (data.history) {
+        setHistory(data.history);
+      }
+    } catch (err) {
+      console.error('Ошибка загрузки истории:', err);
     }
   };
 
@@ -306,23 +336,87 @@ const AdminChakra = () => {
             <CardHeader>
               <CardTitle>Выбор пользователя</CardTitle>
             </CardHeader>
-            <CardContent>
-              <Select
-                value={selectedUserId?.toString() || 'all'}
-                onValueChange={(val) => setSelectedUserId(val === 'all' ? null : parseInt(val))}
+            <CardContent className="flex gap-4">
+              <div className="flex-1">
+                <Select
+                  value={selectedUserId?.toString() || 'all'}
+                  onValueChange={(val) => setSelectedUserId(val === 'all' ? null : parseInt(val))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Все пользователи" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Все пользователи</SelectItem>
+                    {users.map((user) => (
+                      <SelectItem key={user.id} value={user.id.toString()}>
+                        {user.name} ({user.email})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setShowHistory(!showHistory);
+                  if (!showHistory) loadHistory();
+                }}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Все пользователи" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Все пользователи</SelectItem>
-                  {users.map((user) => (
-                    <SelectItem key={user.id} value={user.id.toString()}>
-                      {user.name} ({user.email})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                <Icon name="Clock" className="mr-2" />
+                {showHistory ? 'Скрыть историю' : 'История изменений'}
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {currentUser?.is_admin && showHistory && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>История изменений</CardTitle>
+              <CardDescription>
+                Последние 200 изменений всех пользователей
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-auto max-h-96">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Дата</TableHead>
+                      <TableHead>Пользователь</TableHead>
+                      <TableHead>Чакра</TableHead>
+                      <TableHead>Поле</TableHead>
+                      <TableHead>Старое значение</TableHead>
+                      <TableHead>Новое значение</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {history.map((item) => (
+                      <TableRow key={item.id}>
+                        <TableCell className="whitespace-nowrap">
+                          {new Date(item.edited_at).toLocaleString('ru-RU')}
+                        </TableCell>
+                        <TableCell>{item.user_name || `ID ${item.user_id}`}</TableCell>
+                        <TableCell>{item.chakra_name || `#${item.chakra_id}`}</TableCell>
+                        <TableCell className="font-mono text-xs">{item.field_name}</TableCell>
+                        <TableCell className="max-w-xs truncate text-xs text-gray-500">
+                          {item.old_value?.substring(0, 50)}
+                        </TableCell>
+                        <TableCell className="max-w-xs truncate text-xs text-emerald-700 font-medium">
+                          {item.new_value?.substring(0, 50)}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {history.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center text-gray-500">
+                          История изменений пуста
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         )}

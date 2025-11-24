@@ -140,6 +140,31 @@ def handle_get(cur, event: Dict[str, Any], user_id: int, is_admin: bool) -> Dict
             'body': json.dumps({'users': result})
         }
     
+    if table == 'history' and is_admin:
+        limit = params.get('limit', '100')
+        query = f'''
+            SELECT h.id, h.chakra_id, h.user_id, u.name as user_name, 
+                   h.field_name, h.old_value, h.new_value, h.edited_at,
+                   c.name as chakra_name
+            FROM {SCHEMA}.chakra_edit_history h
+            LEFT JOIN {SCHEMA}.users u ON h.user_id = u.id
+            LEFT JOIN {SCHEMA}.chakras c ON h.chakra_id = c.id
+            ORDER BY h.edited_at DESC
+            LIMIT %s
+        '''
+        cur.execute(query, (int(limit),))
+        rows = cur.fetchall()
+        history = [{
+            'id': r[0], 'chakra_id': r[1], 'user_id': r[2], 'user_name': r[3],
+            'field_name': r[4], 'old_value': r[5], 'new_value': r[6], 
+            'edited_at': r[7].isoformat() if r[7] else None, 'chakra_name': r[8]
+        } for r in rows]
+        return {
+            'statusCode': 200,
+            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({'history': history})
+        }
+    
     if not table or table not in TABLES:
         return {
             'statusCode': 400,
