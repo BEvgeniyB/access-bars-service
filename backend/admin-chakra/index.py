@@ -20,7 +20,8 @@ TABLES = {
     'chakra_questions': ['id', 'chakra_id', 'question', 'question_type', 'user_id'],
     'chakra_responsibilities': ['id', 'chakra_id', 'responsibility', 'user_id'],
     'chakra_sciences': ['id', 'chakra_id', 'science_name', 'description', 'user_id'],
-    'chakra_organs': ['id', 'chakra_id', 'organ_name', 'description', 'user_id']
+    'chakra_organs': ['id', 'chakra_id', 'organ_name', 'description', 'user_id'],
+    'users': ['id', 'name', 'email', 'role', 'is_admin', 'telegram_id', 'telegram_username', 'chakra_id']
 }
 
 def verify_token(token: str) -> Optional[Dict[str, Any]]:
@@ -131,9 +132,9 @@ def handle_get(cur, event: Dict[str, Any], user_id: int, is_admin: bool) -> Dict
     target_user_id = params.get('user_id')
     
     if table == 'users' and is_admin:
-        cur.execute(f'SELECT id, name, email, role, is_admin, telegram_id, telegram_username FROM {SCHEMA}.users')
+        cur.execute(f'SELECT id, name, email, role, is_admin, telegram_id, telegram_username, chakra_id FROM {SCHEMA}.users')
         users = cur.fetchall()
-        result = [{'id': u[0], 'name': u[1], 'email': u[2], 'role': u[3], 'is_admin': u[4], 'telegram_id': u[5], 'telegram_username': u[6]} for u in users]
+        result = [{'id': u[0], 'name': u[1], 'email': u[2], 'role': u[3], 'is_admin': u[4], 'telegram_id': u[5], 'telegram_username': u[6], 'chakra_id': u[7]} for u in users]
         return {
             'statusCode': 200,
             'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
@@ -173,10 +174,25 @@ def handle_get(cur, event: Dict[str, Any], user_id: int, is_admin: bool) -> Dict
         }
     
     columns = TABLES[table]
+    chakra_id_param = params.get('chakra_id')
     
-    if is_admin and target_user_id:
+    if is_admin and target_user_id and chakra_id_param:
+        if 'user_id' in columns and 'chakra_id' in columns:
+            cur.execute(f'SELECT * FROM {SCHEMA}.{table} WHERE user_id = %s AND chakra_id = %s', (target_user_id, chakra_id_param))
+        elif 'user_id' in columns:
+            cur.execute(f'SELECT * FROM {SCHEMA}.{table} WHERE user_id = %s', (target_user_id,))
+        elif 'chakra_id' in columns:
+            cur.execute(f'SELECT * FROM {SCHEMA}.{table} WHERE chakra_id = %s', (chakra_id_param,))
+        else:
+            cur.execute(f'SELECT * FROM {SCHEMA}.{table}')
+    elif is_admin and target_user_id:
         if 'user_id' in columns:
             cur.execute(f'SELECT * FROM {SCHEMA}.{table} WHERE user_id = %s', (target_user_id,))
+        else:
+            cur.execute(f'SELECT * FROM {SCHEMA}.{table}')
+    elif is_admin and chakra_id_param:
+        if 'chakra_id' in columns:
+            cur.execute(f'SELECT * FROM {SCHEMA}.{table} WHERE chakra_id = %s', (chakra_id_param,))
         else:
             cur.execute(f'SELECT * FROM {SCHEMA}.{table}')
     elif is_admin:
