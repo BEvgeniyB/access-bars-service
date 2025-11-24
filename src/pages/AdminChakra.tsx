@@ -101,6 +101,10 @@ const AdminChakra = () => {
   const [editType, setEditType] = useState<'concept' | 'organ' | 'science' | 'responsibility' | 'user'>('concept');
   const [editItem, setEditItem] = useState<any>(null);
   const [editMode, setEditMode] = useState<'create' | 'edit'>('create');
+  
+  const [allConcepts, setAllConcepts] = useState<ChakraConcept[]>([]);
+  const [showNewConceptForm, setShowNewConceptForm] = useState(false);
+  const [selectedExistingConceptId, setSelectedExistingConceptId] = useState<number | null>(null);
 
   const handleLogin = async () => {
     if (!telegramId.trim() || !telegramGroupId.trim()) {
@@ -179,6 +183,22 @@ const AdminChakra = () => {
       }
     } catch (err: any) {
       console.error('Ошибка загрузки чакр:', err.message || err);
+    }
+  };
+
+  const loadAllConcepts = async () => {
+    if (!token) return;
+
+    try {
+      const response = await fetch(`${ADMIN_API_URL}?table=chakra_concepts`, {
+        headers: { 'X-Auth-Token': token },
+      });
+      const data = await response.json();
+      if (data.chakra_concepts) {
+        setAllConcepts(data.chakra_concepts);
+      }
+    } catch (err) {
+      console.error('Ошибка загрузки всех энергий:', err);
     }
   };
 
@@ -307,6 +327,9 @@ const AdminChakra = () => {
     if (type === 'concept') {
       newItem.concept = '';
       newItem.category = '';
+      setShowNewConceptForm(false);
+      setSelectedExistingConceptId(null);
+      loadAllConcepts();
     } else if (type === 'organ') {
       newItem.organ_name = '';
       newItem.description = '';
@@ -330,6 +353,40 @@ const AdminChakra = () => {
 
   const handleSave = async () => {
     if (!token || !editItem) return;
+
+    if (editType === 'concept' && editMode === 'create' && !showNewConceptForm && selectedExistingConceptId) {
+      const existingConcept = allConcepts.find((c) => c.id === selectedExistingConceptId);
+      if (!existingConcept) return;
+
+      const newItem = {
+        chakra_id: editItem.chakra_id,
+        user_id: editItem.user_id,
+        concept: existingConcept.concept,
+        category: existingConcept.category,
+      };
+
+      try {
+        const response = await fetch(ADMIN_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Auth-Token': token,
+          },
+          body: JSON.stringify({ table: 'chakra_concepts', data: newItem }),
+        });
+
+        if (response.ok) {
+          setEditDialog(false);
+          await loadUserData();
+        } else {
+          const data = await response.json();
+          alert(data.error || 'Ошибка сохранения');
+        }
+      } catch (err) {
+        console.error('Ошибка сохранения:', err);
+      }
+      return;
+    }
 
     const tableMap = {
       concept: 'chakra_concepts',
@@ -413,6 +470,7 @@ const AdminChakra = () => {
     if (isAuthenticated && token) {
       loadUsers();
       loadChakras();
+      loadAllConcepts();
     }
   }, [isAuthenticated, token]);
 
@@ -812,7 +870,76 @@ const AdminChakra = () => {
               </>
             )}
 
-            {editType === 'concept' && editItem && (
+            {editType === 'concept' && editItem && editMode === 'create' && (
+              <>
+                {!showNewConceptForm ? (
+                  <>
+                    <div className="space-y-2">
+                      <Label>Выбрать существующую энергию</Label>
+                      <Select
+                        value={selectedExistingConceptId?.toString() || ''}
+                        onValueChange={(val) => setSelectedExistingConceptId(parseInt(val))}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Поиск энергии..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <div className="max-h-[300px] overflow-y-auto">
+                            {allConcepts
+                              .sort((a, b) => a.concept.localeCompare(b.concept))
+                              .map((concept) => (
+                                <SelectItem key={concept.id} value={concept.id.toString()}>
+                                  {concept.concept} ({concept.category})
+                                </SelectItem>
+                              ))}
+                          </div>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowNewConceptForm(true)}
+                      className="w-full"
+                    >
+                      <Icon name="Plus" size={16} className="mr-2" />
+                      Создать новую энергию
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center justify-between mb-2">
+                      <Label>Создание новой энергии</Label>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowNewConceptForm(false)}
+                      >
+                        <Icon name="ArrowLeft" size={16} className="mr-1" />
+                        Назад
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Энергия</Label>
+                      <Input
+                        value={editItem.concept || ''}
+                        onChange={(e) => setEditItem({ ...editItem, concept: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Категория</Label>
+                      <Input
+                        value={editItem.category || ''}
+                        onChange={(e) => setEditItem({ ...editItem, category: e.target.value })}
+                      />
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+
+            {editType === 'concept' && editItem && editMode === 'edit' && (
               <>
                 <div className="space-y-2">
                   <Label>Энергия</Label>
@@ -884,7 +1011,17 @@ const AdminChakra = () => {
             <Button variant="outline" onClick={() => setEditDialog(false)}>
               Отмена
             </Button>
-            <Button onClick={handleSave}>Сохранить</Button>
+            <Button 
+              onClick={handleSave}
+              disabled={
+                editType === 'concept' && 
+                editMode === 'create' && 
+                !showNewConceptForm && 
+                !selectedExistingConceptId
+              }
+            >
+              Сохранить
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
