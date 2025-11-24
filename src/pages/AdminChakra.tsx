@@ -147,6 +147,7 @@ const AdminChakra = () => {
         headers: { 'X-Auth-Token': token },
       });
       const data = await response.json();
+      console.log('Loaded users:', data.users?.length || 0, data.users);
       if (data.users) {
         setUsers(data.users);
       }
@@ -163,8 +164,11 @@ const AdminChakra = () => {
         headers: { 'X-Auth-Token': token },
       });
       const data = await response.json();
+      console.log('Loaded chakras:', data.chakras?.length || 0, data.chakras);
       if (data.chakras) {
-        setChakras(data.chakras.sort((a: Chakra, b: Chakra) => a.position - b.position));
+        const sorted = data.chakras.sort((a: Chakra, b: Chakra) => a.position - b.position);
+        console.log('Sorted chakras:', sorted);
+        setChakras(sorted);
       }
     } catch (err) {
       console.error('Ошибка загрузки чакр:', err);
@@ -529,9 +533,11 @@ const AdminChakra = () => {
                     <SelectContent>
                       {sortedUsers.map((user) => {
                         const chakra = chakras.find((c) => c.id === user.chakra_id);
+                        const label = chakra ? `${chakra.position} - ${user.name}` : user.name;
+                        console.log('Rendering user:', user.name, 'chakra_id:', user.chakra_id, 'found chakra:', chakra, 'label:', label);
                         return (
                           <SelectItem key={user.id} value={user.id.toString()}>
-                            {chakra ? `${chakra.position} - ${user.name}` : user.name}
+                            {label}
                           </SelectItem>
                         );
                       })}
