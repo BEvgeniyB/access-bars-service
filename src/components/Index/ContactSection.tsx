@@ -16,8 +16,8 @@ const ContactSection = () => {
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <div className="flex items-center gap-3 text-lg">
               <Icon name="MapPin" className="text-gold-400" size={24} />
-              <span className="text-emerald-200">Район Нагатино-Садовники
-адрес уточню по телефону</span>
+              <span className="text-emerald-200">Район Нагатино-Садовники 
+ адрес уточню по телефону</span>
             </div>
             <div className="flex items-center gap-3 text-lg">
               <Icon name="Clock" className="text-gold-400" size={24} />
