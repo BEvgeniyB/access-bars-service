@@ -559,7 +559,7 @@ const AdminChakra = () => {
         {selectedUserId && selectedUser && (
           <Tabs defaultValue="concepts" className="w-full">
             <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="concepts" className="text-xs">Концепции</TabsTrigger>
+              <TabsTrigger value="concepts" className="text-xs">Энергии</TabsTrigger>
               <TabsTrigger value="organs" className="text-xs">Органы</TabsTrigger>
               <TabsTrigger value="sciences" className="text-xs">Науки</TabsTrigger>
               <TabsTrigger value="responsibilities" className="text-xs">За что отвечает</TabsTrigger>
@@ -569,7 +569,7 @@ const AdminChakra = () => {
               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex justify-between items-center">
-                    <CardTitle className="text-base">Концепции</CardTitle>
+                    <CardTitle className="text-base">Энергии</CardTitle>
                     <Button size="sm" onClick={() => handleCreate('concept')}>
                       <Icon name="Plus" size={16} />
                     </Button>
@@ -748,7 +748,7 @@ const AdminChakra = () => {
           <DialogHeader>
             <DialogTitle>
               {editMode === 'create' ? 'Создать' : 'Редактировать'}{' '}
-              {editType === 'concept' && 'концепцию'}
+              {editType === 'concept' && 'энергию'}
               {editType === 'organ' && 'орган'}
               {editType === 'science' && 'науку'}
               {editType === 'responsibility' && 'ответственность'}
@@ -815,7 +815,7 @@ const AdminChakra = () => {
             {editType === 'concept' && editItem && (
               <>
                 <div className="space-y-2">
-                  <Label>Концепция</Label>
+                  <Label>Энергия</Label>
                   <Input
                     value={editItem.concept || ''}
                     onChange={(e) => setEditItem({ ...editItem, concept: e.target.value })}
