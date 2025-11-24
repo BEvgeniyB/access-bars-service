@@ -788,16 +788,16 @@ const AdminChakra = () => {
                 <div className="space-y-2">
                   <Label>Чакра</Label>
                   <Select
-                    value={editItem.chakra_id?.toString() || ''}
+                    value={editItem.chakra_id?.toString() || 'none'}
                     onValueChange={(val) =>
-                      setEditItem({ ...editItem, chakra_id: val ? parseInt(val) : null })
+                      setEditItem({ ...editItem, chakra_id: val === 'none' ? null : parseInt(val) })
                     }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Выберите чакру" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Не назначена</SelectItem>
+                      <SelectItem value="none">Не назначена</SelectItem>
                       {chakras.map((chakra) => (
                         <SelectItem key={chakra.id} value={chakra.id.toString()}>
                           {chakra.position} - {chakra.name}
