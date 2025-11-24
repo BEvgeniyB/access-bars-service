@@ -16,6 +16,7 @@ const NavigationMenu = ({ isMenuOpen, setIsMenuOpen, closeMenu }: NavigationMenu
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           <Icon name="Menu" size={16} />
+          <span className="ml-1 md:ml-2 hidden sm:inline">Разделы</span>
         </Button>
         
         <div className={`${isMenuOpen ? 'block' : 'hidden'} absolute top-12 right-0 w-64 bg-black/95 border-2 border-gold-400/50 rounded-lg shadow-2xl overflow-hidden z-50`}>
