@@ -1,4 +1,6 @@
 {
+  "admin-chakra": "https://functions.poehali.dev/9471e2dc-0dfa-4927-9d58-74f7dc75819c",
+  "telegram-auth": "https://functions.poehali.dev/81142751-b500-40dc-91f2-9318b9f48791",
   "chakras": "https://functions.poehali.dev/802474e6-54c0-4040-a65f-71d604777df5",
   "content": "https://functions.poehali.dev/19b63815-9352-48d4-80bd-71fc889808df",
   "api": "https://functions.poehali.dev/7cba2a8f-846d-42ad-8f44-ae289488325a",
