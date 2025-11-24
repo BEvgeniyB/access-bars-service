@@ -6,14 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import Icon from '@/components/ui/icon';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -23,13 +16,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 
 const TELEGRAM_AUTH_URL = 'https://functions.poehali.dev/81142751-b500-40dc-91f2-9318b9f48791';
 const ADMIN_API_URL = 'https://functions.poehali.dev/9471e2dc-0dfa-4927-9d58-74f7dc75819c';
@@ -44,30 +30,44 @@ interface User {
   telegram_username?: string;
 }
 
-interface TableData {
-  [key: string]: any[];
+interface Chakra {
+  id: number;
+  name: string;
+  position: number;
+  continent?: string;
+  responsible_user_id?: number;
 }
 
-interface HistoryItem {
+interface ChakraConcept {
   id: number;
   chakra_id: number;
-  chakra_name: string;
+  concept: string;
+  category: string;
   user_id: number;
-  user_name: string;
-  field_name: string;
-  old_value: string;
-  new_value: string;
-  edited_at: string;
 }
 
-const TABLES = [
-  { key: 'chakras', label: 'Чакры', fields: ['id', 'name', 'color', 'position', 'right_statement', 'description'] },
-  { key: 'chakra_concepts', label: 'Понятия', fields: ['id', 'chakra_id', 'concept', 'category', 'user_id'] },
-  { key: 'chakra_questions', label: 'Вопросы', fields: ['id', 'chakra_id', 'question', 'question_type', 'user_id'] },
-  { key: 'chakra_responsibilities', label: 'Ответственности', fields: ['id', 'chakra_id', 'responsibility', 'user_id'] },
-  { key: 'chakra_sciences', label: 'Науки', fields: ['id', 'chakra_id', 'science_name', 'description', 'user_id'] },
-  { key: 'chakra_organs', label: 'Органы', fields: ['id', 'chakra_id', 'organ_name', 'description', 'user_id'] },
-];
+interface ChakraOrgan {
+  id: number;
+  chakra_id: number;
+  organ_name: string;
+  description: string;
+  user_id: number;
+}
+
+interface ChakraScience {
+  id: number;
+  chakra_id: number;
+  science_name: string;
+  description: string;
+  user_id: number;
+}
+
+interface ChakraResponsibility {
+  id: number;
+  chakra_id: number;
+  responsibility: string;
+  user_id: number;
+}
 
 const AdminChakra = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -79,15 +79,19 @@ const AdminChakra = () => {
   const [loading, setLoading] = useState(false);
 
   const [users, setUsers] = useState<User[]>([]);
+  const [chakras, setChakras] = useState<Chakra[]>([]);
+  const [selectedChakraId, setSelectedChakraId] = useState<number | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
-  const [tableData, setTableData] = useState<TableData>({});
-  const [activeTable, setActiveTable] = useState('chakras');
+
+  const [concepts, setConcepts] = useState<ChakraConcept[]>([]);
+  const [organs, setOrgans] = useState<ChakraOrgan[]>([]);
+  const [sciences, setSciences] = useState<ChakraScience[]>([]);
+  const [responsibilities, setResponsibilities] = useState<ChakraResponsibility[]>([]);
 
   const [editDialog, setEditDialog] = useState(false);
+  const [editType, setEditType] = useState<'concept' | 'organ' | 'science' | 'responsibility'>('concept');
   const [editItem, setEditItem] = useState<any>(null);
   const [editMode, setEditMode] = useState<'create' | 'edit'>('create');
-  const [history, setHistory] = useState<HistoryItem[]>([]);
-  const [showHistory, setShowHistory] = useState(false);
 
   const handleLogin = async () => {
     if (!telegramId.trim() || !telegramGroupId.trim()) {
@@ -127,7 +131,7 @@ const AdminChakra = () => {
   };
 
   const loadUsers = async () => {
-    if (!token || !currentUser?.is_admin) return;
+    if (!token) return;
 
     try {
       const response = await fetch(`${ADMIN_API_URL}?table=users`, {
@@ -142,66 +146,113 @@ const AdminChakra = () => {
     }
   };
 
-  const loadTableData = async (table: string) => {
+  const loadChakras = async () => {
     if (!token) return;
 
     try {
-      const url = currentUser?.is_admin && selectedUserId
-        ? `${ADMIN_API_URL}?table=${table}&user_id=${selectedUserId}`
-        : `${ADMIN_API_URL}?table=${table}`;
-
-      const response = await fetch(url, {
+      const response = await fetch(`${ADMIN_API_URL}?table=chakras`, {
         headers: { 'X-Auth-Token': token },
       });
       const data = await response.json();
-      setTableData((prev) => ({ ...prev, [table]: data[table] || [] }));
-    } catch (err) {
-      console.error(`Ошибка загрузки ${table}:`, err);
-    }
-  };
-
-  const loadHistory = async () => {
-    if (!token || !currentUser?.is_admin) return;
-
-    try {
-      const response = await fetch(`${ADMIN_API_URL}?table=history&limit=200`, {
-        headers: { 'X-Auth-Token': token },
-      });
-      const data = await response.json();
-      if (data.history) {
-        setHistory(data.history);
+      if (data.chakras) {
+        setChakras(data.chakras.sort((a: Chakra, b: Chakra) => a.position - b.position));
+        if (!selectedChakraId && data.chakras.length > 0) {
+          setSelectedChakraId(data.chakras[0].id);
+        }
       }
     } catch (err) {
-      console.error('Ошибка загрузки истории:', err);
+      console.error('Ошибка загрузки чакр:', err);
     }
   };
 
-  const handleCreate = (table: string) => {
-    const fields = TABLES.find((t) => t.key === table)?.fields || [];
-    const newItem: any = {};
-    fields.forEach((field) => {
-      if (field !== 'id') newItem[field] = '';
-    });
-    setEditItem(newItem);
+  const loadChakraData = async () => {
+    if (!token || !selectedChakraId) return;
+
+    const userParam = selectedUserId ? `&user_id=${selectedUserId}` : '';
+
+    try {
+      const [conceptsRes, organsRes, sciencesRes, responsibilitiesRes] = await Promise.all([
+        fetch(`${ADMIN_API_URL}?table=chakra_concepts${userParam}`, {
+          headers: { 'X-Auth-Token': token },
+        }),
+        fetch(`${ADMIN_API_URL}?table=chakra_organs${userParam}`, {
+          headers: { 'X-Auth-Token': token },
+        }),
+        fetch(`${ADMIN_API_URL}?table=chakra_sciences${userParam}`, {
+          headers: { 'X-Auth-Token': token },
+        }),
+        fetch(`${ADMIN_API_URL}?table=chakra_responsibilities${userParam}`, {
+          headers: { 'X-Auth-Token': token },
+        }),
+      ]);
+
+      const [conceptsData, organsData, sciencesData, responsibilitiesData] = await Promise.all([
+        conceptsRes.json(),
+        organsRes.json(),
+        sciencesRes.json(),
+        responsibilitiesRes.json(),
+      ]);
+
+      setConcepts((conceptsData.chakra_concepts || []).filter((c: ChakraConcept) => c.chakra_id === selectedChakraId));
+      setOrgans((organsData.chakra_organs || []).filter((o: ChakraOrgan) => o.chakra_id === selectedChakraId));
+      setSciences((sciencesData.chakra_sciences || []).filter((s: ChakraScience) => s.chakra_id === selectedChakraId));
+      setResponsibilities((responsibilitiesData.chakra_responsibilities || []).filter((r: ChakraResponsibility) => r.chakra_id === selectedChakraId));
+    } catch (err) {
+      console.error('Ошибка загрузки данных чакры:', err);
+    }
+  };
+
+  const handleCreate = (type: 'concept' | 'organ' | 'science' | 'responsibility') => {
+    setEditType(type);
     setEditMode('create');
+    
+    const newItem: any = {
+      chakra_id: selectedChakraId,
+      user_id: currentUser?.id
+    };
+
+    if (type === 'concept') {
+      newItem.concept = '';
+      newItem.category = '';
+    } else if (type === 'organ') {
+      newItem.organ_name = '';
+      newItem.description = '';
+    } else if (type === 'science') {
+      newItem.science_name = '';
+      newItem.description = '';
+    } else if (type === 'responsibility') {
+      newItem.responsibility = '';
+    }
+
+    setEditItem(newItem);
     setEditDialog(true);
   };
 
-  const handleEdit = (item: any) => {
-    setEditItem({ ...item });
+  const handleEdit = (type: 'concept' | 'organ' | 'science' | 'responsibility', item: any) => {
+    setEditType(type);
     setEditMode('edit');
+    setEditItem({ ...item });
     setEditDialog(true);
   };
 
   const handleSave = async () => {
-    if (!token) return;
+    if (!token || !editItem) return;
+
+    const tableMap = {
+      concept: 'chakra_concepts',
+      organ: 'chakra_organs',
+      science: 'chakra_sciences',
+      responsibility: 'chakra_responsibilities',
+    };
+
+    const table = tableMap[editType];
 
     try {
       const method = editMode === 'create' ? 'POST' : 'PUT';
       const body =
         editMode === 'create'
-          ? { table: activeTable, data: editItem }
-          : { table: activeTable, id: editItem.id, data: editItem };
+          ? { table, data: editItem }
+          : { table, id: editItem.id, data: editItem };
 
       const response = await fetch(ADMIN_API_URL, {
         method,
@@ -214,7 +265,7 @@ const AdminChakra = () => {
 
       if (response.ok) {
         setEditDialog(false);
-        loadTableData(activeTable);
+        loadChakraData();
       } else {
         const data = await response.json();
         alert(data.error || 'Ошибка сохранения');
@@ -224,17 +275,26 @@ const AdminChakra = () => {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (type: 'concept' | 'organ' | 'science' | 'responsibility', id: number) => {
     if (!token || !confirm('Удалить запись?')) return;
 
+    const tableMap = {
+      concept: 'chakra_concepts',
+      organ: 'chakra_organs',
+      science: 'chakra_sciences',
+      responsibility: 'chakra_responsibilities',
+    };
+
+    const table = tableMap[type];
+
     try {
-      const response = await fetch(`${ADMIN_API_URL}?table=${activeTable}&id=${id}`, {
+      const response = await fetch(`${ADMIN_API_URL}?table=${table}&id=${id}`, {
         method: 'DELETE',
         headers: { 'X-Auth-Token': token },
       });
 
       if (response.ok) {
-        loadTableData(activeTable);
+        loadChakraData();
       }
     } catch (err) {
       console.error('Ошибка удаления:', err);
@@ -254,14 +314,15 @@ const AdminChakra = () => {
   useEffect(() => {
     if (isAuthenticated && token) {
       loadUsers();
+      loadChakras();
     }
   }, [isAuthenticated, token]);
 
   useEffect(() => {
-    if (isAuthenticated && token) {
-      loadTableData(activeTable);
+    if (isAuthenticated && token && selectedChakraId) {
+      loadChakraData();
     }
-  }, [activeTable, selectedUserId, isAuthenticated, token]);
+  }, [selectedChakraId, selectedUserId, isAuthenticated, token]);
 
   if (!isAuthenticated) {
     return (
@@ -306,12 +367,22 @@ const AdminChakra = () => {
     );
   }
 
+  const selectedChakra = chakras.find((c) => c.id === selectedChakraId);
+  const responsibleUser = selectedChakra?.responsible_user_id 
+    ? users.find((u) => u.id === selectedChakra.responsible_user_id)
+    : null;
+
+  const getUserName = (userId: number) => {
+    const user = users.find((u) => u.id === userId);
+    return user?.name || `ID ${userId}`;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-teal-50 p-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-emerald-900">Админ-панель ChakraCraft</h1>
+            <h1 className="text-3xl font-bold text-emerald-900">Управление чакрами</h1>
             <p className="text-emerald-700">
               {currentUser?.name} {currentUser?.is_admin ? '(Администратор)' : '(Пользователь)'}
             </p>
@@ -331,198 +402,269 @@ const AdminChakra = () => {
           </Button>
         </div>
 
-        {currentUser?.is_admin && (
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Выбор пользователя</CardTitle>
-            </CardHeader>
-            <CardContent className="flex gap-4">
-              <div className="flex-1">
-                <Select
-                  value={selectedUserId?.toString() || 'all'}
-                  onValueChange={(val) => setSelectedUserId(val === 'all' ? null : parseInt(val))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Все пользователи" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Все пользователи</SelectItem>
-                    {users.map((user) => (
-                      <SelectItem key={user.id} value={user.id.toString()}>
-                        {user.name} ({user.email})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button 
-                variant="outline" 
-                onClick={() => {
-                  setShowHistory(!showHistory);
-                  if (!showHistory) loadHistory();
-                }}
-              >
-                <Icon name="Clock" className="mr-2" />
-                {showHistory ? 'Скрыть историю' : 'История изменений'}
-              </Button>
-            </CardContent>
-          </Card>
-        )}
-
-        {currentUser?.is_admin && showHistory && (
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>История изменений</CardTitle>
-              <CardDescription>
-                Последние 200 изменений всех пользователей
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-auto max-h-96">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Дата</TableHead>
-                      <TableHead>Пользователь</TableHead>
-                      <TableHead>Чакра</TableHead>
-                      <TableHead>Поле</TableHead>
-                      <TableHead>Старое значение</TableHead>
-                      <TableHead>Новое значение</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {history.map((item) => (
-                      <TableRow key={item.id}>
-                        <TableCell className="whitespace-nowrap">
-                          {new Date(item.edited_at).toLocaleString('ru-RU')}
-                        </TableCell>
-                        <TableCell>{item.user_name || `ID ${item.user_id}`}</TableCell>
-                        <TableCell>{item.chakra_name || `#${item.chakra_id}`}</TableCell>
-                        <TableCell className="font-mono text-xs">{item.field_name}</TableCell>
-                        <TableCell className="max-w-xs truncate text-xs text-gray-500">
-                          {item.old_value?.substring(0, 50)}
-                        </TableCell>
-                        <TableCell className="max-w-xs truncate text-xs text-emerald-700 font-medium">
-                          {item.new_value?.substring(0, 50)}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    {history.length === 0 && (
-                      <TableRow>
-                        <TableCell colSpan={6} className="text-center text-gray-500">
-                          История изменений пуста
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        <Card>
+        <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Управление данными</CardTitle>
+            <CardTitle>Выбор чакры</CardTitle>
           </CardHeader>
           <CardContent>
-            <Tabs value={activeTable} onValueChange={setActiveTable}>
-              <TabsList className="grid grid-cols-3 lg:grid-cols-6 mb-4">
-                {TABLES.map((table) => (
-                  <TabsTrigger key={table.key} value={table.key}>
-                    {table.label}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-
-              {TABLES.map((table) => (
-                <TabsContent key={table.key} value={table.key}>
-                  <div className="mb-4">
-                    <Button onClick={() => handleCreate(table.key)}>
-                      <Icon name="Plus" className="mr-2" />
-                      Добавить
-                    </Button>
-                  </div>
-                  <div className="overflow-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          {table.fields.map((field) => (
-                            <TableHead key={field}>{field}</TableHead>
-                          ))}
-                          <TableHead>Действия</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {(tableData[table.key] || []).map((item) => (
-                          <TableRow key={item.id}>
-                            {table.fields.map((field) => (
-                              <TableCell key={field}>
-                                {String(item[field] || '').substring(0, 50)}
-                              </TableCell>
-                            ))}
-                            <TableCell>
-                              <div className="flex gap-2">
-                                <Button size="sm" variant="outline" onClick={() => handleEdit(item)}>
-                                  <Icon name="Edit" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="destructive"
-                                  onClick={() => handleDelete(item.id)}
-                                >
-                                  <Icon name="Trash2" />
-                                </Button>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </TabsContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
+              {chakras.map((chakra) => (
+                <Button
+                  key={chakra.id}
+                  variant={selectedChakraId === chakra.id ? 'default' : 'outline'}
+                  onClick={() => setSelectedChakraId(chakra.id)}
+                  className="h-auto flex flex-col items-center py-3"
+                >
+                  <div className="text-2xl font-bold">{chakra.position}</div>
+                  <div className="text-xs mt-1">{chakra.name}</div>
+                </Button>
               ))}
-            </Tabs>
+            </div>
           </CardContent>
         </Card>
 
+        {selectedChakra && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>{selectedChakra.name}</CardTitle>
+              <CardDescription>
+                {selectedChakra.continent && (
+                  <span className="mr-4">Континент: {selectedChakra.continent}</span>
+                )}
+                {responsibleUser && (
+                  <span>Ответственный: {responsibleUser.name}</span>
+                )}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Tabs value={selectedUserId?.toString() || 'all'} onValueChange={(val) => setSelectedUserId(val === 'all' ? null : parseInt(val))}>
+                <TabsList className="mb-4">
+                  <TabsTrigger value="all">Все</TabsTrigger>
+                  {users.map((user) => (
+                    <TabsTrigger key={user.id} value={user.id.toString()}>
+                      {user.name}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+
+                <TabsContent value={selectedUserId?.toString() || 'all'}>
+                  <div className="space-y-6">
+                    <div>
+                      <div className="flex justify-between items-center mb-3">
+                        <h3 className="text-lg font-semibold">Энергии (Понятия)</h3>
+                        <Button size="sm" onClick={() => handleCreate('concept')}>
+                          <Icon name="Plus" className="mr-1" size={16} />
+                          Добавить
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {concepts.map((concept) => (
+                          <Card key={concept.id}>
+                            <CardContent className="pt-4">
+                              <div className="flex justify-between items-start mb-2">
+                                <Badge variant="secondary">{concept.category}</Badge>
+                                <div className="flex gap-1">
+                                  <Button size="sm" variant="ghost" onClick={() => handleEdit('concept', concept)}>
+                                    <Icon name="Edit" size={14} />
+                                  </Button>
+                                  <Button size="sm" variant="ghost" onClick={() => handleDelete('concept', concept.id)}>
+                                    <Icon name="Trash2" size={14} />
+                                  </Button>
+                                </div>
+                              </div>
+                              <p className="text-sm mb-2">{concept.concept}</p>
+                              <p className="text-xs text-gray-500">Автор: {getUserName(concept.user_id)}</p>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="flex justify-between items-center mb-3">
+                        <h3 className="text-lg font-semibold">Органы</h3>
+                        <Button size="sm" onClick={() => handleCreate('organ')}>
+                          <Icon name="Plus" className="mr-1" size={16} />
+                          Добавить
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {organs.map((organ) => (
+                          <Card key={organ.id}>
+                            <CardContent className="pt-4">
+                              <div className="flex justify-between items-start mb-2">
+                                <h4 className="font-semibold">{organ.organ_name}</h4>
+                                <div className="flex gap-1">
+                                  <Button size="sm" variant="ghost" onClick={() => handleEdit('organ', organ)}>
+                                    <Icon name="Edit" size={14} />
+                                  </Button>
+                                  <Button size="sm" variant="ghost" onClick={() => handleDelete('organ', organ.id)}>
+                                    <Icon name="Trash2" size={14} />
+                                  </Button>
+                                </div>
+                              </div>
+                              <p className="text-sm mb-2">{organ.description}</p>
+                              <p className="text-xs text-gray-500">Автор: {getUserName(organ.user_id)}</p>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="flex justify-between items-center mb-3">
+                        <h3 className="text-lg font-semibold">Науки</h3>
+                        <Button size="sm" onClick={() => handleCreate('science')}>
+                          <Icon name="Plus" className="mr-1" size={16} />
+                          Добавить
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {sciences.map((science) => (
+                          <Card key={science.id}>
+                            <CardContent className="pt-4">
+                              <div className="flex justify-between items-start mb-2">
+                                <h4 className="font-semibold">{science.science_name}</h4>
+                                <div className="flex gap-1">
+                                  <Button size="sm" variant="ghost" onClick={() => handleEdit('science', science)}>
+                                    <Icon name="Edit" size={14} />
+                                  </Button>
+                                  <Button size="sm" variant="ghost" onClick={() => handleDelete('science', science.id)}>
+                                    <Icon name="Trash2" size={14} />
+                                  </Button>
+                                </div>
+                              </div>
+                              <p className="text-sm mb-2">{science.description}</p>
+                              <p className="text-xs text-gray-500">Автор: {getUserName(science.user_id)}</p>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="flex justify-between items-center mb-3">
+                        <h3 className="text-lg font-semibold">Ответственности</h3>
+                        <Button size="sm" onClick={() => handleCreate('responsibility')}>
+                          <Icon name="Plus" className="mr-1" size={16} />
+                          Добавить
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {responsibilities.map((resp) => (
+                          <Card key={resp.id}>
+                            <CardContent className="pt-4">
+                              <div className="flex justify-between items-start mb-2">
+                                <p className="text-sm flex-1">{resp.responsibility}</p>
+                                <div className="flex gap-1 ml-2">
+                                  <Button size="sm" variant="ghost" onClick={() => handleEdit('responsibility', resp)}>
+                                    <Icon name="Edit" size={14} />
+                                  </Button>
+                                  <Button size="sm" variant="ghost" onClick={() => handleDelete('responsibility', resp.id)}>
+                                    <Icon name="Trash2" size={14} />
+                                  </Button>
+                                </div>
+                              </div>
+                              <p className="text-xs text-gray-500">Автор: {getUserName(resp.user_id)}</p>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+        )}
+
         <Dialog open={editDialog} onOpenChange={setEditDialog}>
-          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>
-                {editMode === 'create' ? 'Создать запись' : 'Редактировать запись'}
+                {editMode === 'create' ? 'Добавить' : 'Редактировать'}
               </DialogTitle>
               <DialogDescription>
-                {TABLES.find((t) => t.key === activeTable)?.label}
+                {editType === 'concept' && 'Энергия (Понятие)'}
+                {editType === 'organ' && 'Орган'}
+                {editType === 'science' && 'Наука'}
+                {editType === 'responsibility' && 'Ответственность'}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
-              {editItem &&
-                Object.keys(editItem).map((key) => {
-                  if (key === 'id' && editMode === 'edit') return null;
-                  return (
-                    <div key={key} className="space-y-2">
-                      <Label htmlFor={key}>{key}</Label>
-                      {key.includes('description') || key === 'concept' || key === 'question' || key === 'responsibility' ? (
-                        <Textarea
-                          id={key}
-                          value={editItem[key] || ''}
-                          onChange={(e) =>
-                            setEditItem({ ...editItem, [key]: e.target.value })
-                          }
-                        />
-                      ) : (
-                        <Input
-                          id={key}
-                          value={editItem[key] || ''}
-                          onChange={(e) =>
-                            setEditItem({ ...editItem, [key]: e.target.value })
-                          }
-                        />
-                      )}
-                    </div>
-                  );
-                })}
+              {editItem && editType === 'concept' && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="concept">Понятие</Label>
+                    <Textarea
+                      id="concept"
+                      value={editItem.concept || ''}
+                      onChange={(e) => setEditItem({ ...editItem, concept: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="category">Категория</Label>
+                    <Input
+                      id="category"
+                      value={editItem.category || ''}
+                      onChange={(e) => setEditItem({ ...editItem, category: e.target.value })}
+                    />
+                  </div>
+                </>
+              )}
+
+              {editItem && editType === 'organ' && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="organ_name">Название органа</Label>
+                    <Input
+                      id="organ_name"
+                      value={editItem.organ_name || ''}
+                      onChange={(e) => setEditItem({ ...editItem, organ_name: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="description">Описание</Label>
+                    <Textarea
+                      id="description"
+                      value={editItem.description || ''}
+                      onChange={(e) => setEditItem({ ...editItem, description: e.target.value })}
+                    />
+                  </div>
+                </>
+              )}
+
+              {editItem && editType === 'science' && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="science_name">Название науки</Label>
+                    <Input
+                      id="science_name"
+                      value={editItem.science_name || ''}
+                      onChange={(e) => setEditItem({ ...editItem, science_name: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="description">Описание</Label>
+                    <Textarea
+                      id="description"
+                      value={editItem.description || ''}
+                      onChange={(e) => setEditItem({ ...editItem, description: e.target.value })}
+                    />
+                  </div>
+                </>
+              )}
+
+              {editItem && editType === 'responsibility' && (
+                <div className="space-y-2">
+                  <Label htmlFor="responsibility">Ответственность</Label>
+                  <Textarea
+                    id="responsibility"
+                    value={editItem.responsibility || ''}
+                    onChange={(e) => setEditItem({ ...editItem, responsibility: e.target.value })}
+                  />
+                </div>
+              )}
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setEditDialog(false)}>
