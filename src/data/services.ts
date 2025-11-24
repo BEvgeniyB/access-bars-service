@@ -35,7 +35,7 @@ export const ALL_SERVICES: Service[] = [
     price: '7 000 ₽', 
     category: 'Access Bars', 
     description: 'Классический сеанс Access Bars для регулярной практики',
-    apiId: 1 
+    apiId: 6 
   },
   { 
     id: 'access-bars-intensive', 
@@ -44,7 +44,7 @@ export const ALL_SERVICES: Service[] = [
     price: '18 000 ₽', 
     category: 'Access Bars', 
     description: 'Курс из 3 сессий со скидкой для максимального эффекта',
-    apiId: 4 
+    apiId: 7 
   },
   
   // Massage
@@ -84,7 +84,7 @@ export const ALL_SERVICES: Service[] = [
     price: '21 000 ₽', 
     category: 'Целительство', 
     description: 'Комплексная программа исцеления из 3 сеансов со скидкой',
-    apiId: 5 
+    apiId: 8 
   },
   { 
     id: 'remote-healing', 
@@ -93,7 +93,7 @@ export const ALL_SERVICES: Service[] = [
     price: '7 000 ₽', 
     category: 'Целительство', 
     description: 'Энергетическая работа на расстоянии по видеосвязи из любой точки мира',
-    apiId: 5 
+    apiId: 9 
   },
   
   // Training
@@ -113,7 +113,7 @@ export const ALL_SERVICES: Service[] = [
     price: '14 500 ₽', 
     category: 'Обучение', 
     description: 'Курс для тех, кто уже проходил обучение ранее',
-    apiId: 4 
+    apiId: 10 
   },
   { 
     id: 'training-teen', 
@@ -122,7 +122,7 @@ export const ALL_SERVICES: Service[] = [
     price: '14 500 ₽', 
     category: 'Обучение', 
     description: 'Специальный курс Access Bars для подростков',
-    apiId: 4 
+    apiId: 11 
   },
 ];
 
