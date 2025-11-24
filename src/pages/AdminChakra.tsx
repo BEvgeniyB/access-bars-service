@@ -160,13 +160,16 @@ const AdminChakra = () => {
     if (!token) return;
 
     try {
-      const timestamp = Date.now();
-      const response = await fetch(`${ADMIN_API_URL}?table=chakras&_t=${timestamp}`, {
+      const response = await fetch(`${ADMIN_API_URL}?table=chakras`, {
         headers: { 
-          'X-Auth-Token': token,
-          'Cache-Control': 'no-cache'
+          'X-Auth-Token': token
         },
       });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
       const data = await response.json();
       console.log('Loaded chakras:', data.chakras?.length || 0, data.chakras);
       if (data.chakras) {
@@ -174,8 +177,8 @@ const AdminChakra = () => {
         console.log('Sorted chakras:', sorted);
         setChakras(sorted);
       }
-    } catch (err) {
-      console.error('Ошибка загрузки чакр:', err);
+    } catch (err: any) {
+      console.error('Ошибка загрузки чакр:', err.message || err);
     }
   };
 
