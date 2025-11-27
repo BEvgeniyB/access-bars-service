@@ -101,6 +101,8 @@ const AdminChakra = () => {
   const [showNewResponsibilityForm, setShowNewResponsibilityForm] = useState(false);
   const [selectedExistingResponsibilityId, setSelectedExistingResponsibilityId] = useState<number | null>(null);
 
+  const selectedUser = useMemo(() => users.find((u) => u.id === selectedUserId), [users, selectedUserId]);
+
   const handleLogin = async () => {
     if (!telegramId.trim() || !telegramGroupId.trim()) {
       setError('Введите Telegram ID и Group ID');
@@ -590,8 +592,6 @@ const AdminChakra = () => {
       />
     );
   }
-
-  const selectedUser = useMemo(() => users.find((u) => u.id === selectedUserId), [users, selectedUserId]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-teal-50 pb-20">
