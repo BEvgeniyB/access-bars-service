@@ -1045,6 +1045,180 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'body': json.dumps({'message': 'Blocked date deleted'})
                     }
         
+        elif resource == 'booking_data':
+            if method == 'GET':
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_services WHERE is_active = TRUE ORDER BY name')
+                    services = cur.fetchall()
+                    
+                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_settings LIMIT 1')
+                    settings_row = cur.fetchone()
+                    
+                    services_list = []
+                    for service in services:
+                        services_list.append({
+                            'id': str(service['id']),
+                            'name': service['name'],
+                            'duration': service['duration'],
+                            'price': service['price'],
+                            'description': service.get('description', '')
+                        })
+                    
+                    settings = {
+                        'telegram_bot_username': settings_row.get('telegram_bot_username', '') if settings_row else '',
+                        'work_hours_start': settings_row.get('work_hours_start', '09:00') if settings_row else '09:00',
+                        'work_hours_end': settings_row.get('work_hours_end', '18:00') if settings_row else '18:00'
+                    }
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'services': services_list, 'settings': settings})
+                    }
+        
+        elif resource == 'available_slots':
+            if method == 'GET':
+                service_id = event.get('queryStringParameters', {}).get('service_id')
+                date_str = event.get('queryStringParameters', {}).get('date')
+                
+                from datetime import datetime, timedelta
+                
+                target_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+                target_weekday = target_date.isoweekday()
+                
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_services WHERE id = {int(service_id)}')
+                    service = cur.fetchone()
+                    
+                    if not service:
+                        return {
+                            'statusCode': 404,
+                            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                            'isBase64Encoded': False,
+                            'body': json.dumps({'slots': []})
+                        }
+                    
+                    service_duration = service['duration']
+                    prep_time = service.get('prep_time', 0)
+                    buffer_time = service.get('buffer_time', 0)
+                    
+                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_settings LIMIT 1')
+                    settings = cur.fetchone()
+                    work_start = settings.get('work_hours_start', '09:00') if settings else '09:00'
+                    work_end = settings.get('work_hours_end', '18:00') if settings else '18:00'
+                    
+                    cur.execute(f"SELECT * FROM {SCHEMA}.diary_blocked_dates WHERE blocked_date = '{date_str}'")
+                    if cur.fetchone():
+                        return {
+                            'statusCode': 200,
+                            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                            'isBase64Encoded': False,
+                            'body': json.dumps({'slots': []})
+                        }
+                    
+                    cur.execute(f'''
+                        SELECT * FROM {SCHEMA}.diary_week_schedule 
+                        WHERE day_of_week = {target_weekday}
+                        AND cycle_start_date <= '{date_str}'
+                        ORDER BY cycle_start_date DESC
+                        LIMIT 10
+                    ''')
+                    schedules = cur.fetchall()
+                    
+                    if not schedules:
+                        return {
+                            'statusCode': 200,
+                            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                            'isBase64Encoded': False,
+                            'body': json.dumps({'slots': []})
+                        }
+                    
+                    active_cycle = None
+                    for schedule in schedules:
+                        cycle_start = schedule['cycle_start_date']
+                        days_diff = (target_date - cycle_start).days
+                        weeks_diff = days_diff // 7
+                        week_in_cycle = (weeks_diff % 2) + 1
+                        
+                        if schedule['week_number'] == week_in_cycle:
+                            active_cycle = schedule
+                            break
+                    
+                    if not active_cycle:
+                        return {
+                            'statusCode': 200,
+                            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                            'isBase64Encoded': False,
+                            'body': json.dumps({'slots': []})
+                        }
+                    
+                    study_start = active_cycle['start_time']
+                    study_end = active_cycle['end_time']
+                    
+                    cur.execute(f'''
+                        SELECT appointment_time, service_id FROM {SCHEMA}.diary_appointments 
+                        WHERE appointment_date = '{date_str}' 
+                        AND status IN ('pending', 'confirmed')
+                    ''')
+                    existing_appointments = cur.fetchall()
+                    
+                    busy_ranges = []
+                    for apt in existing_appointments:
+                        cur.execute(f'SELECT duration, prep_time, buffer_time FROM {SCHEMA}.diary_services WHERE id = {apt["service_id"]}')
+                        apt_service = cur.fetchone()
+                        if apt_service:
+                            apt_start = datetime.strptime(apt['appointment_time'], '%H:%M').time()
+                            apt_duration = apt_service['duration']
+                            apt_prep = apt_service.get('prep_time', 0)
+                            apt_buffer = apt_service.get('buffer_time', 0)
+                            
+                            total_minutes = apt_duration + apt_prep + apt_buffer
+                            apt_start_dt = datetime.combine(target_date, apt_start)
+                            apt_end_dt = apt_start_dt + timedelta(minutes=total_minutes)
+                            
+                            busy_ranges.append((apt_start_dt.time(), apt_end_dt.time()))
+                    
+                    if study_start and study_end:
+                        busy_ranges.append((study_start, study_end))
+                    
+                    work_start_time = datetime.strptime(work_start, '%H:%M').time()
+                    work_end_time = datetime.strptime(work_end, '%H:%M').time()
+                    
+                    slots = []
+                    current_time = datetime.combine(target_date, work_start_time)
+                    end_time = datetime.combine(target_date, work_end_time)
+                    
+                    slot_duration = service_duration + prep_time + buffer_time
+                    
+                    while current_time + timedelta(minutes=slot_duration) <= end_time:
+                        slot_start = current_time.time()
+                        slot_end = (current_time + timedelta(minutes=slot_duration)).time()
+                        
+                        is_free = True
+                        for busy_start, busy_end in busy_ranges:
+                            if not (slot_end <= busy_start or slot_start >= busy_end):
+                                is_free = False
+                                break
+                        
+                        if is_free:
+                            slots.append(current_time.strftime('%H:%M'))
+                        
+                        current_time += timedelta(minutes=30)
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'slots': slots})
+                    }
+        
         return {
             'statusCode': 400,
             'headers': {
