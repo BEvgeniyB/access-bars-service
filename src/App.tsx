@@ -21,6 +21,7 @@ import Reviews from "./pages/Reviews";
 
 import NotFound from "./pages/NotFound";
 import DiaryAdminPanel from "./pages/diary/AdminPanel";
+import PublicBooking from "./pages/PublicBooking";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
           <Route path="/admin/chakra" element={<AdminChakra />} />
           
           <Route path="/diary" element={<DiaryAdminPanel />} />
+          <Route path="/booking" element={<PublicBooking />} />
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
