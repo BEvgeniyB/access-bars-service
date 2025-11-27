@@ -13,6 +13,13 @@ import urllib.request
 
 SCHEMA = 't_p89870318_access_bars_service'
 
+DAY_MAPPING = {
+    'monday': 1, 'tuesday': 2, 'wednesday': 3, 'thursday': 4,
+    'friday': 5, 'saturday': 6, 'sunday': 7
+}
+
+DAY_REVERSE_MAPPING = {v: k for k, v in DAY_MAPPING.items()}
+
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     method: str = event.get('httpMethod', 'GET')
     
@@ -605,6 +612,100 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         },
                         'isBase64Encoded': False,
                         'body': json.dumps({'id': client_id, 'user_id': user_id, 'message': 'Client created'})
+                    }
+        
+        elif resource == 'week_schedule':
+            if method == 'GET':
+                owner_id = event.get('queryStringParameters', {}).get('owner_id')
+                
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    query = f'SELECT * FROM {SCHEMA}.diary_week_schedule'
+                    if owner_id:
+                        query += f' WHERE owner_id = {int(owner_id)}'
+                    query += ' ORDER BY week_number, day_of_week, start_time'
+                    
+                    cur.execute(query)
+                    schedules = cur.fetchall()
+                    
+                    result = []
+                    for schedule in schedules:
+                        result.append({
+                            'id': schedule['id'],
+                            'dayOfWeek': DAY_REVERSE_MAPPING.get(schedule['day_of_week'], 'monday'),
+                            'startTime': schedule['start_time'].strftime('%H:%M') if schedule.get('start_time') else '00:00',
+                            'endTime': schedule['end_time'].strftime('%H:%M') if schedule.get('end_time') else '00:00',
+                            'weekNumber': schedule.get('week_number', 1),
+                            'title': schedule.get('title', ''),
+                            'description': schedule.get('description', '')
+                        })
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'weekSchedule': result})
+                    }
+            
+            elif method == 'POST':
+                body_data = json.loads(event.get('body', '{}'))
+                
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    title = body_data.get('title', '').replace("'", "''")
+                    description = body_data.get('description', '').replace("'", "''")
+                    
+                    day_of_week_value = body_data.get('day_of_week', 1)
+                    if isinstance(day_of_week_value, str):
+                        day_of_week_value = DAY_MAPPING.get(day_of_week_value.lower(), 1)
+                    else:
+                        day_of_week_value = int(day_of_week_value)
+                    
+                    query = f'''
+                        INSERT INTO {SCHEMA}.diary_week_schedule 
+                        (owner_id, week_number, day_of_week, start_time, end_time, title, description)
+                        VALUES (
+                            {int(body_data['owner_id'])}, 
+                            {int(body_data.get('week_number', 1))}, 
+                            {day_of_week_value}, 
+                            '{body_data['start_time']}', 
+                            '{body_data['end_time']}', 
+                            '{title}', 
+                            '{description}'
+                        )
+                        RETURNING id
+                    '''
+                    cur.execute(query)
+                    schedule_id = cur.fetchone()['id']
+                    conn.commit()
+                    
+                    return {
+                        'statusCode': 201,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'id': schedule_id, 'message': 'Schedule created'})
+                    }
+            
+            elif method == 'DELETE':
+                schedule_id = event.get('queryStringParameters', {}).get('id')
+                
+                with conn.cursor() as cur:
+                    query = f'DELETE FROM {SCHEMA}.diary_week_schedule WHERE id = {int(schedule_id)}'
+                    cur.execute(query)
+                    conn.commit()
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'message': 'Schedule deleted'})
                     }
         
         return {
