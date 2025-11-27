@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { api } from '@/services/api';
+import { api } from '@/services/diary/api';
 
 interface User {
   telegram_id: string;
@@ -19,31 +19,62 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
+  return context;
+};
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setLoading(false);
-
-    // Check for groupId in URL params
-    const params = new URLSearchParams(window.location.search);
-    const groupId = params.get('groupId');
-    if (groupId) {
-      loginByGroupId(groupId);
-    }
+    const checkAuth = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const groupId = urlParams.get('groupId');
+      
+      if (groupId) {
+        try {
+          const response = await fetch(`https://functions.poehali.dev/22e2b938-d28c-4bb0-b268-8ccb03bbac16?groupId=${groupId}`);
+          const data = await response.json();
+          
+          if (data.authorized) {
+            const adminUser = {
+              telegram_id: groupId,
+              role: 'owner' as const
+            };
+            setUser(adminUser);
+            localStorage.setItem('diary_user', JSON.stringify(adminUser));
+            localStorage.setItem('diary_groupId', groupId);
+          }
+        } catch (error) {
+          console.error('Auth by groupId failed:', error);
+        }
+      } else {
+        const savedUser = localStorage.getItem('diary_user');
+        if (savedUser) {
+          setUser(JSON.parse(savedUser));
+        }
+      }
+      setLoading(false);
+    };
+    
+    checkAuth();
   }, []);
 
   const login = async (telegramId: number) => {
     setLoading(true);
     try {
       const response = await api.auth.login(telegramId);
-      setUser(response);
-      localStorage.setItem('user', JSON.stringify(response));
+      const userData = {
+        telegram_id: String(telegramId),
+        role: response.user.role
+      };
+      setUser(userData);
+      localStorage.setItem('diary_user', JSON.stringify(userData));
     } catch (error) {
       console.error('Login failed:', error);
       throw error;
@@ -55,16 +86,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const loginByGroupId = async (groupId: string) => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `https://functions.poehali.dev/11f94891-555b-485d-ba38-a93639bb439c?action=getOwnerByGroupId&groupId=${groupId}`
-      );
+      const response = await fetch(`https://functions.poehali.dev/22e2b938-d28c-4bb0-b268-8ccb03bbac16?groupId=${groupId}`);
       const data = await response.json();
       
-      if (data.telegram_id) {
-        await login(Number(data.telegram_id));
+      if (data.authorized) {
+        const adminUser = {
+          telegram_id: groupId,
+          role: 'owner' as const
+        };
+        setUser(adminUser);
+        localStorage.setItem('diary_user', JSON.stringify(adminUser));
+        localStorage.setItem('diary_groupId', groupId);
+      } else {
+        throw new Error('Access denied');
       }
     } catch (error) {
-      console.error('Login by group ID failed:', error);
+      console.error('Login by groupId failed:', error);
       throw error;
     } finally {
       setLoading(false);
@@ -73,26 +110,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('user');
+    localStorage.removeItem('diary_user');
+    localStorage.removeItem('diary_groupId');
   };
 
   const isAdmin = user?.role === 'admin';
   const isOwner = user?.role === 'owner';
-  const isClient = !user || (user.role !== 'admin' && user.role !== 'owner');
+  const isClient = user?.role === 'client';
 
   return (
-    <AuthContext.Provider
-      value={{ user, loading, login, loginByGroupId, logout, isAdmin, isOwner, isClient }}
-    >
+    <AuthContext.Provider value={{ user, loading, login, loginByGroupId, logout, isAdmin, isOwner, isClient }}>
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 };
