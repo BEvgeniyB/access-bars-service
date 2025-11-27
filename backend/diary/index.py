@@ -364,8 +364,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         result.append({
                             'id': service['id'],
                             'name': service['name'],
-                            'duration': service['duration_minutes'],
-                            'price': str(service['price'])
+                            'duration_minutes': service['duration_minutes'],
+                            'price': str(service['price']),
+                            'active': service.get('active', True),
+                            'description': service.get('description', '')
                         })
                     
                     return {
@@ -451,6 +453,84 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         },
                         'isBase64Encoded': False,
                         'body': json.dumps({'message': 'Service deleted'})
+                    }
+        
+        elif resource == 'admin_data':
+            if method == 'GET':
+                owner_id = event.get('queryStringParameters', {}).get('owner_id', '1')
+                
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_bookings WHERE owner_id = {int(owner_id)} LIMIT 100')
+                    bookings_raw = cur.fetchall()
+                    bookings = [{
+                        'id': b['id'],
+                        'client_id': b.get('client_id'),
+                        'service_id': b.get('service_id'),
+                        'time': b['start_time'].strftime('%H:%M') if b.get('start_time') else '00:00',
+                        'date': b['booking_date'].strftime('%Y-%m-%d') if b.get('booking_date') else '',
+                        'status': b.get('status', 'pending'),
+                        'end_time': b['end_time'].strftime('%H:%M') if b.get('end_time') else '00:00'
+                    } for b in bookings_raw]
+                    
+                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_services WHERE owner_id = {int(owner_id)} ORDER BY id')
+                    services_raw = cur.fetchall()
+                    services = [{
+                        'id': s['id'],
+                        'name': s['name'],
+                        'duration_minutes': s['duration_minutes'],
+                        'price': str(s['price']),
+                        'active': s.get('active', True),
+                        'description': s.get('description', '')
+                    } for s in services_raw]
+                    
+                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_clients WHERE owner_id = {int(owner_id)} ORDER BY id')
+                    clients_raw = cur.fetchall()
+                    clients = [dict(c) for c in clients_raw]
+                    
+                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_settings WHERE owner_id = {int(owner_id)} LIMIT 1')
+                    settings_raw = cur.fetchone()
+                    settings = dict(settings_raw) if settings_raw else {}
+                    
+                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_calendar_events WHERE owner_id = {int(owner_id)} LIMIT 100')
+                    events_raw = cur.fetchall()
+                    events = [{
+                        'id': e['id'],
+                        'type': e['event_type'],
+                        'title': e['title'],
+                        'date': e['event_date'].strftime('%Y-%m-%d'),
+                        'startTime': e['start_time'].strftime('%H:%M'),
+                        'endTime': e['end_time'].strftime('%H:%M'),
+                        'description': e['description']
+                    } for e in events_raw]
+                    
+                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_week_schedule WHERE owner_id = {int(owner_id)} ORDER BY id')
+                    week_schedule_raw = cur.fetchall()
+                    weekSchedule = [dict(w) for w in week_schedule_raw]
+                    
+                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_blocked_dates WHERE owner_id = {int(owner_id)} ORDER BY blocked_date')
+                    blocked_dates_raw = cur.fetchall()
+                    blockedDates = [{
+                        'id': bd['id'],
+                        'date': bd['blocked_date'].strftime('%Y-%m-%d'),
+                        'reason': bd.get('reason', '')
+                    } for bd in blocked_dates_raw]
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({
+                            'bookings': bookings,
+                            'services': services,
+                            'clients': clients,
+                            'settings': settings,
+                            'events': events,
+                            'weekSchedule': weekSchedule,
+                            'blockedDates': blockedDates
+                        })
                     }
         
         elif resource == 'clients':
