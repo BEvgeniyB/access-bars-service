@@ -577,12 +577,22 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         print(f'Warning: Could not load services: {e}')
                     
                     try:
-                        cur.execute(f'SELECT * FROM {SCHEMA}.diary_clients WHERE owner_id = {int(owner_id)} ORDER BY id')
+                        cur.execute(f'''
+                            SELECT c.id, c.user_id, c.owner_id, c.total_visits, c.last_visit_date, c.created_at,
+                                   u.name, u.phone, u.email
+                            FROM {SCHEMA}.diary_clients c
+                            LEFT JOIN {SCHEMA}.diary_users u ON c.user_id = u.id
+                            WHERE c.owner_id = {int(owner_id)} 
+                            ORDER BY c.id
+                        ''')
                         clients_raw = cur.fetchall()
                         clients = [{
                             'id': c['id'],
                             'user_id': c['user_id'],
                             'owner_id': c['owner_id'],
+                            'name': c.get('name', 'Без имени'),
+                            'phone': c.get('phone'),
+                            'email': c.get('email'),
                             'total_visits': c.get('total_visits', 0),
                             'last_visit_date': c['last_visit_date'].strftime('%Y-%m-%d') if c.get('last_visit_date') else None,
                             'created_at': c['created_at'].strftime('%Y-%m-%d %H:%M:%S') if c.get('created_at') else None

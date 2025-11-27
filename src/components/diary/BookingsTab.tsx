@@ -49,6 +49,33 @@ const BookingsTab = () => {
   });
 
   const handleCreate = async () => {
+    if (!newBooking.client_id) {
+      toast({
+        title: 'Ошибка',
+        description: 'Выберите клиента',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    if (!newBooking.service_id) {
+      toast({
+        title: 'Ошибка',
+        description: 'Выберите услугу',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    if (!newBooking.start_time || !newBooking.end_time) {
+      toast({
+        title: 'Ошибка',
+        description: 'Укажите время начала и окончания',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
     try {
       await api.bookings.create({
         client_id: Number(newBooking.client_id),
