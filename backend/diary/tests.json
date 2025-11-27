@@ -1,0 +1,31 @@
+{
+  "tests": [
+    {
+      "name": "Get services list",
+      "method": "GET",
+      "path": "/?action=services",
+      "headers": {
+        "X-Telegram-Id": "123456789"
+      },
+      "expectedStatus": 200
+    },
+    {
+      "name": "Get bookings list",
+      "method": "GET",
+      "path": "/?action=bookings",
+      "headers": {
+        "X-Telegram-Id": "123456789"
+      },
+      "expectedStatus": 200
+    },
+    {
+      "name": "Get schedule",
+      "method": "GET",
+      "path": "/?action=schedule",
+      "headers": {
+        "X-Telegram-Id": "123456789"
+      },
+      "expectedStatus": 200
+    }
+  ]
+}
