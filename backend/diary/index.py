@@ -1109,7 +1109,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     settings_rows = cur.fetchall()
                     settings_dict = {row['key']: row['value'] for row in settings_rows}
                     
-                    prep_time = int(settings_dict.get('prep_time', 0))
+                    prep_time = int(settings_dict.get('max_bookings_per_day', 0))
                     buffer_time = int(settings_dict.get('booking_buffer_minutes', 0))
                     work_start = settings_dict.get('work_hours_start', '09:00')
                     work_end = settings_dict.get('work_hours_end', '18:00')
