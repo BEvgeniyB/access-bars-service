@@ -255,11 +255,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         result.append({
                             'id': evt['id'],
                             'type': evt['event_type'],
-                            'title': evt['title'],
-                            'date': evt['event_date'].strftime('%Y-%m-%d'),
-                            'startTime': evt['start_time'].strftime('%H:%M'),
-                            'endTime': evt['end_time'].strftime('%H:%M'),
-                            'description': evt['description']
+                            'title': evt.get('title', ''),
+                            'date': evt['start_date'].strftime('%Y-%m-%d') if evt.get('start_date') else '',
+                            'startTime': evt['start_time'].strftime('%H:%M') if evt.get('start_time') else '',
+                            'endTime': evt['end_time'].strftime('%H:%M') if evt.get('end_time') else '',
+                            'description': evt.get('description', '')
                         })
                 
                 return {
@@ -276,7 +276,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 try:
                     body_data = json.loads(event.get('body', '{}'))
                     
-                    required_fields = ['owner_id', 'event_date', 'start_time', 'end_time', 'title', 'event_type']
+                    required_fields = ['owner_id', 'start_time', 'end_time', 'title', 'event_type']
                     missing = [f for f in required_fields if f not in body_data or not body_data[f]]
                     if missing:
                         return {
@@ -303,7 +303,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                 LEFT JOIN {SCHEMA}.diary_users u ON c.user_id = u.id
                                 LEFT JOIN {SCHEMA}.diary_services s ON b.service_id = s.id
                                 WHERE b.owner_id = {int(body_data['owner_id'])} 
-                                AND b.booking_date = '{body_data['event_date']}' 
+                                AND b.booking_date = '{body_data.get('date', body_data.get('start_date', ''))}'""  
                                 AND b.status = 'confirmed'
                                 AND b.start_time < '{body_data['end_time']}'::time 
                                 AND b.end_time > '{body_data['start_time']}'::time
@@ -349,10 +349,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         description = body_data.get('description', '').replace("'", "''")
                         title = body_data['title'].replace("'", "''")
                         
+                        start_date = body_data.get('date', body_data.get('start_date', ''))
+                        
                         query = f'''
                             INSERT INTO {SCHEMA}.diary_calendar_events 
-                            (owner_id, event_type, title, event_date, start_time, end_time, description)
-                            VALUES ({int(body_data['owner_id'])}, '{body_data['event_type']}', '{title}', '{body_data['event_date']}', '{body_data['start_time']}', '{body_data['end_time']}', '{description}')
+                            (owner_id, event_type, title, start_date, start_time, end_time, description)
+                            VALUES ({int(body_data['owner_id'])}, '{body_data['event_type']}', '{title}', '{start_date}', '{body_data['start_time']}', '{body_data['end_time']}', '{description}')
                             RETURNING id
                         '''
                         cur.execute(query)
@@ -600,11 +602,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         events = [{
                             'id': e['id'],
                             'type': e['event_type'],
-                            'title': e['title'],
-                            'date': e['event_date'].strftime('%Y-%m-%d'),
-                            'startTime': e['start_time'].strftime('%H:%M'),
-                            'endTime': e['end_time'].strftime('%H:%M'),
-                            'description': e['description']
+                            'title': e.get('title', ''),
+                            'date': e['start_date'].strftime('%Y-%m-%d') if e.get('start_date') else '',
+                            'startTime': e['start_time'].strftime('%H:%M') if e.get('start_time') else '',
+                            'endTime': e['end_time'].strftime('%H:%M') if e.get('end_time') else '',
+                            'description': e.get('description', '')
                         } for e in events_raw]
                     except Exception as e:
                         print(f'Warning: Could not load events: {e}')
