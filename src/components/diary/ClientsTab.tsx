@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -7,17 +8,114 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import Icon from '@/components/ui/icon';
 import { useData } from '@/contexts/diary/DataContext';
+import { api } from '@/services/diary/api';
+import { useToast } from '@/hooks/use-toast';
 
 const ClientsTab = () => {
-  const { clients, loading } = useData();
+  const { clients, loading, refreshClients } = useData();
+  const { toast } = useToast();
+  const [showDialog, setShowDialog] = useState(false);
+  const [newClient, setNewClient] = useState({
+    name: '',
+    phone: '',
+    email: '',
+  });
+
+  const handleCreate = async () => {
+    if (!newClient.name.trim()) {
+      toast({
+        title: 'Ошибка',
+        description: 'Введите имя клиента',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      await api.clients.create(newClient);
+      
+      toast({
+        title: 'Клиент добавлен',
+        description: 'Новый клиент успешно добавлен в базу',
+      });
+      
+      setShowDialog(false);
+      setNewClient({ name: '', phone: '', email: '' });
+      refreshClients();
+    } catch (error) {
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось добавить клиента',
+        variant: 'destructive',
+      });
+    }
+  };
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div>
-        <h2 className="text-3xl font-bold text-gray-900">Клиенты</h2>
-        <p className="text-gray-500 mt-1">База ваших клиентов</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold text-gray-900">Клиенты</h2>
+          <p className="text-gray-500 mt-1">База ваших клиентов</p>
+        </div>
+        <Dialog open={showDialog} onOpenChange={setShowDialog}>
+          <DialogTrigger asChild>
+            <Button className="gap-2">
+              <Icon name="UserPlus" size={16} />
+              Добавить клиента
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Добавить клиента</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Имя *</Label>
+                <Input
+                  value={newClient.name}
+                  onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
+                  placeholder="Иван Иванов"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Телефон</Label>
+                <Input
+                  value={newClient.phone}
+                  onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
+                  placeholder="+7 (900) 123-45-67"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Email</Label>
+                <Input
+                  type="email"
+                  value={newClient.email}
+                  onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
+                  placeholder="client@example.com"
+                />
+              </div>
+
+              <Button onClick={handleCreate} className="w-full">
+                Добавить клиента
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
