@@ -182,115 +182,7 @@ const AdminChakra = () => {
     }
   };
 
-  const loadAllConcepts = async () => {
-    if (!token) return;
 
-    try {
-      const response = await fetch(`${ADMIN_API_URL}?action=get_all_data`, {
-        headers: { 'X-Auth-Token': token },
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      
-      if (data.chakra_concepts) {
-        setAllConcepts(data.chakra_concepts);
-      }
-    } catch (err: any) {
-      console.error('Ошибка загрузки концепций:', err.message || err);
-    }
-  };
-
-  const loadAllOrgans = async () => {
-    if (!token) return;
-
-    try {
-      const response = await fetch(`${ADMIN_API_URL}?action=get_all_data`, {
-        headers: { 'X-Auth-Token': token },
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      
-      if (data.chakra_organs) {
-        setAllOrgans(data.chakra_organs);
-      }
-    } catch (err: any) {
-      console.error('Ошибка загрузки органов:', err.message || err);
-    }
-  };
-
-  const loadAllSciences = async () => {
-    if (!token) return;
-
-    try {
-      const response = await fetch(`${ADMIN_API_URL}?action=get_all_data`, {
-        headers: { 'X-Auth-Token': token },
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      
-      if (data.chakra_sciences) {
-        setAllSciences(data.chakra_sciences);
-      }
-    } catch (err: any) {
-      console.error('Ошибка загрузки наук:', err.message || err);
-    }
-  };
-
-  const loadAllResponsibilities = async () => {
-    if (!token) return;
-
-    try {
-      const response = await fetch(`${ADMIN_API_URL}?action=get_all_data`, {
-        headers: { 'X-Auth-Token': token },
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      
-      if (data.chakra_responsibilities) {
-        setAllResponsibilities(data.chakra_responsibilities);
-      }
-    } catch (err: any) {
-      console.error('Ошибка загрузки ответственностей:', err.message || err);
-    }
-  };
-
-  const loadUsers = async () => {
-    if (!token) return;
-
-    try {
-      const response = await fetch(`${ADMIN_API_URL}?action=get_all_data`, {
-        headers: { 'X-Auth-Token': token },
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      
-      if (data.users) {
-        setUsers(data.users);
-      }
-    } catch (err: any) {
-      console.error('Ошибка загрузки пользователей:', err.message || err);
-    }
-  };
 
   const loadUserData = async () => {
     console.log('loadUserData called, token:', !!token, 'selectedUserId:', selectedUserId);
@@ -419,24 +311,24 @@ const AdminChakra = () => {
       newItem.category = '';
       setShowNewConceptForm(false);
       setSelectedExistingConceptId(null);
-      loadAllConcepts();
+      loadAllData();
     } else if (type === 'organ') {
       newItem.organ_name = '';
       newItem.description = '';
       setShowNewOrganForm(false);
       setSelectedExistingOrganId(null);
-      loadAllOrgans();
+      loadAllData();
     } else if (type === 'science') {
       newItem.science_name = '';
       newItem.description = '';
       setShowNewScienceForm(false);
       setSelectedExistingScienceId(null);
-      loadAllSciences();
+      loadAllData();
     } else if (type === 'responsibility') {
       newItem.responsibility = '';
       setShowNewResponsibilityForm(false);
       setSelectedExistingResponsibilityId(null);
-      loadAllResponsibilities();
+      loadAllData();
     }
 
     setEditItem(newItem);
@@ -708,7 +600,7 @@ const AdminChakra = () => {
       if (response.ok) {
         setEditDialog(false);
         if (editType === 'user') {
-          await loadUsers();
+          await loadAllData();
         } else {
           await loadUserData();
         }
