@@ -342,7 +342,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         if body_data.get('force', False) and conflicting_bookings:
                             booking_ids = ','.join([str(int(b['id'])) for b in conflicting_bookings])
                             cur.execute(f'''
-                                UPDATE {SCHEMA}.diary_bookings 
+                                UPDATE diary_bookings 
                                 SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP
                                 WHERE id IN ({booking_ids})
                             ''')
@@ -534,16 +534,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 
                 with conn.cursor(cursor_factory=RealDictCursor) as cur:
                     try:
-                        query1 = f'SELECT * FROM diary_bookings WHERE owner_id = {int(owner_id)} LIMIT 100'
-                        query2 = f'SELECT * FROM {SCHEMA}.diary_bookings WHERE owner_id = {int(owner_id)} LIMIT 100'
-                        print(f'[DEBUG] Trying without schema first: {query1}')
-                        try:
-                            cur.execute(query1)
-                        except Exception as e1:
-                            print(f'[DEBUG] Without schema failed: {e1}, trying with schema: {query2}')
-                            cur.execute(query2)
+                        query = f'SELECT * FROM {SCHEMA}.diary_bookings WHERE owner_id = {int(owner_id)} LIMIT 100'
+                        cur.execute(query)
                         bookings_raw = cur.fetchall()
-                        print(f'[DEBUG] Bookings loaded: {len(bookings_raw)} rows')
                         bookings = [{
                             'id': b['id'],
                             'client_id': b.get('client_id'),
@@ -668,8 +661,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 with conn.cursor(cursor_factory=RealDictCursor) as cur:
                     query = f'''
                         SELECT c.id, c.user_id, u.name, u.phone, u.email 
-                        FROM {SCHEMA}.diary_clients c
-                        JOIN {SCHEMA}.diary_users u ON c.user_id = u.id
+                        FROM diary_clients c
+                        JOIN diary_users u ON c.user_id = u.id
                     '''
                     if owner_id:
                         query += f' WHERE c.owner_id = {int(owner_id)}'
@@ -786,7 +779,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     end_time = body_data['end_time']
                     
                     cur.execute(f'''
-                        SELECT id FROM {SCHEMA}.diary_week_schedule 
+                        SELECT id FROM diary_week_schedule 
                         WHERE owner_id = {owner_id} 
                         AND week_number = {week_number}
                         AND day_of_week = {day_of_week_value}
@@ -838,7 +831,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 schedule_id = event.get('queryStringParameters', {}).get('id')
                 
                 with conn.cursor() as cur:
-                    query = f'DELETE FROM {SCHEMA}.diary_week_schedule WHERE id = {int(schedule_id)}'
+                    query = f'DELETE FROM diary_week_schedule WHERE id = {int(schedule_id)}'
                     cur.execute(query)
                     conn.commit()
                     
