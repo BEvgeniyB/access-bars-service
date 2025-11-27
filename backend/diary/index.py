@@ -242,22 +242,26 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         }
                     
                     with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                        cur.execute(f'''
-                            SELECT b.id, u.name as client_name, s.name as service_name, 
-                                   TO_CHAR(b.start_time, 'HH24:MI') as start_time,
-                                   TO_CHAR(b.end_time, 'HH24:MI') as end_time
-                            FROM {SCHEMA}.diary_bookings b
-                            LEFT JOIN {SCHEMA}.diary_clients c ON b.client_id = c.id
-                            LEFT JOIN {SCHEMA}.diary_users u ON c.user_id = u.id
-                            LEFT JOIN {SCHEMA}.diary_services s ON b.service_id = s.id
-                            WHERE b.owner_id = {int(body_data['owner_id'])} 
-                            AND b.booking_date = '{body_data['event_date']}' 
-                            AND b.status = 'confirmed'
-                            AND b.start_time < '{body_data['end_time']}'::time 
-                            AND b.end_time > '{body_data['start_time']}'::time
-                        ''')
-                        
-                        conflicting_bookings = cur.fetchall()
+                        conflicting_bookings = []
+                        try:
+                            cur.execute(f'''
+                                SELECT b.id, u.name as client_name, s.name as service_name, 
+                                       TO_CHAR(b.start_time, 'HH24:MI') as start_time,
+                                       TO_CHAR(b.end_time, 'HH24:MI') as end_time
+                                FROM {SCHEMA}.diary_bookings b
+                                LEFT JOIN {SCHEMA}.diary_clients c ON b.client_id = c.id
+                                LEFT JOIN {SCHEMA}.diary_users u ON c.user_id = u.id
+                                LEFT JOIN {SCHEMA}.diary_services s ON b.service_id = s.id
+                                WHERE b.owner_id = {int(body_data['owner_id'])} 
+                                AND b.booking_date = '{body_data['event_date']}' 
+                                AND b.status = 'confirmed'
+                                AND b.start_time < '{body_data['end_time']}'::time 
+                                AND b.end_time > '{body_data['start_time']}'::time
+                            ''')
+                            
+                            conflicting_bookings = cur.fetchall()
+                        except Exception as e:
+                            print(f'Warning: Could not check booking conflicts: {e}')
                         
                         if conflicting_bookings and not body_data.get('force', False):
                             conflicts = []
@@ -795,6 +799,81 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         },
                         'isBase64Encoded': False,
                         'body': json.dumps({'message': 'Schedule deleted'})
+                    }
+        
+        elif resource == 'blocked_dates':
+            if method == 'GET':
+                owner_id = event.get('queryStringParameters', {}).get('owner_id')
+                
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    query = f'SELECT * FROM {SCHEMA}.diary_blocked_dates'
+                    if owner_id:
+                        query += f' WHERE owner_id = {int(owner_id)}'
+                    query += ' ORDER BY blocked_date'
+                    
+                    cur.execute(query)
+                    blocked_dates = cur.fetchall()
+                    
+                    result = []
+                    for bd in blocked_dates:
+                        result.append({
+                            'id': bd['id'],
+                            'date': bd['blocked_date'].strftime('%Y-%m-%d'),
+                            'reason': bd.get('reason', '')
+                        })
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'blockedDates': result})
+                    }
+            
+            elif method == 'POST':
+                body_data = json.loads(event.get('body', '{}'))
+                
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    reason = body_data.get('reason', '').replace("'", "''")
+                    
+                    query = f'''
+                        INSERT INTO {SCHEMA}.diary_blocked_dates 
+                        (owner_id, blocked_date, reason)
+                        VALUES ({int(body_data['owner_id'])}, '{body_data['date']}', '{reason}')
+                        RETURNING id
+                    '''
+                    cur.execute(query)
+                    blocked_date_id = cur.fetchone()['id']
+                    conn.commit()
+                    
+                    return {
+                        'statusCode': 201,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'id': blocked_date_id, 'message': 'Blocked date created'})
+                    }
+            
+            elif method == 'DELETE':
+                blocked_date_id = event.get('queryStringParameters', {}).get('id')
+                
+                with conn.cursor() as cur:
+                    query = f'DELETE FROM {SCHEMA}.diary_blocked_dates WHERE id = {int(blocked_date_id)}'
+                    cur.execute(query)
+                    conn.commit()
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'message': 'Blocked date deleted'})
                     }
         
         return {
