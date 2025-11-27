@@ -23,7 +23,7 @@ export default function EmailSettingsPanel() {
   const checkEmailStatus = async () => {
     setLoading(true);
     try {
-      const response = await fetch(EMAIL_NOTIFICATIONS_API_URL, {
+      const response = await fetch(`${EMAIL_NOTIFICATIONS_API_URL}?endpoint=notifications`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -32,7 +32,6 @@ export default function EmailSettingsPanel() {
       
       if (response.ok) {
         const data = await response.json();
-        console.log('Email settings response:', data);
         
         setEmailStatus({
           smtp_configured: data.success && !!data.settings,
@@ -72,8 +71,6 @@ export default function EmailSettingsPanel() {
         notifications_enabled: smtpSettings.enabled
       };
       
-      console.log('Saving email settings:', requestData);
-      
       const response = await fetch(`${EMAIL_NOTIFICATIONS_API_URL}?endpoint=notifications`, {
         method: 'PUT',
         headers: {
@@ -92,11 +89,9 @@ export default function EmailSettingsPanel() {
         }
       } else {
         const errorText = await response.text();
-        console.error('Response error:', response.status, errorText);
         throw new Error(`Ошибка ${response.status}: ${errorText || 'Не удалось сохранить настройки'}`);
       }
     } catch (error) {
-      console.error('Error saving settings:', error);
       alert(`❌ Ошибка сохранения настроек: ${error.message}`);
     } finally {
       setSaving(false);
@@ -134,7 +129,6 @@ export default function EmailSettingsPanel() {
         alert(`❌ Ошибка отправки: ${errorData.error}`);
       }
     } catch (error) {
-      console.error('Email test error:', error);
       alert(`❌ Ошибка соединения с SMTP функцией: ${error.message}`);
     } finally {
       setTesting(false);
@@ -159,7 +153,6 @@ export default function EmailSettingsPanel() {
       
       if (response.ok) {
         const data = await response.json();
-        console.log('Settings from server:', data);
         
         if (data.success && data.settings) {
           setSmtpSettings({
@@ -172,7 +165,7 @@ export default function EmailSettingsPanel() {
         }
       }
     } catch (error) {
-      console.log('Ошибка загрузки настроек с сервера, используем локальные');
+      // Ошибка загрузки настроек с сервера, используем локальные
     }
   };
 
