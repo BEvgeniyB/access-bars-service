@@ -415,12 +415,15 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     name = body_data['name'].replace("'", "''")
                     description = body_data.get('description', '').replace("'", "''")
                     
+                    active = 'true' if body_data.get('active', True) else 'false'
+                    
                     query = f'''
                         UPDATE {SCHEMA}.diary_services 
                         SET name = '{name}', 
                             description = '{description}',
                             duration_minutes = {int(body_data['duration_minutes'])},
                             price = {float(body_data['price'])},
+                            active = {active},
                             updated_at = CURRENT_TIMESTAMP
                         WHERE id = {int(service_id)}
                     '''
