@@ -47,6 +47,27 @@
       "method": "GET",
       "path": "/?resource=admin_data&owner_id=1",
       "expectedStatus": 200
+    },
+    {
+      "name": "Get booking data",
+      "method": "GET",
+      "path": "/?resource=booking_data",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "services": "array",
+        "settings": "object"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get available slots",
+      "method": "GET",
+      "path": "/?resource=available_slots&service_id=1&date=2025-12-01",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "slots": "array"
+      },
+      "bodyMatcher": "partial"
     }
   ]
 }
