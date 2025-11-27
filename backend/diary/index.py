@@ -1,21 +1,20 @@
+'''
+Business: Единый API для управления записями, событиями, услугами и клиентами
+Args: event с httpMethod, body, queryStringParameters, pathParams; context с request_id
+Returns: HTTP response с данными в зависимости от resource
+'''
+
 import json
 import os
-from typing import Dict, Any, List, Optional
-from datetime import datetime, timedelta
-from decimal import Decimal
+from typing import Dict, Any
 import psycopg2
 from psycopg2.extras import RealDictCursor
+import urllib.request
+
+SCHEMA = 't_p89870318_access_bars_service'
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
-    '''
-    Business: Diary API для управления услугами, записями и расписанием владельца
-    Args: event - dict с httpMethod, body, queryStringParameters, pathParams
-          context - object с request_id, function_name
-    Returns: HTTP response dict с данными diary
-    '''
     method: str = event.get('httpMethod', 'GET')
-    path_params = event.get('pathParams', {})
-    query_params = event.get('queryStringParameters', {})
     
     if method == 'OPTIONS':
         return {
@@ -23,458 +22,1373 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'headers': {
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type, X-Telegram-Id, X-User-Role',
+                'Access-Control-Allow-Headers': 'Content-Type, X-User-Id, X-Auth-Token',
                 'Access-Control-Max-Age': '86400'
             },
-            'body': ''
+            'body': '',
+            'isBase64Encoded': False
         }
     
-    headers = event.get('headers', {})
-    telegram_id = headers.get('X-Telegram-Id') or headers.get('x-telegram-id')
+    resource = event.get('queryStringParameters', {}).get('resource', 'bookings')
     
-    dsn = os.environ.get('DATABASE_URL')
-    if not dsn:
-        return error_response('DATABASE_URL not configured', 500)
-    
-    conn = psycopg2.connect(dsn)
+    db_url = os.environ.get('DATABASE_URL')
+    conn = psycopg2.connect(db_url)
     
     try:
-        action = query_params.get('action', '')
+        if resource == 'bookings':
+            if method == 'GET':
+                owner_id = event.get('queryStringParameters', {}).get('owner_id')
+                booking_date = event.get('queryStringParameters', {}).get('date')
+                
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    if booking_date:
+                        query = f'''
+                            SELECT b.*, u.name as client_name, s.name as service_name, s.duration_minutes
+                            FROM {SCHEMA}.diary_bookings b
+                            LEFT JOIN {SCHEMA}.diary_clients c ON b.client_id = c.id
+                            LEFT JOIN {SCHEMA}.diary_users u ON c.user_id = u.id
+                            LEFT JOIN {SCHEMA}.diary_services s ON b.service_id = s.id
+                            WHERE b.owner_id = %s AND b.booking_date = %s
+                            ORDER BY b.start_time
+                        '''
+                        cur.execute(query, (owner_id, booking_date))
+                    else:
+                        query = f'''
+                            SELECT b.*, u.name as client_name, s.name as service_name, s.duration_minutes
+                            FROM {SCHEMA}.diary_bookings b
+                            LEFT JOIN {SCHEMA}.diary_clients c ON b.client_id = c.id
+                            LEFT JOIN {SCHEMA}.diary_users u ON c.user_id = u.id
+                            LEFT JOIN {SCHEMA}.diary_services s ON b.service_id = s.id
+                            WHERE b.owner_id = %s
+                            ORDER BY b.booking_date DESC, b.start_time
+                            LIMIT 100
+                        '''
+                        cur.execute(query, (owner_id,))
+                    
+                    bookings = cur.fetchall()
+                    
+                    result = []
+                    for booking in bookings:
+                        result.append({
+                            'id': booking['id'],
+                            'client': booking['client_name'] or 'Неизвестно',
+                            'service': booking['service_name'] or 'Услуга удалена',
+                            'time': booking['start_time'].strftime('%H:%M') if booking['start_time'] else '00:00',
+                            'date': booking['booking_date'].strftime('%Y-%m-%d') if booking['booking_date'] else '',
+                            'status': booking['status'],
+                            'duration': booking['duration_minutes'] if booking['duration_minutes'] else 60
+                        })
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'bookings': result})
+                    }
+            
+            elif method == 'POST':
+                body_data = json.loads(event.get('body', '{}'))
+                
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    query = f'''
+                        INSERT INTO {SCHEMA}.diary_bookings 
+                        (client_id, service_id, owner_id, booking_date, start_time, end_time, status)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s)
+                        RETURNING id
+                    '''
+                    cur.execute(query, (
+                        body_data['client_id'],
+                        body_data['service_id'],
+                        body_data['owner_id'],
+                        body_data['booking_date'],
+                        body_data['start_time'],
+                        body_data['end_time'],
+                        body_data.get('status', 'pending')
+                    ))
+                    
+                    booking_id = cur.fetchone()['id']
+                    conn.commit()
+                    
+                    cur.execute(f'''
+                        SELECT 
+                            b.id as booking_id,
+                            b.booking_date,
+                            b.start_time,
+                            u.name as client_name,
+                            u.phone as client_phone,
+                            u.email as client_email,
+                            s.name as service_name,
+                            s.duration_minutes,
+                            s.price
+                        FROM {SCHEMA}.diary_bookings b
+                        LEFT JOIN {SCHEMA}.diary_clients c ON b.client_id = c.id
+                        LEFT JOIN {SCHEMA}.diary_users u ON c.user_id = u.id
+                        LEFT JOIN {SCHEMA}.diary_services s ON b.service_id = s.id
+                        WHERE b.id = %s
+                    ''', (booking_id,))
+                    
+                    booking_data = cur.fetchone()
+                    
+                    if booking_data:
+                        try:
+                            telegram_bot_url = 'https://functions.poehali.dev/07b2b89b-011e-472f-b782-0f844489a891'
+                            notification_payload = {
+                                'booking_id': booking_data['booking_id'],
+                                'client_name': booking_data['client_name'] or 'Не указано',
+                                'client_phone': booking_data['client_phone'] or 'Не указан',
+                                'client_email': booking_data['client_email'] or 'не указан',
+                                'service_name': booking_data['service_name'],
+                                'duration': booking_data['duration_minutes'],
+                                'price': str(booking_data['price']).replace('₽', '').strip(),
+                                'date': booking_data['booking_date'].strftime('%d.%m.%Y'),
+                                'time': booking_data['start_time'].strftime('%H:%M')
+                            }
+                            
+                            data = json.dumps(notification_payload).encode('utf-8')
+                            req = urllib.request.Request(
+                                telegram_bot_url,
+                                data=data,
+                                headers={'Content-Type': 'application/json'}
+                            )
+                            urllib.request.urlopen(req, timeout=5)
+                        except Exception as e:
+                            print(f'Failed to send Telegram notification: {e}')
+                    
+                    return {
+                        'statusCode': 201,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'id': booking_id, 'message': 'Booking created'})
+                    }
+            
+            elif method == 'PUT':
+                body_data = json.loads(event.get('body', '{}'))
+                booking_id = body_data.get('id')
+                
+                with conn.cursor() as cur:
+                    query = f'''
+                        UPDATE {SCHEMA}.diary_bookings 
+                        SET status = %s, updated_at = CURRENT_TIMESTAMP
+                        WHERE id = %s
+                    '''
+                    cur.execute(query, (body_data['status'], booking_id))
+                    conn.commit()
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'message': 'Booking updated'})
+                    }
         
-        if method == 'GET' and action == 'users':
-            return get_users(conn, telegram_id)
-        elif method == 'GET' and action == 'services':
-            return get_services(conn, telegram_id)
-        elif method == 'POST' and action == 'services':
-            body = json.loads(event.get('body', '{}'))
-            return create_service(conn, telegram_id, body)
-        elif method == 'PUT' and action == 'services':
-            service_id = path_params.get('id')
-            body = json.loads(event.get('body', '{}'))
-            return update_service(conn, telegram_id, service_id, body)
-        elif method == 'DELETE' and action == 'services':
-            service_id = path_params.get('id')
-            return delete_service(conn, telegram_id, service_id)
-        elif method == 'GET' and action == 'bookings':
-            return get_bookings(conn, telegram_id)
-        elif method == 'POST' and action == 'bookings':
-            body = json.loads(event.get('body', '{}'))
-            return create_booking(conn, telegram_id, body)
-        elif method == 'PUT' and action == 'bookings':
-            booking_id = path_params.get('id')
-            body = json.loads(event.get('body', '{}'))
-            return update_booking(conn, telegram_id, booking_id, body)
-        elif method == 'GET' and action == 'schedule':
-            return get_schedule(conn, telegram_id)
-        elif method == 'POST' and action == 'schedule':
-            body = json.loads(event.get('body', '{}'))
-            return update_schedule(conn, telegram_id, body)
-        elif method == 'GET' and action == 'settings':
-            return get_settings(conn, telegram_id)
-        elif method == 'POST' and action == 'settings':
-            body = json.loads(event.get('body', '{}'))
-            return update_settings(conn, telegram_id, body)
-        else:
-            return error_response(f'Unknown action: {action}', 400)
+        elif resource == 'events':
+            if method == 'GET':
+                owner_id = event.get('queryStringParameters', {}).get('owner_id')
+                event_date = event.get('queryStringParameters', {}).get('date')
+                
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    if event_date:
+                        query = f'''
+                            SELECT * FROM {SCHEMA}.diary_calendar_events
+                            WHERE owner_id = %s AND event_date = %s
+                            ORDER BY start_time
+                        '''
+                        cur.execute(query, (owner_id, event_date))
+                    else:
+                        query = f'''
+                            SELECT * FROM {SCHEMA}.diary_calendar_events
+                            WHERE owner_id = %s
+                            ORDER BY event_date DESC, start_time
+                            LIMIT 100
+                        '''
+                        cur.execute(query, (owner_id,))
+                    
+                    events = cur.fetchall()
+                    
+                    result = []
+                    for evt in events:
+                        result.append({
+                            'id': evt['id'],
+                            'type': evt['event_type'],
+                            'title': evt['title'],
+                            'date': evt['event_date'].strftime('%Y-%m-%d'),
+                            'startTime': evt['start_time'].strftime('%H:%M'),
+                            'endTime': evt['end_time'].strftime('%H:%M'),
+                            'description': evt['description']
+                        })
+                
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'isBase64Encoded': False,
+                    'body': json.dumps({'events': result})
+                }
+            
+            elif method == 'POST':
+                try:
+                    body_data = json.loads(event.get('body', '{}'))
+                    
+                    required_fields = ['owner_id', 'event_date', 'start_time', 'end_time', 'title', 'event_type']
+                    missing = [f for f in required_fields if f not in body_data or not body_data[f]]
+                    if missing:
+                        return {
+                            'statusCode': 400,
+                            'headers': {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Allow-Origin': '*'
+                            },
+                            'isBase64Encoded': False,
+                            'body': json.dumps({
+                                'error': f'Missing required fields: {", ".join(missing)}'
+                            })
+                        }
+                    
+                    with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                        cur.execute(f'''
+                            SELECT b.id, u.name as client_name, s.name as service_name, 
+                                   TO_CHAR(b.start_time, 'HH24:MI') as start_time,
+                                   TO_CHAR(b.end_time, 'HH24:MI') as end_time
+                            FROM {SCHEMA}.diary_bookings b
+                            LEFT JOIN {SCHEMA}.diary_clients c ON b.client_id = c.id
+                            LEFT JOIN {SCHEMA}.diary_users u ON c.user_id = u.id
+                            LEFT JOIN {SCHEMA}.diary_services s ON b.service_id = s.id
+                            WHERE b.owner_id = %s 
+                            AND b.booking_date = %s 
+                            AND b.status = 'confirmed'
+                            AND b.start_time < %s::time 
+                            AND b.end_time > %s::time
+                        ''', (
+                            body_data['owner_id'],
+                            body_data['event_date'],
+                            body_data['end_time'],
+                            body_data['start_time']
+                        ))
+                        
+                        conflicting_bookings = cur.fetchall()
+                        
+                        if conflicting_bookings and not body_data.get('force', False):
+                            conflicts = []
+                            for booking in conflicting_bookings:
+                                conflicts.append({
+                                    'id': booking['id'],
+                                    'client': booking['client_name'],
+                                    'service': booking['service_name'],
+                                    'startTime': booking['start_time'],
+                                    'endTime': booking['end_time']
+                                })
+                            
+                            return {
+                                'statusCode': 409,
+                                'headers': {
+                                    'Content-Type': 'application/json',
+                                    'Access-Control-Allow-Origin': '*'
+                                },
+                                'isBase64Encoded': False,
+                                'body': json.dumps({
+                                    'conflict': True,
+                                    'bookings': conflicts,
+                                    'message': 'Событие конфликтует с подтверждёнными записями'
+                                })
+                            }
+                        
+                        if body_data.get('force', False) and conflicting_bookings:
+                            booking_ids = [b['id'] for b in conflicting_bookings]
+                            cur.execute(f'''
+                                UPDATE {SCHEMA}.diary_bookings 
+                                SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP
+                                WHERE id = ANY(%s)
+                            ''', (booking_ids,))
+                        
+                        query = f'''
+                            INSERT INTO {SCHEMA}.diary_calendar_events 
+                            (owner_id, event_type, title, event_date, start_time, end_time, description)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s)
+                            RETURNING id
+                        '''
+                        cur.execute(query, (
+                            body_data['owner_id'],
+                            body_data['event_type'],
+                            body_data['title'],
+                            body_data['event_date'],
+                            body_data['start_time'],
+                            body_data['end_time'],
+                            body_data.get('description', '')
+                        ))
+                        
+                        result = cur.fetchone()
+                        event_id = result['id'] if result else None
+                    
+                    conn.commit()
+                    
+                    return {
+                        'statusCode': 201,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'id': event_id, 'message': 'Event created'})
+                    }
+                except Exception as e:
+                    import traceback
+                    error_msg = str(e) if str(e) else repr(e)
+                    error_trace = traceback.format_exc()
+                    return {
+                        'statusCode': 500,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({
+                            'error': f'Server error: {error_msg}',
+                            'type': type(e).__name__,
+                            'trace': error_trace[:500]
+                        })
+                    }
+            
+            elif method == 'DELETE':
+                event_id = event.get('queryStringParameters', {}).get('id')
+                
+                with conn.cursor() as cur:
+                    query = f'DELETE FROM {SCHEMA}.diary_calendar_events WHERE id = %s'
+                    cur.execute(query, (event_id,))
+                    conn.commit()
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'message': 'Event deleted'})
+                    }
+        
+        elif resource == 'clients':
+            if method == 'GET':
+                owner_id = event.get('queryStringParameters', {}).get('owner_id')
+                
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    query = f'''
+                        SELECT c.*, u.name, u.phone, u.email
+                        FROM {SCHEMA}.diary_clients c
+                        JOIN {SCHEMA}.diary_users u ON c.user_id = u.id
+                        WHERE c.owner_id = %s
+                        ORDER BY c.total_visits DESC
+                    '''
+                    cur.execute(query, (owner_id,))
+                    clients = cur.fetchall()
+                    
+                    result = []
+                    for client in clients:
+                        result.append({
+                            'id': client['id'],
+                            'name': client['name'],
+                            'phone': client['phone'],
+                            'email': client['email'],
+                            'visits': client['total_visits'],
+                            'lastVisit': client['last_visit_date'].strftime('%d.%m.%Y') if client['last_visit_date'] else 'Нет визитов'
+                        })
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'clients': result})
+                    }
+            
+            elif method == 'POST':
+                body_data = json.loads(event.get('body', '{}'))
+                
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    cur.execute(f'SELECT id FROM {SCHEMA}.diary_users WHERE phone = %s', (body_data.get('phone', ''),))
+                    existing_user = cur.fetchone()
+                    
+                    if existing_user:
+                        user_id = existing_user['id']
+                        
+                        cur.execute(
+                            f'SELECT id FROM {SCHEMA}.diary_clients WHERE user_id = %s AND owner_id = %s',
+                            (user_id, body_data['owner_id'])
+                        )
+                        existing_client = cur.fetchone()
+                        
+                        if existing_client:
+                            client_id = existing_client['id']
+                        else:
+                            cur.execute(
+                                f'INSERT INTO {SCHEMA}.diary_clients (user_id, owner_id, total_visits) VALUES (%s, %s, %s) RETURNING id',
+                                (user_id, body_data['owner_id'], 0)
+                            )
+                            client_id = cur.fetchone()['id']
+                    else:
+                        email_value = body_data.get('email', '').strip()
+                        email_value = email_value if email_value else None
+                        
+                        phone_value = body_data.get('phone', '').strip()
+                        phone_value = phone_value if phone_value else None
+                        
+                        cur.execute(f'''
+                            INSERT INTO {SCHEMA}.diary_users (role, name, phone, email)
+                            VALUES (%s, %s, %s, %s)
+                            RETURNING id
+                        ''', (
+                            'client',
+                            body_data['name'],
+                            phone_value,
+                            email_value
+                        ))
+                        
+                        user_id = cur.fetchone()['id']
+                        
+                        cur.execute(
+                            f'INSERT INTO {SCHEMA}.diary_clients (user_id, owner_id, total_visits) VALUES (%s, %s, %s) RETURNING id',
+                            (user_id, body_data['owner_id'], 0)
+                        )
+                        client_id = cur.fetchone()['id']
+                    
+                    conn.commit()
+                    
+                    return {
+                        'statusCode': 201,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'id': client_id, 'message': 'Client created or found'})
+                    }
+        
+        elif resource == 'settings':
+            if method == 'GET':
+                owner_id = event.get('queryStringParameters', {}).get('owner_id', '1')
+                
+                with conn.cursor() as cur:
+                    cur.execute(f'SELECT key, value FROM {SCHEMA}.diary_settings WHERE owner_id = %s', (int(owner_id),))
+                    rows = cur.fetchall()
+                    
+                    settings = {}
+                    for row in rows:
+                        key, value = row
+                        settings[key] = value
+                
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'isBase64Encoded': False,
+                    'body': json.dumps({'settings': settings})
+                }
+            
+            elif method == 'PUT':
+                body_data = json.loads(event.get('body', '{}'))
+                owner_id = body_data.get('owner_id', '1')
+                
+                with conn.cursor() as cur:
+                    for key, value in body_data.items():
+                        if key == 'owner_id':
+                            continue
+                            
+                        cur.execute(
+                            f'''
+                            INSERT INTO {SCHEMA}.diary_settings (owner_id, key, value)
+                            VALUES (%s, %s, %s)
+                            ON CONFLICT (owner_id, key) 
+                            DO UPDATE SET value = EXCLUDED.value
+                            ''',
+                            (int(owner_id), key, str(value))
+                        )
+                    conn.commit()
+                
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'isBase64Encoded': False,
+                    'body': json.dumps({'message': 'Settings updated'})
+                }
+        
+        elif resource == 'available_slots':
+            if method == 'GET':
+                owner_id = event.get('queryStringParameters', {}).get('owner_id')
+                date = event.get('queryStringParameters', {}).get('date')
+                service_id = event.get('queryStringParameters', {}).get('service_id')
+                current_time_str = event.get('queryStringParameters', {}).get('current_time')
+                
+                if not all([owner_id, date, service_id]):
+                    return {
+                        'statusCode': 400,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': 'owner_id, date, and service_id required'})
+                    }
+                
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    cur.execute(f'''
+                        SELECT id FROM {SCHEMA}.diary_blocked_dates 
+                        WHERE owner_id = %s AND blocked_date = %s
+                    ''', (int(owner_id), date))
+                    
+                    if cur.fetchone():
+                        return {
+                            'statusCode': 200,
+                            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                            'isBase64Encoded': False,
+                            'body': json.dumps({'slots': [], 'message': 'Date is blocked'})
+                        }
+                    
+                    cur.execute(f'SELECT duration_minutes FROM {SCHEMA}.diary_services WHERE id = %s', (int(service_id),))
+                    service = cur.fetchone()
+                    if not service:
+                        return {
+                            'statusCode': 404,
+                            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                            'body': json.dumps({'error': 'Service not found'})
+                        }
+                    
+                    duration = service['duration_minutes']
+                    
+                    cur.execute(f'SELECT key, value FROM {SCHEMA}.diary_settings WHERE owner_id = %s', (int(owner_id),))
+                    settings_rows = cur.fetchall()
+                    settings = {row['key']: row['value'] for row in settings_rows}
+                    
+                    work_start = settings.get('work_start', '10:00')
+                    work_end = settings.get('work_end', '20:00')
+                    prep_time = int(settings.get('prep_time', '0'))
+                    buffer_time = int(settings.get('buffer_time', '0'))
+                    work_priority = settings.get('work_priority', 'False') == 'True'
+                    
+                    total_time_needed = prep_time + duration + buffer_time
+                    
+                    import datetime
+                    date_obj = datetime.datetime.strptime(date, '%Y-%m-%d')
+                    day_names = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+                    day_of_week = day_names[date_obj.weekday()]
+                    
+                    cur.execute(f'''
+                        SELECT DISTINCT cycle_start_date 
+                        FROM {SCHEMA}.diary_week_schedule 
+                        WHERE owner_id = %s AND cycle_start_date <= %s
+                        ORDER BY cycle_start_date DESC 
+                        LIMIT 1
+                    ''', (int(owner_id), date))
+                    
+                    cycle_row = cur.fetchone()
+                    study_periods = []
+                    
+                    if cycle_row:
+                        cycle_start_date = cycle_row[0]
+                        
+                        days_diff = (date_obj - datetime.datetime.strptime(str(cycle_start_date), '%Y-%m-%d')).days
+                        weeks_passed = days_diff // 7
+                        week_number = (weeks_passed % 2) + 1
+                        
+                        cur.execute(f'''
+                            SELECT TO_CHAR(start_time, 'HH24:MI') as start_time,
+                                   TO_CHAR(end_time, 'HH24:MI') as end_time
+                            FROM {SCHEMA}.diary_week_schedule
+                            WHERE owner_id = %s 
+                              AND day_of_week = %s 
+                              AND cycle_start_date = %s 
+                              AND week_number = %s
+                        ''', (int(owner_id), day_of_week, cycle_start_date, week_number))
+                        
+                        study_periods = cur.fetchall()
+                    
+                    cur.execute(f'''
+                        SELECT TO_CHAR(start_time, 'HH24:MI') as start_time,
+                               TO_CHAR(end_time, 'HH24:MI') as end_time
+                        FROM {SCHEMA}.diary_calendar_events
+                        WHERE owner_id = %s AND event_date = %s
+                    ''', (int(owner_id), date))
+                    
+                    events = cur.fetchall()
+                    
+                    cur.execute(
+                        f'''
+                        SELECT 
+                            TO_CHAR(start_time, 'HH24:MI') as start_time,
+                            TO_CHAR(end_time, 'HH24:MI') as end_time
+                        FROM {SCHEMA}.diary_bookings 
+                        WHERE owner_id = %s AND booking_date = %s AND status != 'cancelled'
+                        ''',
+                        (int(owner_id), date)
+                    )
+                    bookings = cur.fetchall()
+                    
+                    slots = []
+                    
+                    def time_to_minutes(time_str):
+                        parts = time_str.split(':')
+                        return int(parts[0]) * 60 + int(parts[1])
+                    
+                    available_periods = []
+                    
+                    if work_priority:
+                        start_minutes = time_to_minutes(work_start)
+                        end_minutes = time_to_minutes(work_end)
+                        
+                        current_start = start_minutes
+                        sorted_events = sorted(events, key=lambda e: time_to_minutes(e['start_time']))
+                        
+                        for event in sorted_events:
+                            event_start = time_to_minutes(event['start_time'])
+                            event_end = time_to_minutes(event['end_time'])
+                            
+                            if event_start > current_start and event_start < end_minutes:
+                                if event_start - current_start >= total_time_needed:
+                                    available_periods.append((current_start, min(event_start, end_minutes)))
+                                current_start = max(event_end, current_start)
+                        
+                        if current_start < end_minutes and end_minutes - current_start >= total_time_needed:
+                            available_periods.append((current_start, end_minutes))
+                    
+                    else:
+                        work_start_min = time_to_minutes(work_start)
+                        work_end_min = time_to_minutes(work_end)
+                        
+                        if study_periods:
+                            temp_periods = [(work_start_min, work_end_min)]
+                            
+                            for study in study_periods:
+                                study_start = time_to_minutes(study['start_time'])
+                                study_end = time_to_minutes(study['end_time'])
+                                
+                                new_temp_periods = []
+                                for period_start, period_end in temp_periods:
+                                    if study_end <= period_start or study_start >= period_end:
+                                        new_temp_periods.append((period_start, period_end))
+                                    elif study_start <= period_start < study_end < period_end:
+                                        new_temp_periods.append((study_end, period_end))
+                                    elif period_start < study_start < period_end <= study_end:
+                                        new_temp_periods.append((period_start, study_start))
+                                    elif period_start < study_start and study_end < period_end:
+                                        new_temp_periods.append((period_start, study_start))
+                                        new_temp_periods.append((study_end, period_end))
+                                
+                                temp_periods = new_temp_periods
+                            
+                            sorted_events = sorted(events, key=lambda e: time_to_minutes(e['start_time'])) if events else []
+                            
+                            for period_start, period_end in temp_periods:
+                                current_start = period_start
+                                
+                                for event in sorted_events:
+                                    event_start = time_to_minutes(event['start_time'])
+                                    event_end = time_to_minutes(event['end_time'])
+                                    
+                                    if event_start > current_start and event_start < period_end:
+                                        if event_start - current_start >= total_time_needed:
+                                            available_periods.append((current_start, event_start))
+                                        current_start = max(event_end, current_start)
+                                
+                                if current_start < period_end and period_end - current_start >= total_time_needed:
+                                    available_periods.append((current_start, period_end))
+                        else:
+                            current_start = work_start_min
+                            sorted_events = sorted(events, key=lambda e: time_to_minutes(e['start_time']))
+                            
+                            for event in sorted_events:
+                                event_start = time_to_minutes(event['start_time'])
+                                event_end = time_to_minutes(event['end_time'])
+                                
+                                if event_start > current_start and event_start < work_end_min:
+                                    if event_start - current_start >= total_time_needed:
+                                        available_periods.append((current_start, event_start))
+                                    current_start = max(event_end, current_start)
+                            
+                            if current_start < work_end_min and work_end_min - current_start >= total_time_needed:
+                                available_periods.append((current_start, work_end_min))
+                    
+                    for period_idx, (period_start, period_end) in enumerate(available_periods):
+                        current = period_start
+                        is_first_period = (period_idx == 0)
+                        is_last_period = (period_idx == len(available_periods) - 1)
+                        
+                        first_slot_in_period = True
+                        
+                        while True:
+                            current_prep = 0 if (is_first_period and first_slot_in_period) else prep_time
+                            
+                            slot_time_needed = current_prep + duration + buffer_time
+                            
+                            slot_fits = current + slot_time_needed <= period_end
+                            
+                            if not slot_fits and is_last_period:
+                                overhang = (current + slot_time_needed) - period_end
+                                if overhang <= 60:
+                                    slot_fits = True
+                            
+                            if not slot_fits:
+                                break
+                            
+                            slot_start = f"{(current + current_prep) // 60:02d}:{(current + current_prep) % 60:02d}"
+                            
+                            actual_start_min = current
+                            actual_end_min = current + slot_time_needed
+                            
+                            is_available = True
+                            for booking in bookings:
+                                booking_start_min = time_to_minutes(booking['start_time'])
+                                booking_end_min = time_to_minutes(booking['end_time'])
+                                
+                                if actual_start_min < booking_end_min and actual_end_min > booking_start_min:
+                                    is_available = False
+                                    break
+                            
+                            if is_available:
+                                slots.append({'time': slot_start, 'available': True})
+                            
+                            first_slot_in_period = False
+                            current += 30
+                
+                if current_time_str:
+                    try:
+                        current_time_parts = current_time_str.split(':')
+                        current_minutes = int(current_time_parts[0]) * 60 + int(current_time_parts[1])
+                        
+                        filtered_slots = []
+                        for slot in slots:
+                            slot_time_parts = slot['time'].split(':')
+                            slot_minutes = int(slot_time_parts[0]) * 60 + int(slot_time_parts[1])
+                            
+                            if slot_minutes > current_minutes:
+                                filtered_slots.append(slot)
+                        
+                        slots = filtered_slots
+                    except:
+                        pass
+                
+                return {
+                    'statusCode': 200,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'isBase64Encoded': False,
+                    'body': json.dumps({'slots': slots})
+                }
+        
+        elif resource == 'week_schedule':
+            if method == 'GET':
+                owner_id = event.get('queryStringParameters', {}).get('owner_id')
+                selected_date = event.get('queryStringParameters', {}).get('date')
+                
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    if selected_date:
+                        import datetime
+                        date_obj = datetime.datetime.strptime(selected_date, '%Y-%m-%d')
+                        
+                        cur.execute(f'''
+                            SELECT DISTINCT cycle_start_date 
+                            FROM {SCHEMA}.diary_week_schedule 
+                            WHERE owner_id = %s AND cycle_start_date <= %s
+                            ORDER BY cycle_start_date DESC 
+                            LIMIT 1
+                        ''', (owner_id, selected_date))
+                        
+                        cycle_row = cur.fetchone()
+                        if not cycle_row:
+                            return {
+                                'statusCode': 200,
+                                'headers': {
+                                    'Content-Type': 'application/json',
+                                    'Access-Control-Allow-Origin': '*'
+                                },
+                                'isBase64Encoded': False,
+                                'body': json.dumps({'schedule': [], 'cycleStartDate': None, 'weekNumber': None})
+                            }
+                        
+                        cycle_start_date = cycle_row['cycle_start_date']
+                        
+                        days_diff = (date_obj.date() - cycle_start_date).days
+                        weeks_passed = days_diff // 7
+                        week_number = (weeks_passed % 2) + 1
+                        
+                        cur.execute(f'''
+                            SELECT * FROM {SCHEMA}.diary_week_schedule
+                            WHERE owner_id = %s 
+                              AND cycle_start_date = %s 
+                              AND week_number = %s
+                            ORDER BY 
+                                CASE day_of_week
+                                    WHEN 'monday' THEN 1
+                                    WHEN 'tuesday' THEN 2
+                                    WHEN 'wednesday' THEN 3
+                                    WHEN 'thursday' THEN 4
+                                    WHEN 'friday' THEN 5
+                                    WHEN 'saturday' THEN 6
+                                    WHEN 'sunday' THEN 7
+                                END,
+                                start_time
+                        ''', (owner_id, cycle_start_date, week_number))
+                        
+                        schedule = cur.fetchall()
+                        
+                        result = []
+                        for item in schedule:
+                            result.append({
+                                'id': item['id'],
+                                'dayOfWeek': item['day_of_week'],
+                                'startTime': item['start_time'].strftime('%H:%M'),
+                                'endTime': item['end_time'].strftime('%H:%M'),
+                                'cycleStartDate': cycle_start_date.strftime('%Y-%m-%d'),
+                                'weekNumber': item['week_number']
+                            })
+                        
+                        return {
+                            'statusCode': 200,
+                            'headers': {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Allow-Origin': '*'
+                            },
+                            'isBase64Encoded': False,
+                            'body': json.dumps({
+                                'schedule': result,
+                                'cycleStartDate': cycle_start_date.strftime('%Y-%m-%d'),
+                                'weekNumber': week_number
+                            })
+                        }
+                    else:
+                        cur.execute(f'''
+                            SELECT * FROM {SCHEMA}.diary_week_schedule
+                            WHERE owner_id = %s
+                            ORDER BY 
+                                cycle_start_date DESC,
+                                week_number,
+                                CASE day_of_week
+                                    WHEN 'monday' THEN 1
+                                    WHEN 'tuesday' THEN 2
+                                    WHEN 'wednesday' THEN 3
+                                    WHEN 'thursday' THEN 4
+                                    WHEN 'friday' THEN 5
+                                    WHEN 'saturday' THEN 6
+                                    WHEN 'sunday' THEN 7
+                                END,
+                                start_time
+                        ''', (owner_id,))
+                        
+                        schedule = cur.fetchall()
+                        
+                        result = []
+                        for item in schedule:
+                            result.append({
+                                'id': item['id'],
+                                'dayOfWeek': item['day_of_week'],
+                                'startTime': item['start_time'].strftime('%H:%M'),
+                                'endTime': item['end_time'].strftime('%H:%M'),
+                                'cycleStartDate': item['cycle_start_date'].strftime('%Y-%m-%d'),
+                                'weekNumber': item['week_number']
+                            })
+                        
+                        return {
+                            'statusCode': 200,
+                            'headers': {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Allow-Origin': '*'
+                            },
+                            'isBase64Encoded': False,
+                            'body': json.dumps({'schedule': result})
+                        }
+            
+            elif method == 'POST':
+                body_data = json.loads(event.get('body', '{}'))
+                
+                with conn.cursor() as cur:
+                    query = f'''
+                        INSERT INTO {SCHEMA}.diary_week_schedule 
+                        (owner_id, day_of_week, start_time, end_time, cycle_start_date, week_number)
+                        VALUES (%s, %s, %s, %s, %s, %s)
+                        RETURNING id
+                    '''
+                    cur.execute(query, (
+                        body_data['owner_id'],
+                        body_data['day_of_week'],
+                        body_data['start_time'],
+                        body_data['end_time'],
+                        body_data['cycle_start_date'],
+                        body_data['week_number']
+                    ))
+                    
+                    schedule_id = cur.fetchone()[0]
+                    conn.commit()
+                    
+                    return {
+                        'statusCode': 201,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'id': schedule_id, 'message': 'Schedule created'})
+                    }
+            
+            elif method == 'DELETE':
+                schedule_id = event.get('queryStringParameters', {}).get('id')
+                
+                with conn.cursor() as cur:
+                    cur.execute(f'DELETE FROM {SCHEMA}.diary_week_schedule WHERE id = %s', (schedule_id,))
+                    conn.commit()
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'message': 'Schedule deleted'})
+                    }
+        
+        elif resource == 'services':
+            if method == 'GET':
+                owner_id = event.get('queryStringParameters', {}).get('owner_id')
+                
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    cur.execute(f'''
+                        SELECT * FROM {SCHEMA}.diary_services
+                        WHERE owner_id = %s
+                        ORDER BY name
+                    ''', (owner_id,))
+                    services_raw = cur.fetchall()
+                    
+                    services = []
+                    for service in services_raw:
+                        services.append({
+                            'id': service['id'],
+                            'name': service['name'],
+                            'description': service['description'] if 'description' in service else '',
+                            'price': str(service['price']),
+                            'duration_minutes': service['duration_minutes'],
+                            'active': service['active']
+                        })
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'services': services})
+                    }
+            
+            elif method == 'POST':
+                body_data = json.loads(event.get('body', '{}'))
+                
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    cur.execute(f'''
+                        INSERT INTO {SCHEMA}.diary_services 
+                        (owner_id, name, description, price, duration_minutes, active)
+                        VALUES (%s, %s, %s, %s, %s, %s)
+                        RETURNING id
+                    ''', (
+                        body_data['owner_id'],
+                        body_data['name'],
+                        body_data.get('description', ''),
+                        body_data['price'],
+                        body_data['duration_minutes'],
+                        body_data.get('active', True)
+                    ))
+                    
+                    service_id = cur.fetchone()['id']
+                    conn.commit()
+                    
+                    return {
+                        'statusCode': 201,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'id': service_id, 'message': 'Service created'})
+                    }
+            
+            elif method == 'PUT':
+                body_data = json.loads(event.get('body', '{}'))
+                
+                with conn.cursor() as cur:
+                    cur.execute(f'''
+                        UPDATE {SCHEMA}.diary_services 
+                        SET name = %s, description = %s, price = %s, 
+                            duration_minutes = %s, active = %s
+                        WHERE id = %s
+                    ''', (
+                        body_data['name'],
+                        body_data.get('description', ''),
+                        body_data['price'],
+                        body_data['duration_minutes'],
+                        body_data.get('active', True),
+                        body_data['id']
+                    ))
+                    conn.commit()
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'message': 'Service updated'})
+                    }
+            
+            elif method == 'DELETE':
+                service_id = event.get('queryStringParameters', {}).get('id')
+                
+                with conn.cursor() as cur:
+                    cur.execute(f'DELETE FROM {SCHEMA}.diary_services WHERE id = %s', (service_id,))
+                    conn.commit()
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'message': 'Service deleted'})
+                    }
+        
+        elif resource == 'blocked_dates':
+            if method == 'GET':
+                owner_id = event.get('queryStringParameters', {}).get('owner_id')
+                
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    cur.execute(f'''
+                        SELECT * FROM {SCHEMA}.diary_blocked_dates
+                        WHERE owner_id = %s
+                        ORDER BY blocked_date
+                    ''', (owner_id,))
+                    
+                    dates = cur.fetchall()
+                    
+                    result = []
+                    for item in dates:
+                        result.append({
+                            'id': item['id'],
+                            'date': item['blocked_date'].strftime('%Y-%m-%d')
+                        })
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'blockedDates': result})
+                    }
+            
+            elif method == 'POST':
+                body_data = json.loads(event.get('body', '{}'))
+                
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    cur.execute(f'''
+                        SELECT b.id, u.name as client_name, s.name as service_name, b.start_time
+                        FROM {SCHEMA}.diary_bookings b
+                        LEFT JOIN {SCHEMA}.diary_clients c ON b.client_id = c.id
+                        LEFT JOIN {SCHEMA}.diary_users u ON c.user_id = u.id
+                        LEFT JOIN {SCHEMA}.diary_services s ON b.service_id = s.id
+                        WHERE b.owner_id = %s 
+                        AND b.booking_date = %s 
+                        AND b.status = 'confirmed'
+                        ORDER BY b.start_time
+                    ''', (body_data['owner_id'], body_data['date']))
+                    
+                    confirmed_bookings = cur.fetchall()
+                    
+                    if confirmed_bookings:
+                        conflicts = []
+                        for booking in confirmed_bookings:
+                            conflicts.append({
+                                'id': booking['id'],
+                                'client': booking['client_name'],
+                                'service': booking['service_name'],
+                                'time': booking['start_time'].strftime('%H:%M')
+                            })
+                        
+                        return {
+                            'statusCode': 409,
+                            'headers': {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Allow-Origin': '*'
+                            },
+                            'isBase64Encoded': False,
+                            'body': json.dumps({
+                                'conflict': True,
+                                'bookings': conflicts,
+                                'message': 'На эту дату есть подтверждённые записи'
+                            })
+                        }
+                    
+                    if body_data.get('force', False):
+                        cur.execute(f'''
+                            UPDATE {SCHEMA}.diary_bookings 
+                            SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP
+                            WHERE owner_id = %s AND booking_date = %s
+                        ''', (body_data['owner_id'], body_data['date']))
+                    
+                    cur.execute(f'''
+                        INSERT INTO {SCHEMA}.diary_blocked_dates (owner_id, blocked_date)
+                        VALUES (%s, %s)
+                        RETURNING id
+                    ''', (body_data['owner_id'], body_data['date']))
+                    
+                    blocked_id = cur.fetchone()[0]
+                    conn.commit()
+                    
+                    return {
+                        'statusCode': 201,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'id': blocked_id, 'message': 'Date blocked'})
+                    }
+            
+            elif method == 'DELETE':
+                blocked_id = event.get('queryStringParameters', {}).get('id')
+                
+                with conn.cursor() as cur:
+                    cur.execute(f'DELETE FROM {SCHEMA}.diary_blocked_dates WHERE id = %s', (blocked_id,))
+                    conn.commit()
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'message': 'Block removed'})
+                    }
+        
+        elif resource == 'admin_data':
+            if method == 'GET':
+                try:
+                    owner_id = event.get('queryStringParameters', {}).get('owner_id', '1')
+                    
+                    with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                        cur.execute(f'''
+                        SELECT b.*, u.name as client_name, s.name as service_name, s.duration_minutes
+                        FROM {SCHEMA}.diary_bookings b
+                        LEFT JOIN {SCHEMA}.diary_clients c ON b.client_id = c.id
+                        LEFT JOIN {SCHEMA}.diary_users u ON c.user_id = u.id
+                        LEFT JOIN {SCHEMA}.diary_services s ON b.service_id = s.id
+                        WHERE b.owner_id = %s
+                        ORDER BY b.booking_date DESC, b.start_time
+                        LIMIT 100
+                        ''', (owner_id,))
+                        bookings_raw = cur.fetchall()
+                        
+                        bookings = []
+                        for booking in bookings_raw:
+                            bookings.append({
+                                'id': booking['id'],
+                                'client': booking['client_name'] or 'Неизвестно',
+                                'service': booking['service_name'] or 'Услуга удалена',
+                                'time': booking['start_time'].strftime('%H:%M') if booking['start_time'] else '00:00',
+                                'date': booking['booking_date'].strftime('%Y-%m-%d') if booking['booking_date'] else '',
+                                'status': booking['status'],
+                                'duration': booking['duration_minutes'] if booking['duration_minutes'] else 60
+                            })
+                        
+                        cur.execute(f'SELECT * FROM {SCHEMA}.diary_services WHERE owner_id = %s ORDER BY name', (owner_id,))
+                        services_raw = cur.fetchall()
+                        
+                        services = []
+                        for service in services_raw:
+                            services.append({
+                                'id': service['id'],
+                                'name': service['name'],
+                                'description': service['description'] if 'description' in service else '',
+                                'duration_minutes': service['duration_minutes'],
+                                'price': str(service['price']),
+                                'active': service['active']
+                            })
+                        
+                        cur.execute(f'''
+                            SELECT c.*, u.name, u.phone, u.email
+                            FROM {SCHEMA}.diary_clients c
+                            JOIN {SCHEMA}.diary_users u ON c.user_id = u.id
+                            WHERE c.owner_id = %s
+                            ORDER BY c.total_visits DESC
+                        ''', (owner_id,))
+                        clients_raw = cur.fetchall()
+                        
+                        clients = []
+                        for client in clients_raw:
+                            clients.append({
+                                'id': client['id'],
+                                'name': client['name'],
+                                'phone': client['phone'],
+                                'email': client['email'],
+                                'visits': client['total_visits'],
+                                'lastVisit': client['last_visit_date'].strftime('%d.%m.%Y') if client['last_visit_date'] else 'Нет визитов'
+                            })
+                        
+                        cur.execute(f'SELECT key, value FROM {SCHEMA}.diary_settings WHERE owner_id = %s', (int(owner_id),))
+                        settings_rows = cur.fetchall()
+                        settings = {row['key']: row['value'] for row in settings_rows}
+                        
+                        cur.execute(f'''
+                            SELECT * FROM {SCHEMA}.diary_calendar_events
+                            WHERE owner_id = %s
+                            ORDER BY event_date DESC, start_time
+                            LIMIT 100
+                        ''', (owner_id,))
+                        events_raw = cur.fetchall()
+                        
+                        events = []
+                        for evt in events_raw:
+                            events.append({
+                                'id': evt['id'],
+                                'type': evt['event_type'],
+                                'title': evt['title'],
+                                'date': evt['event_date'].strftime('%Y-%m-%d'),
+                                'startTime': evt['start_time'].strftime('%H:%M'),
+                                'endTime': evt['end_time'].strftime('%H:%M'),
+                                'description': evt['description']
+                            })
+                        
+                        cur.execute(f'''
+                            SELECT * FROM {SCHEMA}.diary_week_schedule
+                            WHERE owner_id = %s
+                            ORDER BY 
+                                CASE day_of_week
+                                    WHEN 'monday' THEN 1
+                                    WHEN 'tuesday' THEN 2
+                                    WHEN 'wednesday' THEN 3
+                                    WHEN 'thursday' THEN 4
+                                    WHEN 'friday' THEN 5
+                                    WHEN 'saturday' THEN 6
+                                    WHEN 'sunday' THEN 7
+                                END,
+                                start_time
+                        ''', (owner_id,))
+                        schedule_raw = cur.fetchall()
+                        
+                        week_schedule = []
+                        for item in schedule_raw:
+                            week_schedule.append({
+                                'id': item['id'],
+                                'dayOfWeek': item['day_of_week'],
+                                'startTime': item['start_time'].strftime('%H:%M'),
+                                'endTime': item['end_time'].strftime('%H:%M')
+                            })
+                        
+                        cur.execute(f'''
+                            SELECT * FROM {SCHEMA}.diary_blocked_dates
+                            WHERE owner_id = %s
+                            ORDER BY blocked_date
+                        ''', (owner_id,))
+                        blocked_raw = cur.fetchall()
+                        
+                        blocked_dates = []
+                        for item in blocked_raw:
+                            blocked_dates.append({
+                                'id': item['id'],
+                                'date': item['blocked_date'].strftime('%Y-%m-%d')
+                            })
+                        
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({
+                            'bookings': bookings,
+                            'services': services,
+                            'clients': clients,
+                            'settings': settings,
+                            'events': events,
+                            'weekSchedule': week_schedule,
+                            'blockedDates': blocked_dates
+                        })
+                    }
+                except Exception as e:
+                    import traceback
+                    error_trace = traceback.format_exc()
+                    print(f"[ERROR] admin_data failed: {str(e)}")
+                    print(f"[ERROR] Traceback: {error_trace}")
+                    return {
+                        'statusCode': 500,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({
+                            'error': str(e),
+                            'trace': error_trace[:500]
+                        })
+                    }
+        
+        elif resource == 'booking_data':
+            if method == 'GET':
+                owner_id = event.get('queryStringParameters', {}).get('owner_id', '1')
+                
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    cur.execute(f'''
+                        SELECT * FROM {SCHEMA}.diary_services 
+                        WHERE owner_id = %s AND active = true
+                        ORDER BY name
+                    ''', (owner_id,))
+                    services_raw = cur.fetchall()
+                    
+                    services = []
+                    for service in services_raw:
+                        services.append({
+                            'id': service['id'],
+                            'name': service['name'],
+                            'duration': f"{service['duration_minutes']} мин",
+                            'price': f"{service['price']}₽",
+                            'active': service['active']
+                        })
+                    
+                    cur.execute(f'SELECT key, value FROM {SCHEMA}.diary_settings WHERE owner_id = %s', (int(owner_id),))
+                    settings_rows = cur.fetchall()
+                    settings = {row['key']: row['value'] for row in settings_rows}
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({
+                            'services': services,
+                            'settings': settings
+                        })
+                    }
+        
+        return {
+            'statusCode': 400,
+            'headers': {'Access-Control-Allow-Origin': '*'},
+            'isBase64Encoded': False,
+            'body': json.dumps({'error': 'Invalid resource or method'})
+        }
     
     finally:
         conn.close()
-
-
-def get_user_by_telegram(conn, telegram_id: str) -> Optional[Dict[str, Any]]:
-    '''Получить пользователя по telegram_id'''
-    if not telegram_id:
-        return None
-    
-    with conn.cursor(cursor_factory=RealDictCursor) as cur:
-        cur.execute(
-            'SELECT id, telegram_id, role, name, phone, email FROM t_p89870318_access_bars_service.diary_users WHERE telegram_id = %s',
-            (int(telegram_id),)
-        )
-        result = cur.fetchone()
-        return dict(result) if result else None
-
-
-def get_users(conn, telegram_id: str) -> Dict[str, Any]:
-    '''Список пользователей владельца'''
-    user = get_user_by_telegram(conn, telegram_id)
-    if not user or user['role'] != 'owner':
-        return error_response('Access denied', 403)
-    
-    with conn.cursor(cursor_factory=RealDictCursor) as cur:
-        cur.execute('''
-            SELECT u.id, u.telegram_id, u.role, u.name, u.phone, u.email, u.created_at
-            FROM t_p89870318_access_bars_service.diary_users u
-            LEFT JOIN t_p89870318_access_bars_service.diary_clients dc ON u.id = dc.client_id
-            WHERE dc.owner_id = %s OR u.id = %s
-            ORDER BY u.created_at DESC
-        ''', (user['id'], user['id']))
-        users = [dict(row) for row in cur.fetchall()]
-    
-    return success_response({'users': users})
-
-
-def get_services(conn, telegram_id: str) -> Dict[str, Any]:
-    '''Список услуг владельца'''
-    user = get_user_by_telegram(conn, telegram_id)
-    if not user:
-        return error_response('User not found', 404)
-    
-    owner_id = user['id'] if user['role'] == 'owner' else None
-    
-    if not owner_id:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute(
-                'SELECT owner_id FROM t_p89870318_access_bars_service.diary_clients WHERE client_id = %s',
-                (user['id'],)
-            )
-            result = cur.fetchone()
-            if result:
-                owner_id = result['owner_id']
-    
-    if not owner_id:
-        return error_response('Owner not found', 404)
-    
-    with conn.cursor(cursor_factory=RealDictCursor) as cur:
-        cur.execute('''
-            SELECT id, name, duration_minutes, price, description, active, created_at
-            FROM t_p89870318_access_bars_service.diary_services
-            WHERE owner_id = %s AND active = true
-            ORDER BY created_at DESC
-        ''', (owner_id,))
-        services = [dict(row) for row in cur.fetchall()]
-    
-    return success_response({'services': services})
-
-
-def create_service(conn, telegram_id: str, body: Dict[str, Any]) -> Dict[str, Any]:
-    '''Создание новой услуги'''
-    user = get_user_by_telegram(conn, telegram_id)
-    if not user or user['role'] != 'owner':
-        return error_response('Access denied', 403)
-    
-    name = body.get('name')
-    duration = body.get('duration_minutes')
-    price = body.get('price')
-    description = body.get('description', '')
-    
-    if not name or not duration or not price:
-        return error_response('Missing required fields', 400)
-    
-    with conn.cursor(cursor_factory=RealDictCursor) as cur:
-        cur.execute('''
-            INSERT INTO t_p89870318_access_bars_service.diary_services 
-            (owner_id, name, duration_minutes, price, description, active, created_at)
-            VALUES (%s, %s, %s, %s, %s, true, NOW())
-            RETURNING id, name, duration_minutes, price, description, active, created_at
-        ''', (user['id'], name, duration, price, description))
-        service = dict(cur.fetchone())
-        conn.commit()
-    
-    return success_response({'service': service}, 201)
-
-
-def update_service(conn, telegram_id: str, service_id: str, body: Dict[str, Any]) -> Dict[str, Any]:
-    '''Обновление услуги'''
-    user = get_user_by_telegram(conn, telegram_id)
-    if not user or user['role'] != 'owner':
-        return error_response('Access denied', 403)
-    
-    if not service_id:
-        return error_response('Service ID required', 400)
-    
-    with conn.cursor(cursor_factory=RealDictCursor) as cur:
-        cur.execute(
-            'SELECT owner_id FROM t_p89870318_access_bars_service.diary_services WHERE id = %s',
-            (int(service_id),)
-        )
-        result = cur.fetchone()
-        if not result or result['owner_id'] != user['id']:
-            return error_response('Service not found', 404)
-        
-        update_fields = []
-        values = []
-        
-        if 'name' in body:
-            update_fields.append('name = %s')
-            values.append(body['name'])
-        if 'duration_minutes' in body:
-            update_fields.append('duration_minutes = %s')
-            values.append(body['duration_minutes'])
-        if 'price' in body:
-            update_fields.append('price = %s')
-            values.append(body['price'])
-        if 'description' in body:
-            update_fields.append('description = %s')
-            values.append(body['description'])
-        if 'active' in body:
-            update_fields.append('active = %s')
-            values.append(body['active'])
-        
-        if not update_fields:
-            return error_response('No fields to update', 400)
-        
-        values.append(int(service_id))
-        
-        cur.execute(f'''
-            UPDATE t_p89870318_access_bars_service.diary_services 
-            SET {', '.join(update_fields)}
-            WHERE id = %s
-            RETURNING id, name, duration_minutes, price, description, active, created_at
-        ''', values)
-        service = dict(cur.fetchone())
-        conn.commit()
-    
-    return success_response({'service': service})
-
-
-def delete_service(conn, telegram_id: str, service_id: str) -> Dict[str, Any]:
-    '''Удаление (деактивация) услуги'''
-    user = get_user_by_telegram(conn, telegram_id)
-    if not user or user['role'] != 'owner':
-        return error_response('Access denied', 403)
-    
-    if not service_id:
-        return error_response('Service ID required', 400)
-    
-    with conn.cursor(cursor_factory=RealDictCursor) as cur:
-        cur.execute(
-            'SELECT owner_id FROM t_p89870318_access_bars_service.diary_services WHERE id = %s',
-            (int(service_id),)
-        )
-        result = cur.fetchone()
-        if not result or result['owner_id'] != user['id']:
-            return error_response('Service not found', 404)
-        
-        cur.execute(
-            'UPDATE t_p89870318_access_bars_service.diary_services SET active = false WHERE id = %s',
-            (int(service_id),)
-        )
-        conn.commit()
-    
-    return success_response({'message': 'Service deleted'})
-
-
-def get_bookings(conn, telegram_id: str) -> Dict[str, Any]:
-    '''Список записей'''
-    user = get_user_by_telegram(conn, telegram_id)
-    if not user:
-        return error_response('User not found', 404)
-    
-    return success_response({'bookings': []})
-
-
-def create_booking(conn, telegram_id: str, body: Dict[str, Any]) -> Dict[str, Any]:
-    '''Создание записи'''
-    user = get_user_by_telegram(conn, telegram_id)
-    if not user:
-        return error_response('User not found', 404)
-    
-    service_id = body.get('service_id')
-    start_time = body.get('start_time')
-    notes = body.get('notes', '')
-    
-    if not service_id or not start_time:
-        return error_response('Missing required fields', 400)
-    
-    with conn.cursor(cursor_factory=RealDictCursor) as cur:
-        cur.execute(
-            'SELECT duration_minutes FROM t_p89870318_access_bars_service.diary_services WHERE id = %s',
-            (service_id,)
-        )
-        result = cur.fetchone()
-        if not result:
-            return error_response('Service not found', 404)
-        
-        duration = result['duration_minutes']
-        start_dt = datetime.fromisoformat(start_time.replace('Z', '+00:00'))
-        end_dt = start_dt + timedelta(minutes=duration)
-        
-        cur.execute('''
-            INSERT INTO t_p89870318_access_bars_service.diary_bookings 
-            (service_id, client_id, start_time, end_time, status, notes, created_at)
-            VALUES (%s, %s, %s, %s, %s, %s, NOW())
-            RETURNING id, service_id, client_id, start_time, end_time, status, notes, created_at
-        ''', (service_id, user['id'], start_dt, end_dt, 'pending', notes))
-        booking = dict(cur.fetchone())
-        conn.commit()
-    
-    return success_response({'booking': booking}, 201)
-
-
-def update_booking(conn, telegram_id: str, booking_id: str, body: Dict[str, Any]) -> Dict[str, Any]:
-    '''Обновление статуса записи'''
-    user = get_user_by_telegram(conn, telegram_id)
-    if not user:
-        return error_response('User not found', 404)
-    
-    if not booking_id:
-        return error_response('Booking ID required', 400)
-    
-    status = body.get('status')
-    if not status:
-        return error_response('Status required', 400)
-    
-    with conn.cursor(cursor_factory=RealDictCursor) as cur:
-        cur.execute('''
-            SELECT b.client_id, s.owner_id
-            FROM t_p89870318_access_bars_service.diary_bookings b
-            JOIN t_p89870318_access_bars_service.diary_services s ON b.service_id = s.id
-            WHERE b.id = %s
-        ''', (int(booking_id),))
-        result = cur.fetchone()
-        
-        if not result:
-            return error_response('Booking not found', 404)
-        
-        if user['role'] != 'owner' and result['client_id'] != user['id']:
-            return error_response('Access denied', 403)
-        
-        cur.execute('''
-            UPDATE t_p89870318_access_bars_service.diary_bookings 
-            SET status = %s
-            WHERE id = %s
-            RETURNING id, service_id, client_id, start_time, end_time, status, notes, created_at
-        ''', (status, int(booking_id)))
-        booking = dict(cur.fetchone())
-        conn.commit()
-    
-    return success_response({'booking': booking})
-
-
-def get_schedule(conn, telegram_id: str) -> Dict[str, Any]:
-    '''Получить расписание владельца'''
-    user = get_user_by_telegram(conn, telegram_id)
-    if not user:
-        return error_response('User not found', 404)
-    
-    return success_response({'schedule': []})
-
-
-def update_schedule(conn, telegram_id: str, body: Dict[str, Any]) -> Dict[str, Any]:
-    '''Обновить расписание владельца'''
-    user = get_user_by_telegram(conn, telegram_id)
-    if not user or user['role'] != 'owner':
-        return error_response('Access denied', 403)
-    
-    schedule = body.get('schedule', [])
-    if not schedule:
-        return error_response('Schedule required', 400)
-    
-    with conn.cursor() as cur:
-        cur.execute(
-            'DELETE FROM t_p89870318_access_bars_service.diary_week_schedule WHERE owner_id = %s',
-            (user['id'],)
-        )
-        
-        for item in schedule:
-            cur.execute('''
-                INSERT INTO t_p89870318_access_bars_service.diary_week_schedule 
-                (owner_id, day_of_week, start_time, end_time, is_working)
-                VALUES (%s, %s, %s, %s, %s)
-            ''', (user['id'], item['day_of_week'], item['start_time'], item['end_time'], item['is_working']))
-        
-        conn.commit()
-    
-    return success_response({'message': 'Schedule updated'})
-
-
-def get_settings(conn, telegram_id: str) -> Dict[str, Any]:
-    '''Получить настройки владельца'''
-    user = get_user_by_telegram(conn, telegram_id)
-    if not user or user['role'] != 'owner':
-        return error_response('Access denied', 403)
-    
-    with conn.cursor(cursor_factory=RealDictCursor) as cur:
-        cur.execute(
-            'SELECT slot_duration_minutes, booking_advance_days, auto_confirm FROM t_p89870318_access_bars_service.diary_settings WHERE owner_id = %s',
-            (user['id'],)
-        )
-        result = cur.fetchone()
-        settings = dict(result) if result else {'slot_duration_minutes': 30, 'booking_advance_days': 30, 'auto_confirm': False}
-    
-    return success_response({'settings': settings})
-
-
-def update_settings(conn, telegram_id: str, body: Dict[str, Any]) -> Dict[str, Any]:
-    '''Обновить настройки владельца'''
-    user = get_user_by_telegram(conn, telegram_id)
-    if not user or user['role'] != 'owner':
-        return error_response('Access denied', 403)
-    
-    with conn.cursor(cursor_factory=RealDictCursor) as cur:
-        cur.execute(
-            'SELECT owner_id FROM t_p89870318_access_bars_service.diary_settings WHERE owner_id = %s',
-            (user['id'],)
-        )
-        exists = cur.fetchone()
-        
-        if exists:
-            update_fields = []
-            values = []
-            
-            if 'slot_duration_minutes' in body:
-                update_fields.append('slot_duration_minutes = %s')
-                values.append(body['slot_duration_minutes'])
-            if 'booking_advance_days' in body:
-                update_fields.append('booking_advance_days = %s')
-                values.append(body['booking_advance_days'])
-            if 'auto_confirm' in body:
-                update_fields.append('auto_confirm = %s')
-                values.append(body['auto_confirm'])
-            
-            values.append(user['id'])
-            
-            cur.execute(f'''
-                UPDATE t_p89870318_access_bars_service.diary_settings 
-                SET {', '.join(update_fields)}
-                WHERE owner_id = %s
-                RETURNING slot_duration_minutes, booking_advance_days, auto_confirm
-            ''', values)
-        else:
-            cur.execute('''
-                INSERT INTO t_p89870318_access_bars_service.diary_settings 
-                (owner_id, slot_duration_minutes, booking_advance_days, auto_confirm)
-                VALUES (%s, %s, %s, %s)
-                RETURNING slot_duration_minutes, booking_advance_days, auto_confirm
-            ''', (user['id'], body.get('slot_duration_minutes', 30), body.get('booking_advance_days', 30), body.get('auto_confirm', False)))
-        
-        settings = dict(cur.fetchone())
-        conn.commit()
-    
-    return success_response({'settings': settings})
-
-
-def decimal_default(obj):
-    '''JSON serializer для Decimal и datetime'''
-    if isinstance(obj, Decimal):
-        return float(obj)
-    if isinstance(obj, datetime):
-        return obj.isoformat()
-    raise TypeError(f'Object of type {type(obj)} is not JSON serializable')
-
-
-def success_response(data: Dict[str, Any], status: int = 200) -> Dict[str, Any]:
-    '''Успешный ответ'''
-    return {
-        'statusCode': status,
-        'headers': {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-        },
-        'isBase64Encoded': False,
-        'body': json.dumps(data, default=decimal_default)
-    }
-
-
-def error_response(message: str, status: int = 400) -> Dict[str, Any]:
-    '''Ответ с ошибкой'''
-    return {
-        'statusCode': status,
-        'headers': {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-        },
-        'isBase64Encoded': False,
-        'body': json.dumps({'error': message})
-    }
