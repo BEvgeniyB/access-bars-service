@@ -4,7 +4,6 @@ Args: event с httpMethod, body, queryStringParameters, pathParams; context с r
 Returns: HTTP response с данными в зависимости от resource
 '''
 
-
 import json
 import os
 from typing import Dict, Any
