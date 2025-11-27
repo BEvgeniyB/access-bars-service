@@ -20,9 +20,7 @@ import SEO404Handler from "./components/SEO404Handler";
 import Reviews from "./pages/Reviews";
 
 import NotFound from "./pages/NotFound";
-import Diary from "./pages/Diary";
-import DiaryBooking from "./pages/DiaryBooking";
-import DiaryLogin from "./pages/DiaryLogin";
+import DiaryAdminPanel from "./pages/diary/AdminPanel";
 
 const queryClient = new QueryClient();
 
@@ -47,9 +45,7 @@ const App = () => (
           <Route path="/admin" element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
           <Route path="/admin/chakra" element={<AdminChakra />} />
           
-          <Route path="/diary" element={<Diary />} />
-          <Route path="/diary/booking" element={<DiaryBooking />} />
-          <Route path="/diary/login" element={<DiaryLogin />} />
+          <Route path="/diary" element={<DiaryAdminPanel />} />
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
