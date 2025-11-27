@@ -469,69 +469,98 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             if method == 'GET':
                 owner_id = event.get('queryStringParameters', {}).get('owner_id', '1')
                 
+                bookings = []
+                services = []
+                clients = []
+                settings = {}
+                events = []
+                weekSchedule = []
+                blockedDates = []
+                
                 with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_bookings WHERE owner_id = {int(owner_id)} LIMIT 100')
-                    bookings_raw = cur.fetchall()
-                    bookings = [{
-                        'id': b['id'],
-                        'client_id': b.get('client_id'),
-                        'service_id': b.get('service_id'),
-                        'time': b['start_time'].strftime('%H:%M') if b.get('start_time') else '00:00',
-                        'date': b['booking_date'].strftime('%Y-%m-%d') if b.get('booking_date') else '',
-                        'status': b.get('status', 'pending'),
-                        'end_time': b['end_time'].strftime('%H:%M') if b.get('end_time') else '00:00'
-                    } for b in bookings_raw]
+                    try:
+                        cur.execute(f'SELECT * FROM {SCHEMA}.diary_bookings WHERE owner_id = {int(owner_id)} LIMIT 100')
+                        bookings_raw = cur.fetchall()
+                        bookings = [{
+                            'id': b['id'],
+                            'client_id': b.get('client_id'),
+                            'service_id': b.get('service_id'),
+                            'time': b['start_time'].strftime('%H:%M') if b.get('start_time') else '00:00',
+                            'date': b['booking_date'].strftime('%Y-%m-%d') if b.get('booking_date') else '',
+                            'status': b.get('status', 'pending'),
+                            'end_time': b['end_time'].strftime('%H:%M') if b.get('end_time') else '00:00'
+                        } for b in bookings_raw]
+                    except Exception as e:
+                        print(f'Warning: Could not load bookings: {e}')
                     
-                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_services WHERE owner_id = {int(owner_id)} ORDER BY id')
-                    services_raw = cur.fetchall()
-                    services = [{
-                        'id': s['id'],
-                        'name': s['name'],
-                        'duration_minutes': s['duration_minutes'],
-                        'price': str(s['price']),
-                        'active': s.get('active', True),
-                        'description': s.get('description', '')
-                    } for s in services_raw]
+                    try:
+                        cur.execute(f'SELECT * FROM {SCHEMA}.diary_services WHERE owner_id = {int(owner_id)} ORDER BY id')
+                        services_raw = cur.fetchall()
+                        services = [{
+                            'id': s['id'],
+                            'name': s['name'],
+                            'duration_minutes': s['duration_minutes'],
+                            'price': str(s['price']),
+                            'active': s.get('active', True),
+                            'description': s.get('description', '')
+                        } for s in services_raw]
+                    except Exception as e:
+                        print(f'Warning: Could not load services: {e}')
                     
-                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_clients WHERE owner_id = {int(owner_id)} ORDER BY id')
-                    clients_raw = cur.fetchall()
-                    clients = [dict(c) for c in clients_raw]
+                    try:
+                        cur.execute(f'SELECT * FROM {SCHEMA}.diary_clients WHERE owner_id = {int(owner_id)} ORDER BY id')
+                        clients_raw = cur.fetchall()
+                        clients = [dict(c) for c in clients_raw]
+                    except Exception as e:
+                        print(f'Warning: Could not load clients: {e}')
                     
-                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_settings WHERE owner_id = {int(owner_id)} LIMIT 1')
-                    settings_raw = cur.fetchone()
-                    settings = dict(settings_raw) if settings_raw else {}
+                    try:
+                        cur.execute(f'SELECT * FROM {SCHEMA}.diary_settings WHERE owner_id = {int(owner_id)} LIMIT 1')
+                        settings_raw = cur.fetchone()
+                        settings = dict(settings_raw) if settings_raw else {}
+                    except Exception as e:
+                        print(f'Warning: Could not load settings: {e}')
                     
-                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_calendar_events WHERE owner_id = {int(owner_id)} LIMIT 100')
-                    events_raw = cur.fetchall()
-                    events = [{
-                        'id': e['id'],
-                        'type': e['event_type'],
-                        'title': e['title'],
-                        'date': e['event_date'].strftime('%Y-%m-%d'),
-                        'startTime': e['start_time'].strftime('%H:%M'),
-                        'endTime': e['end_time'].strftime('%H:%M'),
-                        'description': e['description']
-                    } for e in events_raw]
+                    try:
+                        cur.execute(f'SELECT * FROM {SCHEMA}.diary_calendar_events WHERE owner_id = {int(owner_id)} LIMIT 100')
+                        events_raw = cur.fetchall()
+                        events = [{
+                            'id': e['id'],
+                            'type': e['event_type'],
+                            'title': e['title'],
+                            'date': e['event_date'].strftime('%Y-%m-%d'),
+                            'startTime': e['start_time'].strftime('%H:%M'),
+                            'endTime': e['end_time'].strftime('%H:%M'),
+                            'description': e['description']
+                        } for e in events_raw]
+                    except Exception as e:
+                        print(f'Warning: Could not load events: {e}')
                     
-                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_week_schedule WHERE owner_id = {int(owner_id)} ORDER BY week_number, day_of_week, start_time')
-                    week_schedule_raw = cur.fetchall()
-                    weekSchedule = [{
-                        'id': w['id'],
-                        'dayOfWeek': DAY_REVERSE_MAPPING.get(w['day_of_week'], 'monday'),
-                        'startTime': w['start_time'].strftime('%H:%M') if w.get('start_time') else '00:00',
-                        'endTime': w['end_time'].strftime('%H:%M') if w.get('end_time') else '00:00',
-                        'weekNumber': w.get('week_number', 1),
-                        'title': w.get('title', ''),
-                        'description': w.get('description', '')
-                    } for w in week_schedule_raw]
+                    try:
+                        cur.execute(f'SELECT * FROM {SCHEMA}.diary_week_schedule WHERE owner_id = {int(owner_id)} ORDER BY week_number, day_of_week, start_time')
+                        week_schedule_raw = cur.fetchall()
+                        weekSchedule = [{
+                            'id': w['id'],
+                            'dayOfWeek': DAY_REVERSE_MAPPING.get(w['day_of_week'], 'monday'),
+                            'startTime': w['start_time'].strftime('%H:%M') if w.get('start_time') else '00:00',
+                            'endTime': w['end_time'].strftime('%H:%M') if w.get('end_time') else '00:00',
+                            'weekNumber': w.get('week_number', 1),
+                            'title': w.get('title', ''),
+                            'description': w.get('description', '')
+                        } for w in week_schedule_raw]
+                    except Exception as e:
+                        print(f'Warning: Could not load week schedule: {e}')
                     
-                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_blocked_dates WHERE owner_id = {int(owner_id)} ORDER BY blocked_date')
-                    blocked_dates_raw = cur.fetchall()
-                    blockedDates = [{
-                        'id': bd['id'],
-                        'date': bd['blocked_date'].strftime('%Y-%m-%d'),
-                        'reason': bd.get('reason', '')
-                    } for bd in blocked_dates_raw]
+                    try:
+                        cur.execute(f'SELECT * FROM {SCHEMA}.diary_blocked_dates WHERE owner_id = {int(owner_id)} ORDER BY blocked_date')
+                        blocked_dates_raw = cur.fetchall()
+                        blockedDates = [{
+                            'id': bd['id'],
+                            'date': bd['blocked_date'].strftime('%Y-%m-%d'),
+                            'reason': bd.get('reason', '')
+                        } for bd in blocked_dates_raw]
+                    except Exception as e:
+                        print(f'Warning: Could not load blocked dates: {e}')
                     
                     return {
                         'statusCode': 200,
