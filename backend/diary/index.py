@@ -479,8 +479,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 
                 with conn.cursor(cursor_factory=RealDictCursor) as cur:
                     try:
-                        cur.execute(f'SELECT * FROM {SCHEMA}.diary_bookings WHERE owner_id = {int(owner_id)} LIMIT 100')
+                        query1 = f'SELECT * FROM diary_bookings WHERE owner_id = {int(owner_id)} LIMIT 100'
+                        query2 = f'SELECT * FROM {SCHEMA}.diary_bookings WHERE owner_id = {int(owner_id)} LIMIT 100'
+                        print(f'[DEBUG] Trying without schema first: {query1}')
+                        try:
+                            cur.execute(query1)
+                        except Exception as e1:
+                            print(f'[DEBUG] Without schema failed: {e1}, trying with schema: {query2}')
+                            cur.execute(query2)
                         bookings_raw = cur.fetchall()
+                        print(f'[DEBUG] Bookings loaded: {len(bookings_raw)} rows')
                         bookings = [{
                             'id': b['id'],
                             'client_id': b.get('client_id'),
@@ -491,7 +499,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             'end_time': b['end_time'].strftime('%H:%M') if b.get('end_time') else '00:00'
                         } for b in bookings_raw]
                     except Exception as e:
-                        print(f'Warning: Could not load bookings: {e}')
+                        import traceback
+                        print(f'[ERROR] Could not load bookings: {type(e).__name__}: {str(e)}')
+                        print(f'[ERROR] Traceback: {traceback.format_exc()}')
                     
                     try:
                         cur.execute(f'SELECT * FROM {SCHEMA}.diary_services WHERE owner_id = {int(owner_id)} ORDER BY id')
