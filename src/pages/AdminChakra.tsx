@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
@@ -138,6 +138,18 @@ const AdminChakra = () => {
     }
   };
 
+  const authFetch = async (url: string, options: RequestInit = {}) => {
+    if (!token) throw new Error('No token');
+    
+    return fetch(url, {
+      ...options,
+      headers: {
+        ...options.headers,
+        'X-Auth-Token': token,
+      },
+    });
+  };
+
   const loadAllData = async () => {
     if (!token) return;
 
@@ -151,7 +163,6 @@ const AdminChakra = () => {
       }
       
       const data = await response.json();
-      console.log('Loaded all data:', data);
       
       if (data.users) {
         setUsers(data.users);
@@ -185,14 +196,11 @@ const AdminChakra = () => {
 
 
   const loadUserData = async () => {
-    console.log('loadUserData called, token:', !!token, 'selectedUserId:', selectedUserId);
     if (!token || !selectedUserId) return;
 
     const selectedUser = users.find((u) => u.id === selectedUserId);
-    console.log('selectedUser:', selectedUser);
     
     if (!selectedUser?.chakra_id) {
-      console.log('User has no chakra_id assigned');
       setConcepts([]);
       setOrgans([]);
       setSciences([]);
@@ -202,7 +210,6 @@ const AdminChakra = () => {
 
     try {
       const chakraId = selectedUser.chakra_id;
-      console.log('Loading data for chakraId:', chakraId, 'userId:', selectedUserId);
       
       const [conceptsRes, organsRes, sciencesRes, responsibilitiesRes] = await Promise.all([
         fetch(`${ADMIN_API_URL}?table=chakra_concepts&chakra_id=${chakraId}`, {
@@ -226,24 +233,10 @@ const AdminChakra = () => {
         responsibilitiesRes.json(),
       ]);
 
-      console.log('Loaded data:', {
-        concepts: conceptsData.chakra_concepts?.length || 0,
-        organs: organsData.chakra_organs?.length || 0,
-        sciences: sciencesData.chakra_sciences?.length || 0,
-        responsibilities: responsibilitiesData.chakra_responsibilities?.length || 0
-      });
-
       const userConcepts = (conceptsData.chakra_concepts || []).filter((c: ChakraConcept) => c.user_id === selectedUserId);
       const userOrgans = (organsData.chakra_organs || []).filter((o: ChakraOrgan) => o.user_id === selectedUserId);
       const userSciences = (sciencesData.chakra_sciences || []).filter((s: ChakraScience) => s.user_id === selectedUserId);
       const userResponsibilities = (responsibilitiesData.chakra_responsibilities || []).filter((r: ChakraResponsibility) => r.user_id === selectedUserId);
-
-      console.log('Filtered for user:', {
-        concepts: userConcepts.length,
-        organs: userOrgans.length,
-        sciences: userSciences.length,
-        responsibilities: userResponsibilities.length
-      });
 
       setConcepts(userConcepts);
       setOrgans(userOrgans);
@@ -255,7 +248,6 @@ const AdminChakra = () => {
   };
 
   const handleCreateUser = () => {
-    console.log('handleCreateUser called');
     setEditType('user');
     setEditMode('create');
     setEditItem({
@@ -268,19 +260,14 @@ const AdminChakra = () => {
       is_admin: false,
     });
     setEditDialog(true);
-    console.log('Dialog should open now');
   };
 
   const handleEditUser = () => {
-    console.log('handleEditUser called, selectedUserId:', selectedUserId);
     if (!selectedUserId) {
-      console.log('No user selected');
       return;
     }
     const user = users.find((u) => u.id === selectedUserId);
-    console.log('Found user:', user);
     if (!user) {
-      console.log('User not found in array');
       return;
     }
     
@@ -288,7 +275,6 @@ const AdminChakra = () => {
     setEditMode('edit');
     setEditItem({ ...user });
     setEditDialog(true);
-    console.log('Dialog should open now for edit');
   };
 
   const handleCreate = (type: 'concept' | 'organ' | 'science' | 'responsibility') => {
@@ -340,6 +326,47 @@ const AdminChakra = () => {
     setEditMode('edit');
     setEditItem({ ...item });
     setEditDialog(true);
+  };
+
+  const addExistingItemToUser = async (
+    type: 'concept' | 'organ' | 'science' | 'responsibility',
+    existingItem: any,
+    tableName: string,
+    checkDuplicate: (item: any) => boolean,
+    duplicateMessage: string,
+    mapItemData: (item: any) => any
+  ) => {
+    if (checkDuplicate(existingItem)) {
+      alert(duplicateMessage);
+      return false;
+    }
+
+    const newItem = {
+      chakra_id: editItem.chakra_id,
+      user_id: editItem.user_id,
+      ...mapItemData(existingItem),
+    };
+
+    try {
+      const response = await authFetch(ADMIN_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ table: tableName, data: newItem }),
+      });
+
+      if (response.ok) {
+        setEditDialog(false);
+        await loadUserData();
+        return true;
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Ошибка сохранения');
+        return false;
+      }
+    } catch (err) {
+      console.error('Ошибка сохранения:', err);
+      return false;
+    }
   };
 
   const handleSave = async () => {
@@ -402,44 +429,16 @@ const AdminChakra = () => {
       const existingConcept = allConcepts.find((c) => c.id === selectedExistingConceptId);
       if (!existingConcept) return;
 
-      const duplicateForUser = concepts.find(
-        (c) => 
-          c.concept.toLowerCase().trim() === existingConcept.concept.toLowerCase().trim() && 
-          c.category === existingConcept.category
+      await addExistingItemToUser(
+        'concept',
+        existingConcept,
+        'chakra_concepts',
+        (item) => concepts.find(
+          (c) => c.concept.toLowerCase().trim() === item.concept.toLowerCase().trim() && c.category === item.category
+        ) !== undefined,
+        `Энергия "${existingConcept.concept}" с категорией "${existingConcept.category}" уже добавлена для этого пользователя.`,
+        (item) => ({ concept: item.concept, category: item.category })
       );
-
-      if (duplicateForUser) {
-        alert(`Энергия "${existingConcept.concept}" с категорией "${existingConcept.category}" уже добавлена для этого пользователя.`);
-        return;
-      }
-
-      const newItem = {
-        chakra_id: editItem.chakra_id,
-        user_id: editItem.user_id,
-        concept: existingConcept.concept,
-        category: existingConcept.category,
-      };
-
-      try {
-        const response = await fetch(ADMIN_API_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Auth-Token': token,
-          },
-          body: JSON.stringify({ table: 'chakra_concepts', data: newItem }),
-        });
-
-        if (response.ok) {
-          setEditDialog(false);
-          await loadUserData();
-        } else {
-          const data = await response.json();
-          alert(data.error || 'Ошибка сохранения');
-        }
-      } catch (err) {
-        console.error('Ошибка сохранения:', err);
-      }
       return;
     }
 
@@ -447,42 +446,14 @@ const AdminChakra = () => {
       const existingOrgan = allOrgans.find((o) => o.id === selectedExistingOrganId);
       if (!existingOrgan) return;
 
-      const duplicateForUser = organs.find(
-        (o) => o.organ_name.toLowerCase().trim() === existingOrgan.organ_name.toLowerCase().trim()
+      await addExistingItemToUser(
+        'organ',
+        existingOrgan,
+        'chakra_organs',
+        (item) => organs.find((o) => o.organ_name.toLowerCase().trim() === item.organ_name.toLowerCase().trim()) !== undefined,
+        `Орган "${existingOrgan.organ_name}" уже добавлен для этого пользователя.`,
+        (item) => ({ organ_name: item.organ_name, description: item.description })
       );
-
-      if (duplicateForUser) {
-        alert(`Орган "${existingOrgan.organ_name}" уже добавлен для этого пользователя.`);
-        return;
-      }
-
-      const newItem = {
-        chakra_id: editItem.chakra_id,
-        user_id: editItem.user_id,
-        organ_name: existingOrgan.organ_name,
-        description: existingOrgan.description,
-      };
-
-      try {
-        const response = await fetch(ADMIN_API_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Auth-Token': token,
-          },
-          body: JSON.stringify({ table: 'chakra_organs', data: newItem }),
-        });
-
-        if (response.ok) {
-          setEditDialog(false);
-          await loadUserData();
-        } else {
-          const data = await response.json();
-          alert(data.error || 'Ошибка сохранения');
-        }
-      } catch (err) {
-        console.error('Ошибка сохранения:', err);
-      }
       return;
     }
 
@@ -490,42 +461,14 @@ const AdminChakra = () => {
       const existingScience = allSciences.find((s) => s.id === selectedExistingScienceId);
       if (!existingScience) return;
 
-      const duplicateForUser = sciences.find(
-        (s) => s.science_name.toLowerCase().trim() === existingScience.science_name.toLowerCase().trim()
+      await addExistingItemToUser(
+        'science',
+        existingScience,
+        'chakra_sciences',
+        (item) => sciences.find((s) => s.science_name.toLowerCase().trim() === item.science_name.toLowerCase().trim()) !== undefined,
+        `Наука "${existingScience.science_name}" уже добавлена для этого пользователя.`,
+        (item) => ({ science_name: item.science_name, description: item.description })
       );
-
-      if (duplicateForUser) {
-        alert(`Наука "${existingScience.science_name}" уже добавлена для этого пользователя.`);
-        return;
-      }
-
-      const newItem = {
-        chakra_id: editItem.chakra_id,
-        user_id: editItem.user_id,
-        science_name: existingScience.science_name,
-        description: existingScience.description,
-      };
-
-      try {
-        const response = await fetch(ADMIN_API_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Auth-Token': token,
-          },
-          body: JSON.stringify({ table: 'chakra_sciences', data: newItem }),
-        });
-
-        if (response.ok) {
-          setEditDialog(false);
-          await loadUserData();
-        } else {
-          const data = await response.json();
-          alert(data.error || 'Ошибка сохранения');
-        }
-      } catch (err) {
-        console.error('Ошибка сохранения:', err);
-      }
       return;
     }
 
@@ -533,41 +476,14 @@ const AdminChakra = () => {
       const existingResponsibility = allResponsibilities.find((r) => r.id === selectedExistingResponsibilityId);
       if (!existingResponsibility) return;
 
-      const duplicateForUser = responsibilities.find(
-        (r) => r.responsibility.toLowerCase().trim() === existingResponsibility.responsibility.toLowerCase().trim()
+      await addExistingItemToUser(
+        'responsibility',
+        existingResponsibility,
+        'chakra_responsibilities',
+        (item) => responsibilities.find((r) => r.responsibility.toLowerCase().trim() === item.responsibility.toLowerCase().trim()) !== undefined,
+        `Ответственность "${existingResponsibility.responsibility}" уже добавлена для этого пользователя.`,
+        (item) => ({ responsibility: item.responsibility })
       );
-
-      if (duplicateForUser) {
-        alert(`Ответственность "${existingResponsibility.responsibility}" уже добавлена для этого пользователя.`);
-        return;
-      }
-
-      const newItem = {
-        chakra_id: editItem.chakra_id,
-        user_id: editItem.user_id,
-        responsibility: existingResponsibility.responsibility,
-      };
-
-      try {
-        const response = await fetch(ADMIN_API_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Auth-Token': token,
-          },
-          body: JSON.stringify({ table: 'chakra_responsibilities', data: newItem }),
-        });
-
-        if (response.ok) {
-          setEditDialog(false);
-          await loadUserData();
-        } else {
-          const data = await response.json();
-          alert(data.error || 'Ошибка сохранения');
-        }
-      } catch (err) {
-        console.error('Ошибка сохранения:', err);
-      }
       return;
     }
 
@@ -675,7 +591,7 @@ const AdminChakra = () => {
     );
   }
 
-  const selectedUser = users.find((u) => u.id === selectedUserId);
+  const selectedUser = useMemo(() => users.find((u) => u.id === selectedUserId), [users, selectedUserId]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-teal-50 pb-20">
