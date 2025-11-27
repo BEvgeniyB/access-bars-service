@@ -662,15 +662,41 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     else:
                         day_of_week_value = int(day_of_week_value)
                     
+                    owner_id = int(body_data['owner_id'])
+                    week_number = int(body_data.get('week_number', 1))
+                    start_time = body_data['start_time']
+                    end_time = body_data['end_time']
+                    
+                    cur.execute(f'''
+                        SELECT id FROM {SCHEMA}.diary_week_schedule 
+                        WHERE owner_id = {owner_id} 
+                        AND week_number = {week_number}
+                        AND day_of_week = {day_of_week_value}
+                        AND start_time = '{start_time}'::time
+                        AND end_time = '{end_time}'::time
+                    ''')
+                    existing = cur.fetchone()
+                    
+                    if existing:
+                        return {
+                            'statusCode': 409,
+                            'headers': {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Allow-Origin': '*'
+                            },
+                            'isBase64Encoded': False,
+                            'body': json.dumps({'error': 'Такое расписание уже существует', 'duplicate': True})
+                        }
+                    
                     query = f'''
                         INSERT INTO {SCHEMA}.diary_week_schedule 
                         (owner_id, week_number, day_of_week, start_time, end_time, title, description)
                         VALUES (
-                            {int(body_data['owner_id'])}, 
-                            {int(body_data.get('week_number', 1))}, 
+                            {owner_id}, 
+                            {week_number}, 
                             {day_of_week_value}, 
-                            '{body_data['start_time']}', 
-                            '{body_data['end_time']}', 
+                            '{start_time}', 
+                            '{end_time}', 
                             '{title}', 
                             '{description}'
                         )

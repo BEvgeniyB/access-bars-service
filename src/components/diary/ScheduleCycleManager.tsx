@@ -237,6 +237,11 @@ export default function ScheduleCycleManager({ open, onOpenChange, onSuccess }: 
               week_number: weekNum,
             });
             
+            if (result?.duplicate) {
+              console.warn(`⚠️ [ScheduleCycleManager] Дубликат найден для ${day.key}, неделя ${weekNum}`);
+              continue;
+            }
+            
             console.log(`✅ [ScheduleCycleManager] Ответ от API:`, result);
           }
         }
