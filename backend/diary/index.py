@@ -1051,8 +1051,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     cur.execute(f'SELECT * FROM {SCHEMA}.diary_services WHERE active = TRUE ORDER BY name')
                     services = cur.fetchall()
                     
-                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_settings LIMIT 1')
-                    settings_row = cur.fetchone()
+                    cur.execute(f'SELECT key, value FROM {SCHEMA}.diary_settings')
+                    settings_rows = cur.fetchall()
+                    settings_dict = {row['key']: row['value'] for row in settings_rows}
                     
                     services_list = []
                     for service in services:
@@ -1065,9 +1066,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         })
                     
                     settings = {
-                        'telegram_bot_username': settings_row.get('telegram_bot_username', '') if settings_row else '',
-                        'work_hours_start': settings_row.get('work_hours_start', '09:00') if settings_row else '09:00',
-                        'work_hours_end': settings_row.get('work_hours_end', '18:00') if settings_row else '18:00'
+                        'telegram_bot_username': settings_dict.get('telegram_bot_username', ''),
+                        'work_hours_start': settings_dict.get('work_hours_start', '09:00'),
+                        'work_hours_end': settings_dict.get('work_hours_end', '18:00')
                     }
                     
                     return {
@@ -1103,13 +1104,15 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         }
                     
                     service_duration = service['duration_minutes']
-                    prep_time = service.get('prep_time', 0)
-                    buffer_time = service.get('buffer_time', 0)
                     
-                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_settings LIMIT 1')
-                    settings = cur.fetchone()
-                    work_start = settings.get('work_hours_start', '09:00') if settings else '09:00'
-                    work_end = settings.get('work_hours_end', '18:00') if settings else '18:00'
+                    cur.execute(f'SELECT key, value FROM {SCHEMA}.diary_settings')
+                    settings_rows = cur.fetchall()
+                    settings_dict = {row['key']: row['value'] for row in settings_rows}
+                    
+                    prep_time = int(settings_dict.get('prep_time', 0))
+                    buffer_time = int(settings_dict.get('booking_buffer_minutes', 0))
+                    work_start = settings_dict.get('work_hours_start', '09:00')
+                    work_end = settings_dict.get('work_hours_end', '18:00')
                     
                     cur.execute(f"SELECT * FROM {SCHEMA}.diary_blocked_dates WHERE blocked_date = '{date_str}'")
                     if cur.fetchone():
@@ -1168,15 +1171,13 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     
                     busy_ranges = []
                     for apt in existing_appointments:
-                        cur.execute(f'SELECT duration, prep_time, buffer_time FROM {SCHEMA}.diary_services WHERE id = {apt["service_id"]}')
+                        cur.execute(f'SELECT duration_minutes FROM {SCHEMA}.diary_services WHERE id = {apt["service_id"]}')
                         apt_service = cur.fetchone()
                         if apt_service:
                             apt_start = datetime.strptime(apt['appointment_time'], '%H:%M').time()
-                            apt_duration = apt_service['duration']
-                            apt_prep = apt_service.get('prep_time', 0)
-                            apt_buffer = apt_service.get('buffer_time', 0)
+                            apt_duration = apt_service['duration_minutes']
                             
-                            total_minutes = apt_duration + apt_prep + apt_buffer
+                            total_minutes = apt_duration + prep_time + buffer_time
                             apt_start_dt = datetime.combine(target_date, apt_start)
                             apt_end_dt = apt_start_dt + timedelta(minutes=total_minutes)
                             
