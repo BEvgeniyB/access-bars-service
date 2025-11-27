@@ -513,9 +513,17 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'description': e['description']
                     } for e in events_raw]
                     
-                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_week_schedule WHERE owner_id = {int(owner_id)} ORDER BY id')
+                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_week_schedule WHERE owner_id = {int(owner_id)} ORDER BY week_number, day_of_week, start_time')
                     week_schedule_raw = cur.fetchall()
-                    weekSchedule = [dict(w) for w in week_schedule_raw]
+                    weekSchedule = [{
+                        'id': w['id'],
+                        'dayOfWeek': DAY_REVERSE_MAPPING.get(w['day_of_week'], 'monday'),
+                        'startTime': w['start_time'].strftime('%H:%M') if w.get('start_time') else '00:00',
+                        'endTime': w['end_time'].strftime('%H:%M') if w.get('end_time') else '00:00',
+                        'weekNumber': w.get('week_number', 1),
+                        'title': w.get('title', ''),
+                        'description': w.get('description', '')
+                    } for w in week_schedule_raw]
                     
                     cur.execute(f'SELECT * FROM {SCHEMA}.diary_blocked_dates WHERE owner_id = {int(owner_id)} ORDER BY blocked_date')
                     blocked_dates_raw = cur.fetchall()
