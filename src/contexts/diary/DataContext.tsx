@@ -94,8 +94,9 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     console.log('🔄 [DataContext] API ВЫЗОВ: schedule.getWeek()');
     try {
       const response = await api.schedule.getWeek();
-      setWeekSchedule(response.schedule || []);
-      console.log('✅ [DataContext] Недельное расписание загружено:', response.schedule?.length || 0);
+      const scheduleData = response.schedule || response.weekSchedule || [];
+      setWeekSchedule(scheduleData);
+      console.log('✅ [DataContext] Недельное расписание загружено:', scheduleData.length);
     } catch (err) {
       console.error('❌ [DataContext] Error loading week schedule:', err);
     }

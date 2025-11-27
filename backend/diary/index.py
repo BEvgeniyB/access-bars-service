@@ -342,7 +342,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         if body_data.get('force', False) and conflicting_bookings:
                             booking_ids = ','.join([str(int(b['id'])) for b in conflicting_bookings])
                             cur.execute(f'''
-                                UPDATE diary_bookings 
+                                UPDATE {SCHEMA}.diary_bookings 
                                 SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP
                                 WHERE id IN ({booking_ids})
                             ''')
@@ -661,8 +661,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 with conn.cursor(cursor_factory=RealDictCursor) as cur:
                     query = f'''
                         SELECT c.id, c.user_id, u.name, u.phone, u.email 
-                        FROM diary_clients c
-                        JOIN diary_users u ON c.user_id = u.id
+                        FROM {SCHEMA}.diary_clients c
+                        JOIN {SCHEMA}.diary_users u ON c.user_id = u.id
                     '''
                     if owner_id:
                         query += f' WHERE c.owner_id = {int(owner_id)}'
@@ -781,6 +781,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         elif resource == 'week_schedule':
             if method == 'GET':
                 owner_id = event.get('queryStringParameters', {}).get('owner_id')
+                date_param = event.get('queryStringParameters', {}).get('date')
                 
                 with conn.cursor(cursor_factory=RealDictCursor) as cur:
                     query = f'SELECT * FROM {SCHEMA}.diary_week_schedule'
@@ -803,6 +804,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             'description': schedule.get('description', '')
                         })
                     
+                    response_body = {'schedule': result}
+                    
+                    if date_param:
+                        response_body['cycleStartDate'] = None
+                        response_body['weekNumber'] = None
+                    
                     return {
                         'statusCode': 200,
                         'headers': {
@@ -810,7 +817,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             'Access-Control-Allow-Origin': '*'
                         },
                         'isBase64Encoded': False,
-                        'body': json.dumps({'weekSchedule': result})
+                        'body': json.dumps(response_body)
                     }
             
             elif method == 'POST':
