@@ -68,12 +68,13 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     cur = conn.cursor()
     
     try:
+        telegram_id_int = int(telegram_id)
         query = '''
             SELECT id, name, email, role, telegram_id, phone
             FROM t_p89870318_access_bars_service.diary_users
             WHERE telegram_id = %s
         '''
-        cur.execute(query, (telegram_id,))
+        cur.execute(query, (telegram_id_int,))
         user = cur.fetchone()
         
         if not user:

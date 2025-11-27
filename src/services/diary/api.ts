@@ -142,7 +142,12 @@ export const api = {
   auth: {
     login: async (telegramId: number) => {
       const response = await fetch(
-        `https://functions.poehali.dev/3d742e4e-d51f-4527-8f32-f371d030cdcf?telegram_id=${telegramId}`
+        'https://functions.poehali.dev/81142751-b500-40dc-91f2-9318b9f48791',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ telegram_id: String(telegramId) })
+        }
       );
       if (!response.ok) throw new Error('Auth failed');
       return response.json();
