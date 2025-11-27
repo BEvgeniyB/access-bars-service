@@ -9,8 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import Icon from '@/components/ui/icon';
 
 export default function DiaryLoginPage() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [telegramId, setTelegramId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useDiaryAuth();
   const navigate = useNavigate();
@@ -21,12 +20,12 @@ export default function DiaryLoginPage() {
     setIsLoading(true);
 
     try {
-      await login(username, password);
-      navigate('/diary/admin');
+      await login(telegramId);
+      navigate('/diary');
     } catch (error) {
       toast({
         title: 'Ошибка входа',
-        description: 'Неверное имя пользователя или пароль',
+        description: 'Неверный Telegram ID или нет доступа',
         variant: 'destructive',
       });
     } finally {
@@ -45,34 +44,25 @@ export default function DiaryLoginPage() {
           </div>
           <CardTitle className="text-2xl text-center">Вход в админ-панель</CardTitle>
           <CardDescription className="text-center">
-            Введите учетные данные для доступа к системе онлайн-записи
+            Введите ваш Telegram ID для доступа к системе онлайн-записи
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Имя пользователя</Label>
+              <Label htmlFor="telegramId">Telegram ID</Label>
               <Input
-                id="username"
+                id="telegramId"
                 type="text"
-                placeholder="admin"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                placeholder="123456789"
+                value={telegramId}
+                onChange={(e) => setTelegramId(e.target.value)}
                 disabled={isLoading}
                 required
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Пароль</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
-                required
-              />
+              <p className="text-xs text-muted-foreground">
+                Узнать свой ID: напишите @userinfobot в Telegram
+              </p>
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? (

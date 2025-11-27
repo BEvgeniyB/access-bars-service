@@ -5,7 +5,7 @@ interface DiaryAuthContextType {
   admin: Admin | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (username: string, password: string) => Promise<void>;
+  login: (telegramId: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -32,11 +32,11 @@ export function DiaryAuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  const login = async (username: string, password: string) => {
-    const { token, admin: adminData } = await diaryApi.login(username, password);
+  const login = async (telegramId: string) => {
+    const { token, user } = await diaryApi.loginWithTelegram(telegramId);
     localStorage.setItem('diary_token', token);
-    localStorage.setItem('diary_admin', JSON.stringify(adminData));
-    setAdmin(adminData);
+    localStorage.setItem('diary_admin', JSON.stringify(user));
+    setAdmin(user);
   };
 
   const logout = () => {
