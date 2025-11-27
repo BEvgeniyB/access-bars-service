@@ -520,14 +520,30 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     try:
                         cur.execute(f'SELECT * FROM {SCHEMA}.diary_clients WHERE owner_id = {int(owner_id)} ORDER BY id')
                         clients_raw = cur.fetchall()
-                        clients = [dict(c) for c in clients_raw]
+                        clients = [{
+                            'id': c['id'],
+                            'user_id': c['user_id'],
+                            'owner_id': c['owner_id'],
+                            'total_visits': c.get('total_visits', 0),
+                            'last_visit_date': c['last_visit_date'].strftime('%Y-%m-%d') if c.get('last_visit_date') else None,
+                            'created_at': c['created_at'].strftime('%Y-%m-%d %H:%M:%S') if c.get('created_at') else None
+                        } for c in clients_raw]
                     except Exception as e:
                         print(f'Warning: Could not load clients: {e}')
                     
                     try:
                         cur.execute(f'SELECT * FROM {SCHEMA}.diary_settings WHERE owner_id = {int(owner_id)} LIMIT 1')
                         settings_raw = cur.fetchone()
-                        settings = dict(settings_raw) if settings_raw else {}
+                        if settings_raw:
+                            settings = {
+                                'id': settings_raw['id'],
+                                'owner_id': settings_raw['owner_id'],
+                                'key': settings_raw.get('key'),
+                                'value': settings_raw.get('value'),
+                                'created_at': settings_raw['created_at'].strftime('%Y-%m-%d %H:%M:%S') if settings_raw.get('created_at') else None
+                            }
+                        else:
+                            settings = {}
                     except Exception as e:
                         print(f'Warning: Could not load settings: {e}')
                     
