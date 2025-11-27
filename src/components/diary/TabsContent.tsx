@@ -1,9 +1,6 @@
 import { useAppContext } from '@/contexts/diary/AppContext';
 import BookingsTab from './BookingsTab';
 import ClientsTab from './ClientsTab';
-import ServicesTab from './ServicesTab';
-import SettingsTab from './SettingsTab';
-import MyScheduleTab from './webapp/MyScheduleTab';
 
 const TabsContentComponent = () => {
   const { activeTab } = useAppContext();
@@ -11,9 +8,9 @@ const TabsContentComponent = () => {
     <>
       {activeTab === 'bookings' && <BookingsTab />}
       {activeTab === 'clients' && <ClientsTab />}
-      {activeTab === 'services' && <ServicesTab />}
-      {activeTab === 'settings' && <SettingsTab />}
-      {activeTab === 'my-schedule' && <MyScheduleTab />}
+      {activeTab === 'services' && <div className="p-8 text-center text-gray-500">ServicesTab - скоро будет добавлен</div>}
+      {activeTab === 'settings' && <div className="p-8 text-center text-gray-500">SettingsTab - скоро будет добавлен</div>}
+      {activeTab === 'my-schedule' && <div className="p-8 text-center text-gray-500">MyScheduleTab - скоро будет добавлен</div>}
     </>
   );
 };
