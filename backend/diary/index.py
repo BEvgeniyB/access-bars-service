@@ -350,6 +350,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         title = body_data['title'].replace("'", "''")
                         
                         start_date = body_data.get('date', body_data.get('start_date', ''))
+                        if not start_date:
+                            return {
+                                'statusCode': 400,
+                                'headers': {
+                                    'Content-Type': 'application/json',
+                                    'Access-Control-Allow-Origin': '*'
+                                },
+                                'isBase64Encoded': False,
+                                'body': json.dumps({'error': 'Missing required field: date or start_date'})
+                            }
                         
                         query = f'''
                             INSERT INTO {SCHEMA}.diary_calendar_events 

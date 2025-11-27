@@ -31,7 +31,7 @@ export default function EventsCard({ events, onDataChange, onConflict }: EventsC
   const [newEvent, setNewEvent] = useState({
     event_type: 'event',
     title: '',
-    event_date: '',
+    date: '',
     start_time: '10:00',
     end_time: '11:00',
     description: '',
@@ -42,7 +42,7 @@ export default function EventsCard({ events, onDataChange, onConflict }: EventsC
       alert('Введите название мероприятия');
       return;
     }
-    if (!newEvent.event_date) {
+    if (!newEvent.date) {
       alert('Выберите дату');
       return;
     }
@@ -69,7 +69,7 @@ export default function EventsCard({ events, onDataChange, onConflict }: EventsC
       setNewEvent({
         event_type: 'event',
         title: '',
-        event_date: '',
+        date: '',
         start_time: '10:00',
         end_time: '11:00',
         description: '',
@@ -144,8 +144,8 @@ export default function EventsCard({ events, onDataChange, onConflict }: EventsC
                 <Label>Дата</Label>
                 <Input
                   type="date"
-                  value={newEvent.event_date}
-                  onChange={(e) => setNewEvent({ ...newEvent, event_date: e.target.value })}
+                  value={newEvent.date}
+                  onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
