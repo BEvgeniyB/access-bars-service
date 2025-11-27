@@ -63,6 +63,54 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 })
             }
         
+        if resource == 'debug_all':
+            owner_id = event.get('queryStringParameters', {}).get('owner_id', '1')
+            
+            tables_data = {}
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                tables = [
+                    'diary_users',
+                    'diary_clients', 
+                    'diary_services',
+                    'diary_bookings',
+                    'diary_calendar_events',
+                    'diary_week_schedule',
+                    'diary_blocked_dates',
+                    'diary_settings'
+                ]
+                
+                for table in tables:
+                    try:
+                        cur.execute(f'SELECT * FROM {SCHEMA}.{table} LIMIT 100')
+                        rows = cur.fetchall()
+                        
+                        serialized_rows = []
+                        for row in rows:
+                            serialized_row = {}
+                            for key, value in dict(row).items():
+                                if hasattr(value, 'strftime'):
+                                    serialized_row[key] = value.strftime('%Y-%m-%d %H:%M:%S') if hasattr(value, 'hour') else value.strftime('%Y-%m-%d')
+                                else:
+                                    serialized_row[key] = value
+                            serialized_rows.append(serialized_row)
+                        
+                        tables_data[table] = {
+                            'count': len(rows),
+                            'data': serialized_rows
+                        }
+                    except Exception as e:
+                        tables_data[table] = {
+                            'error': str(e),
+                            'type': type(e).__name__
+                        }
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'isBase64Encoded': False,
+                'body': json.dumps(tables_data, ensure_ascii=False)
+            }
+        
         if resource == 'bookings':
             if method == 'GET':
                 owner_id = event.get('queryStringParameters', {}).get('owner_id')
