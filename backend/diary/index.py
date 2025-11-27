@@ -875,6 +875,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             elif method == 'POST':
                 body_data = json.loads(event.get('body', '{}'))
                 
+                print(f'[DEBUG] POST week_schedule body_data: {body_data}')
+                
                 with conn.cursor(cursor_factory=RealDictCursor) as cur:
                     title = body_data.get('title', '').replace("'", "''")
                     description = body_data.get('description', '').replace("'", "''")
@@ -890,6 +892,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     start_time = body_data['start_time']
                     end_time = body_data['end_time']
                     cycle_start_date = body_data.get('cycle_start_date')
+                    
+                    print(f'[DEBUG] cycle_start_date value: {cycle_start_date}, type: {type(cycle_start_date)}')
                     
                     cur.execute(f'''
                         SELECT id FROM {SCHEMA}.diary_week_schedule 
