@@ -803,23 +803,64 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     cur.execute(query)
                     schedules = cur.fetchall()
                     
-                    result = []
-                    for schedule in schedules:
-                        result.append({
-                            'id': schedule['id'],
-                            'dayOfWeek': DAY_REVERSE_MAPPING.get(schedule['day_of_week'], 'monday'),
-                            'startTime': schedule['start_time'].strftime('%H:%M') if schedule.get('start_time') else '00:00',
-                            'endTime': schedule['end_time'].strftime('%H:%M') if schedule.get('end_time') else '00:00',
-                            'weekNumber': schedule.get('week_number', 1),
-                            'title': schedule.get('title', ''),
-                            'description': schedule.get('description', '')
-                        })
+                    active_cycle_start = None
+                    active_week_number = None
+                    
+                    if date_param and schedules:
+                        from datetime import datetime, timedelta
+                        
+                        target_date = datetime.strptime(date_param, '%Y-%m-%d').date()
+                        
+                        unique_cycles = {}
+                        for schedule in schedules:
+                            cycle_date = schedule.get('cycle_start_date')
+                            if cycle_date:
+                                unique_cycles[cycle_date] = True
+                        
+                        valid_cycles = [cd for cd in unique_cycles.keys() if cd <= target_date]
+                        
+                        if valid_cycles:
+                            active_cycle_start = max(valid_cycles)
+                            
+                            days_diff = (target_date - active_cycle_start).days
+                            weeks_diff = days_diff // 7
+                            
+                            active_week_number = (weeks_diff % 2) + 1
+                    
+                    if date_param and active_cycle_start and active_week_number:
+                        result = []
+                        for schedule in schedules:
+                            if (schedule.get('cycle_start_date') == active_cycle_start and 
+                                schedule.get('week_number') == active_week_number):
+                                result.append({
+                                    'id': schedule['id'],
+                                    'dayOfWeek': DAY_REVERSE_MAPPING.get(schedule['day_of_week'], 'monday'),
+                                    'startTime': schedule['start_time'].strftime('%H:%M') if schedule.get('start_time') else '00:00',
+                                    'endTime': schedule['end_time'].strftime('%H:%M') if schedule.get('end_time') else '00:00',
+                                    'weekNumber': schedule.get('week_number', 1),
+                                    'title': schedule.get('title', ''),
+                                    'description': schedule.get('description', ''),
+                                    'cycleStartDate': schedule.get('cycle_start_date').strftime('%Y-%m-%d') if schedule.get('cycle_start_date') else None
+                                })
+                    else:
+                        result = []
+                        for schedule in schedules:
+                            result.append({
+                                'id': schedule['id'],
+                                'dayOfWeek': DAY_REVERSE_MAPPING.get(schedule['day_of_week'], 'monday'),
+                                'startTime': schedule['start_time'].strftime('%H:%M') if schedule.get('start_time') else '00:00',
+                                'endTime': schedule['end_time'].strftime('%H:%M') if schedule.get('end_time') else '00:00',
+                                'weekNumber': schedule.get('week_number', 1),
+                                'title': schedule.get('title', ''),
+                                'description': schedule.get('description', ''),
+                                'cycleStartDate': schedule.get('cycle_start_date').strftime('%Y-%m-%d') if schedule.get('cycle_start_date') else None
+                            })
                     
                     response_body = {'schedule': result}
                     
                     if date_param:
-                        response_body['cycleStartDate'] = None
-                        response_body['weekNumber'] = None
+                        response_body['cycleStartDate'] = active_cycle_start.strftime('%Y-%m-%d') if active_cycle_start else None
+                        response_body['weekNumber'] = active_week_number
                     
                     return {
                         'statusCode': 200,
@@ -848,14 +889,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     week_number = int(body_data.get('week_number', 1))
                     start_time = body_data['start_time']
                     end_time = body_data['end_time']
+                    cycle_start_date = body_data.get('cycle_start_date')
                     
                     cur.execute(f'''
-                        SELECT id FROM diary_week_schedule 
+                        SELECT id FROM {SCHEMA}.diary_week_schedule 
                         WHERE owner_id = {owner_id} 
                         AND week_number = {week_number}
                         AND day_of_week = {day_of_week_value}
                         AND start_time = '{start_time}'::time
                         AND end_time = '{end_time}'::time
+                        AND cycle_start_date = '{cycle_start_date}'::date
                     ''')
                     existing = cur.fetchone()
                     
@@ -872,7 +915,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     
                     query = f'''
                         INSERT INTO {SCHEMA}.diary_week_schedule 
-                        (owner_id, week_number, day_of_week, start_time, end_time, title, description)
+                        (owner_id, week_number, day_of_week, start_time, end_time, title, description, cycle_start_date)
                         VALUES (
                             {owner_id}, 
                             {week_number}, 
@@ -880,7 +923,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             '{start_time}', 
                             '{end_time}', 
                             '{title}', 
-                            '{description}'
+                            '{description}',
+                            '{cycle_start_date}'
                         )
                         RETURNING id
                     '''
