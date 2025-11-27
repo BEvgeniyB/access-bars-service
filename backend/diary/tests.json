@@ -23,6 +23,30 @@
       "method": "GET",
       "path": "/?resource=clients&owner_id=1",
       "expectedStatus": 200
+    },
+    {
+      "name": "Get week schedule",
+      "method": "GET",
+      "path": "/?resource=week_schedule&owner_id=1",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Get blocked dates",
+      "method": "GET",
+      "path": "/?resource=blocked_dates&owner_id=1",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Get settings",
+      "method": "GET",
+      "path": "/?resource=settings&owner_id=1",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Get admin data",
+      "method": "GET",
+      "path": "/?resource=admin_data&owner_id=1",
+      "expectedStatus": 200
     }
   ]
 }

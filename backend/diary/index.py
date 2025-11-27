@@ -725,6 +725,59 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'body': json.dumps({'id': client_id, 'user_id': user_id, 'message': 'Client created'})
                     }
         
+        elif resource == 'settings':
+            if method == 'GET':
+                owner_id = event.get('queryStringParameters', {}).get('owner_id', '1')
+                
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_settings WHERE owner_id = {int(owner_id)}')
+                    settings_rows = cur.fetchall()
+                    
+                    settings = {}
+                    for row in settings_rows:
+                        settings[row['key']] = row['value']
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'settings': settings})
+                    }
+            
+            elif method == 'PUT':
+                body_data = json.loads(event.get('body', '{}'))
+                owner_id = body_data.get('owner_id', 1)
+                
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    for key, value in body_data.items():
+                        if key == 'owner_id':
+                            continue
+                        
+                        key_escaped = key.replace("'", "''")
+                        value_escaped = str(value).replace("'", "''")
+                        
+                        cur.execute(f"""
+                            INSERT INTO {SCHEMA}.diary_settings (owner_id, key, value)
+                            VALUES ({int(owner_id)}, '{key_escaped}', '{value_escaped}')
+                            ON CONFLICT (owner_id, key) 
+                            DO UPDATE SET value = '{value_escaped}'
+                        """)
+                    
+                    conn.commit()
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'message': 'Settings updated'})
+                    }
+        
         elif resource == 'week_schedule':
             if method == 'GET':
                 owner_id = event.get('queryStringParameters', {}).get('owner_id')
