@@ -75,18 +75,11 @@ class DiaryAPI {
   }
 
   async loginWithTelegram(telegramId: string): Promise<{ token: string; user: Admin }> {
-    const telegramGroupId = import.meta.env.VITE_TELEGRAM_GROUP_ID;
-    
-    if (!telegramGroupId) {
-      throw new Error('TELEGRAM_GROUP_ID не настроен');
-    }
-
     const response = await fetch('https://functions.poehali.dev/81142751-b500-40dc-91f2-9318b9f48791', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
-        telegram_id: telegramId,
-        telegram_group_id: telegramGroupId 
+        telegram_id: telegramId
       }),
     });
 

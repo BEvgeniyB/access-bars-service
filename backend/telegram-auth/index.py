@@ -42,16 +42,15 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         body_raw = '{}'
     body_data = json.loads(body_raw)
     telegram_id: str = body_data.get('telegram_id', '').strip()
-    telegram_group_id: str = body_data.get('telegram_group_id', '').strip()
     
-    if not telegram_id or not telegram_group_id:
+    if not telegram_id:
         return {
             'statusCode': 400,
             'headers': {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
-            'body': json.dumps({'error': 'telegram_id и telegram_group_id обязательны'})
+            'body': json.dumps({'error': 'telegram_id обязателен'})
         }
     
     database_url = os.environ.get('DATABASE_URL')
@@ -70,11 +69,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     
     try:
         query = '''
-            SELECT id, name, email, role, is_admin, telegram_id, telegram_group_id, telegram_username
-            FROM t_p89870318_access_bars_service.users
-            WHERE telegram_id = %s AND telegram_group_id = %s
+            SELECT id, name, email, role, telegram_id, phone
+            FROM t_p89870318_access_bars_service.diary_users
+            WHERE telegram_id = %s
         '''
-        cur.execute(query, (telegram_id, telegram_group_id))
+        cur.execute(query, (telegram_id,))
         user = cur.fetchone()
         
         if not user:
@@ -84,10 +83,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Origin': '*'
                 },
-                'body': json.dumps({'error': 'Неверный telegram_id или telegram_group_id'})
+                'body': json.dumps({'error': 'Пользователь с таким telegram_id не найден'})
             }
         
-        user_id, name, email, role, is_admin, tg_id, tg_group, tg_username = user
+        user_id, name, email, role, tg_id, phone = user
+        is_admin = (role == 'owner')
         
         jwt_secret = os.environ.get('ADMIN_TOKEN', 'default-secret-key')
         token_payload = {
@@ -102,13 +102,13 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'success': True,
             'token': token,
             'user': {
-                'id': user_id,
+                'id': str(user_id),
                 'name': name,
-                'email': email,
+                'email': email or '',
                 'role': role,
-                'is_admin': is_admin or False,
-                'telegram_id': tg_id,
-                'telegram_username': tg_username
+                'is_admin': is_admin,
+                'telegram_id': str(tg_id),
+                'phone': phone or ''
             }
         }
         
