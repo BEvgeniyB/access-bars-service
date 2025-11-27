@@ -90,6 +90,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             for key, value in dict(row).items():
                                 if hasattr(value, 'strftime'):
                                     serialized_row[key] = value.strftime('%Y-%m-%d %H:%M:%S') if hasattr(value, 'hour') else value.strftime('%Y-%m-%d')
+                                elif type(value).__name__ == 'Decimal':
+                                    serialized_row[key] = str(value)
                                 else:
                                     serialized_row[key] = value
                             serialized_rows.append(serialized_row)
