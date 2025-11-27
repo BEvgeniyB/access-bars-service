@@ -1,14 +1,13 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Card } from '@/components/ui/card';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import LoginForm from '@/components/admin/chakra/LoginForm';
 import UserSelector from '@/components/admin/chakra/UserSelector';
 import ChakraDataTabs from '@/components/admin/chakra/ChakraDataTabs';
 import ChakraEditDialog from '@/components/admin/chakra/ChakraEditDialog';
-
-const TELEGRAM_AUTH_URL = 'https://functions.poehali.dev/81142751-b500-40dc-91f2-9318b9f48791';
-const ADMIN_API_URL = 'https://functions.poehali.dev/9471e2dc-0dfa-4927-9d58-74f7dc75819c';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { useChakraData } from '@/hooks/useChakraData';
+import { useChakraActions } from '@/hooks/useChakraActions';
 
 interface User {
   id: number;
@@ -63,532 +62,37 @@ interface ChakraResponsibility {
 }
 
 const AdminChakra = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [token, setToken] = useState<string | null>(null);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [telegramId, setTelegramId] = useState('');
-  const [telegramGroupId, setTelegramGroupId] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const [users, setUsers] = useState<User[]>([]);
-  const [chakras, setChakras] = useState<Chakra[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
 
-  const [concepts, setConcepts] = useState<ChakraConcept[]>([]);
-  const [organs, setOrgans] = useState<ChakraOrgan[]>([]);
-  const [sciences, setSciences] = useState<ChakraScience[]>([]);
-  const [responsibilities, setResponsibilities] = useState<ChakraResponsibility[]>([]);
-
-  const [editDialog, setEditDialog] = useState(false);
-  const [editType, setEditType] = useState<'concept' | 'organ' | 'science' | 'responsibility' | 'user'>('concept');
-  const [editItem, setEditItem] = useState<any>(null);
-  const [editMode, setEditMode] = useState<'create' | 'edit'>('create');
-  
-  const [allConcepts, setAllConcepts] = useState<ChakraConcept[]>([]);
-  const [showNewConceptForm, setShowNewConceptForm] = useState(false);
-  const [selectedExistingConceptId, setSelectedExistingConceptId] = useState<number | null>(null);
-
-  const [allOrgans, setAllOrgans] = useState<ChakraOrgan[]>([]);
-  const [showNewOrganForm, setShowNewOrganForm] = useState(false);
-  const [selectedExistingOrganId, setSelectedExistingOrganId] = useState<number | null>(null);
-
-  const [allSciences, setAllSciences] = useState<ChakraScience[]>([]);
-  const [showNewScienceForm, setShowNewScienceForm] = useState(false);
-  const [selectedExistingScienceId, setSelectedExistingScienceId] = useState<number | null>(null);
-
-  const [allResponsibilities, setAllResponsibilities] = useState<ChakraResponsibility[]>([]);
-  const [showNewResponsibilityForm, setShowNewResponsibilityForm] = useState(false);
-  const [selectedExistingResponsibilityId, setSelectedExistingResponsibilityId] = useState<number | null>(null);
-
-  const selectedUser = useMemo(() => users.find((u) => u.id === selectedUserId), [users, selectedUserId]);
-
-  const handleLogin = async () => {
-    if (!telegramId.trim() || !telegramGroupId.trim()) {
-      setError('Введите Telegram ID и Group ID');
-      return;
-    }
-
-    setLoading(true);
-    setError('');
-
-    try {
-      const response = await fetch(TELEGRAM_AUTH_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          telegram_id: telegramId.trim(),
-          telegram_group_id: telegramGroupId.trim(),
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Ошибка авторизации');
-      }
-
-      setToken(data.token);
-      setCurrentUser(data.user);
-      setIsAuthenticated(true);
-      localStorage.setItem('admin_token', data.token);
-      localStorage.setItem('admin_user', JSON.stringify(data.user));
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const authFetch = async (url: string, options: RequestInit = {}) => {
-    if (!token) throw new Error('No token');
-    
-    return fetch(url, {
-      ...options,
-      headers: {
-        ...options.headers,
-        'X-Auth-Token': token,
-      },
-    });
-  };
-
-  const loadAllData = async () => {
-    if (!token) return;
-
-    try {
-      const response = await fetch(`${ADMIN_API_URL}?action=get_all_data`, {
-        headers: { 'X-Auth-Token': token },
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      
-      if (data.users) {
-        setUsers(data.users);
-      }
-      
-      if (data.chakras) {
-        const sorted = data.chakras.sort((a: Chakra, b: Chakra) => a.position - b.position);
-        setChakras(sorted);
-      }
-      
-      if (data.chakra_concepts) {
-        setAllConcepts(data.chakra_concepts);
-      }
-      
-      if (data.chakra_organs) {
-        setAllOrgans(data.chakra_organs);
-      }
-      
-      if (data.chakra_sciences) {
-        setAllSciences(data.chakra_sciences);
-      }
-      
-      if (data.chakra_responsibilities) {
-        setAllResponsibilities(data.chakra_responsibilities);
-      }
-    } catch (err: any) {
-      console.error('Ошибка загрузки данных:', err.message || err);
-    }
-  };
-
-
-
-  const loadUserData = async () => {
-    if (!token || !selectedUserId) return;
-
-    const selectedUser = users.find((u) => u.id === selectedUserId);
-    
-    if (!selectedUser?.chakra_id) {
-      setConcepts([]);
-      setOrgans([]);
-      setSciences([]);
-      setResponsibilities([]);
-      return;
-    }
-
-    try {
-      const chakraId = selectedUser.chakra_id;
-      
-      const [conceptsRes, organsRes, sciencesRes, responsibilitiesRes] = await Promise.all([
-        fetch(`${ADMIN_API_URL}?table=chakra_concepts&chakra_id=${chakraId}`, {
-          headers: { 'X-Auth-Token': token },
-        }),
-        fetch(`${ADMIN_API_URL}?table=chakra_organs&chakra_id=${chakraId}`, {
-          headers: { 'X-Auth-Token': token },
-        }),
-        fetch(`${ADMIN_API_URL}?table=chakra_sciences&chakra_id=${chakraId}`, {
-          headers: { 'X-Auth-Token': token },
-        }),
-        fetch(`${ADMIN_API_URL}?table=chakra_responsibilities&chakra_id=${chakraId}`, {
-          headers: { 'X-Auth-Token': token },
-        }),
-      ]);
-
-      const [conceptsData, organsData, sciencesData, responsibilitiesData] = await Promise.all([
-        conceptsRes.json(),
-        organsRes.json(),
-        sciencesRes.json(),
-        responsibilitiesRes.json(),
-      ]);
-
-      const userConcepts = (conceptsData.chakra_concepts || []).filter((c: ChakraConcept) => c.user_id === selectedUserId);
-      const userOrgans = (organsData.chakra_organs || []).filter((o: ChakraOrgan) => o.user_id === selectedUserId);
-      const userSciences = (sciencesData.chakra_sciences || []).filter((s: ChakraScience) => s.user_id === selectedUserId);
-      const userResponsibilities = (responsibilitiesData.chakra_responsibilities || []).filter((r: ChakraResponsibility) => r.user_id === selectedUserId);
-
-      setConcepts(userConcepts);
-      setOrgans(userOrgans);
-      setSciences(userSciences);
-      setResponsibilities(userResponsibilities);
-    } catch (err) {
-      console.error('Ошибка загрузки данных пользователя:', err);
-    }
-  };
-
-  const handleCreateUser = () => {
-    setEditType('user');
-    setEditMode('create');
-    setEditItem({
-      name: '',
-      email: '',
-      telegram_id: '',
-      telegram_username: '',
-      chakra_id: null,
-      role: 'responsible',
-      is_admin: false,
-    });
-    setEditDialog(true);
-  };
-
-  const handleEditUser = () => {
-    if (!selectedUserId) {
-      return;
-    }
-    const user = users.find((u) => u.id === selectedUserId);
-    if (!user) {
-      return;
-    }
-    
-    setEditType('user');
-    setEditMode('edit');
-    setEditItem({ ...user });
-    setEditDialog(true);
-  };
-
-  const handleCreate = (type: 'concept' | 'organ' | 'science' | 'responsibility') => {
-    const selectedUser = users.find((u) => u.id === selectedUserId);
-    if (!selectedUser?.chakra_id) {
-      alert('Сначала назначьте пользователю чакру');
-      return;
-    }
-
-    setEditType(type);
-    setEditMode('create');
-
-    const newItem: any = {
-      chakra_id: selectedUser.chakra_id,
-      user_id: selectedUserId,
-    };
-
-    if (type === 'concept') {
-      newItem.concept = '';
-      newItem.category = '';
-      setShowNewConceptForm(false);
-      setSelectedExistingConceptId(null);
-      loadAllData();
-    } else if (type === 'organ') {
-      newItem.organ_name = '';
-      newItem.description = '';
-      setShowNewOrganForm(false);
-      setSelectedExistingOrganId(null);
-      loadAllData();
-    } else if (type === 'science') {
-      newItem.science_name = '';
-      newItem.description = '';
-      setShowNewScienceForm(false);
-      setSelectedExistingScienceId(null);
-      loadAllData();
-    } else if (type === 'responsibility') {
-      newItem.responsibility = '';
-      setShowNewResponsibilityForm(false);
-      setSelectedExistingResponsibilityId(null);
-      loadAllData();
-    }
-
-    setEditItem(newItem);
-    setEditDialog(true);
-  };
-
-  const handleEdit = (type: 'concept' | 'organ' | 'science' | 'responsibility', item: any) => {
-    setEditType(type);
-    setEditMode('edit');
-    setEditItem({ ...item });
-    setEditDialog(true);
-  };
-
-  const addExistingItemToUser = async (
-    type: 'concept' | 'organ' | 'science' | 'responsibility',
-    existingItem: any,
-    tableName: string,
-    checkDuplicate: (item: any) => boolean,
-    duplicateMessage: string,
-    mapItemData: (item: any) => any
-  ) => {
-    if (checkDuplicate(existingItem)) {
-      alert(duplicateMessage);
-      return false;
-    }
-
-    const newItem = {
-      chakra_id: editItem.chakra_id,
-      user_id: editItem.user_id,
-      ...mapItemData(existingItem),
-    };
-
-    try {
-      const response = await authFetch(ADMIN_API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ table: tableName, data: newItem }),
-      });
-
-      if (response.ok) {
-        setEditDialog(false);
-        await loadUserData();
-        return true;
-      } else {
-        const data = await response.json();
-        alert(data.error || 'Ошибка сохранения');
-        return false;
-      }
-    } catch (err) {
-      console.error('Ошибка сохранения:', err);
-      return false;
-    }
-  };
-
-  const handleSave = async () => {
-    if (!token || !editItem) return;
-
-    if (editType === 'concept' && (editMode === 'create' && showNewConceptForm || editMode === 'edit')) {
-      const duplicate = allConcepts.find(
-        (c) => 
-          c.id !== editItem.id &&
-          c.concept.toLowerCase().trim() === editItem.concept.toLowerCase().trim() && 
-          c.category === editItem.category
-      );
-
-      if (duplicate) {
-        alert(`Энергия "${editItem.concept}" с категорией "${editItem.category}" уже существует в базе данных.`);
-        return;
-      }
-    }
-
-    if (editType === 'organ' && (editMode === 'create' && showNewOrganForm || editMode === 'edit')) {
-      const duplicate = allOrgans.find(
-        (o) => 
-          o.id !== editItem.id &&
-          o.organ_name.toLowerCase().trim() === editItem.organ_name.toLowerCase().trim()
-      );
-
-      if (duplicate) {
-        alert(`Орган "${editItem.organ_name}" уже существует в базе данных.`);
-        return;
-      }
-    }
-
-    if (editType === 'science' && (editMode === 'create' && showNewScienceForm || editMode === 'edit')) {
-      const duplicate = allSciences.find(
-        (s) => 
-          s.id !== editItem.id &&
-          s.science_name.toLowerCase().trim() === editItem.science_name.toLowerCase().trim()
-      );
-
-      if (duplicate) {
-        alert(`Наука "${editItem.science_name}" уже существует в базе данных.`);
-        return;
-      }
-    }
-
-    if (editType === 'responsibility' && (editMode === 'create' && showNewResponsibilityForm || editMode === 'edit')) {
-      const duplicate = allResponsibilities.find(
-        (r) => 
-          r.id !== editItem.id &&
-          r.responsibility.toLowerCase().trim() === editItem.responsibility.toLowerCase().trim()
-      );
-
-      if (duplicate) {
-        alert(`Ответственность "${editItem.responsibility}" уже существует в базе данных.`);
-        return;
-      }
-    }
-
-    if (editType === 'concept' && editMode === 'create' && !showNewConceptForm && selectedExistingConceptId) {
-      const existingConcept = allConcepts.find((c) => c.id === selectedExistingConceptId);
-      if (!existingConcept) return;
-
-      await addExistingItemToUser(
-        'concept',
-        existingConcept,
-        'chakra_concepts',
-        (item) => concepts.find(
-          (c) => c.concept.toLowerCase().trim() === item.concept.toLowerCase().trim() && c.category === item.category
-        ) !== undefined,
-        `Энергия "${existingConcept.concept}" с категорией "${existingConcept.category}" уже добавлена для этого пользователя.`,
-        (item) => ({ concept: item.concept, category: item.category })
-      );
-      return;
-    }
-
-    if (editType === 'organ' && editMode === 'create' && !showNewOrganForm && selectedExistingOrganId) {
-      const existingOrgan = allOrgans.find((o) => o.id === selectedExistingOrganId);
-      if (!existingOrgan) return;
-
-      await addExistingItemToUser(
-        'organ',
-        existingOrgan,
-        'chakra_organs',
-        (item) => organs.find((o) => o.organ_name.toLowerCase().trim() === item.organ_name.toLowerCase().trim()) !== undefined,
-        `Орган "${existingOrgan.organ_name}" уже добавлен для этого пользователя.`,
-        (item) => ({ organ_name: item.organ_name, description: item.description })
-      );
-      return;
-    }
-
-    if (editType === 'science' && editMode === 'create' && !showNewScienceForm && selectedExistingScienceId) {
-      const existingScience = allSciences.find((s) => s.id === selectedExistingScienceId);
-      if (!existingScience) return;
-
-      await addExistingItemToUser(
-        'science',
-        existingScience,
-        'chakra_sciences',
-        (item) => sciences.find((s) => s.science_name.toLowerCase().trim() === item.science_name.toLowerCase().trim()) !== undefined,
-        `Наука "${existingScience.science_name}" уже добавлена для этого пользователя.`,
-        (item) => ({ science_name: item.science_name, description: item.description })
-      );
-      return;
-    }
-
-    if (editType === 'responsibility' && editMode === 'create' && !showNewResponsibilityForm && selectedExistingResponsibilityId) {
-      const existingResponsibility = allResponsibilities.find((r) => r.id === selectedExistingResponsibilityId);
-      if (!existingResponsibility) return;
-
-      await addExistingItemToUser(
-        'responsibility',
-        existingResponsibility,
-        'chakra_responsibilities',
-        (item) => responsibilities.find((r) => r.responsibility.toLowerCase().trim() === item.responsibility.toLowerCase().trim()) !== undefined,
-        `Ответственность "${existingResponsibility.responsibility}" уже добавлена для этого пользователя.`,
-        (item) => ({ responsibility: item.responsibility })
-      );
-      return;
-    }
-
-    const tableMap = {
-      concept: 'chakra_concepts',
-      organ: 'chakra_organs',
-      science: 'chakra_sciences',
-      responsibility: 'chakra_responsibilities',
-      user: 'users',
-    };
-
-    const table = tableMap[editType];
-
-    try {
-      const method = editMode === 'create' ? 'POST' : 'PUT';
-      const body =
-        editMode === 'create'
-          ? { table, data: editItem }
-          : { table, id: editItem.id, data: editItem };
-
-      const response = await fetch(ADMIN_API_URL, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Auth-Token': token,
-        },
-        body: JSON.stringify(body),
-      });
-
-      if (response.ok) {
-        setEditDialog(false);
-        if (editType === 'user') {
-          await loadAllData();
-        } else {
-          await loadUserData();
-        }
-      } else {
-        const data = await response.json();
-        alert(data.error || 'Ошибка сохранения');
-      }
-    } catch (err) {
-      console.error('Ошибка сохранения:', err);
-    }
-  };
-
-  const handleDelete = async (type: 'concept' | 'organ' | 'science' | 'responsibility', id: number) => {
-    if (!token || !confirm('Удалить запись?')) return;
-
-    const tableMap = {
-      concept: 'chakra_concepts',
-      organ: 'chakra_organs',
-      science: 'chakra_sciences',
-      responsibility: 'chakra_responsibilities',
-    };
-
-    const table = tableMap[type];
-
-    try {
-      const response = await fetch(`${ADMIN_API_URL}?table=${table}&id=${id}`, {
-        method: 'DELETE',
-        headers: { 'X-Auth-Token': token },
-      });
-
-      if (response.ok) {
-        loadUserData();
-      }
-    } catch (err) {
-      console.error('Ошибка удаления:', err);
-    }
-  };
-
-  useEffect(() => {
-    const savedToken = localStorage.getItem('admin_token');
-    const savedUser = localStorage.getItem('admin_user');
-    if (savedToken && savedUser) {
-      setToken(savedToken);
-      setCurrentUser(JSON.parse(savedUser));
-      setIsAuthenticated(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (isAuthenticated && token) {
-      loadAllData();
-    }
-  }, [isAuthenticated, token]);
-
-  useEffect(() => {
-    if (isAuthenticated && token && selectedUserId) {
-      loadUserData();
-    }
-  }, [selectedUserId, isAuthenticated, token]);
-
-  if (!isAuthenticated) {
+  const auth = useAdminAuth();
+  const data = useChakraData(auth.token, selectedUserId);
+  const actions = useChakraActions({
+    token: auth.token,
+    selectedUserId,
+    users: data.users,
+    concepts: data.concepts,
+    organs: data.organs,
+    sciences: data.sciences,
+    responsibilities: data.responsibilities,
+    allConcepts: data.allConcepts,
+    allOrgans: data.allOrgans,
+    allSciences: data.allSciences,
+    allResponsibilities: data.allResponsibilities,
+    authFetch: data.authFetch,
+    loadAllData: data.loadAllData,
+    loadUserData: data.loadUserData,
+  });
+
+  if (!auth.isAuthenticated) {
     return (
       <LoginForm
-        telegramId={telegramId}
-        setTelegramId={setTelegramId}
-        telegramGroupId={telegramGroupId}
-        setTelegramGroupId={setTelegramGroupId}
-        error={error}
-        loading={loading}
-        onLogin={handleLogin}
+        telegramId={auth.telegramId}
+        setTelegramId={auth.setTelegramId}
+        telegramGroupId={auth.telegramGroupId}
+        setTelegramGroupId={auth.setTelegramGroupId}
+        error={auth.error}
+        loading={auth.loading}
+        onLogin={auth.handleLogin}
       />
     );
   }
@@ -601,19 +105,13 @@ const AdminChakra = () => {
             <div className="flex-1 min-w-0">
               <h1 className="text-lg font-bold text-emerald-900 truncate">ChakraCraft</h1>
               <p className="text-xs text-emerald-700 truncate">
-                {currentUser?.name} {currentUser?.is_admin && '(Админ)'}
+                {auth.currentUser?.name} {auth.currentUser?.is_admin && '(Админ)'}
               </p>
             </div>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => {
-                localStorage.removeItem('admin_token');
-                localStorage.removeItem('admin_user');
-                setIsAuthenticated(false);
-                setToken(null);
-                setCurrentUser(null);
-              }}
+              onClick={auth.handleLogout}
             >
               <Icon name="LogOut" size={16} />
             </Button>
@@ -623,66 +121,66 @@ const AdminChakra = () => {
 
       <div className="p-4 space-y-4">
         <UserSelector
-          currentUser={currentUser}
-          users={users}
-          chakras={chakras}
+          currentUser={auth.currentUser}
+          users={data.users}
+          chakras={data.chakras}
           selectedUserId={selectedUserId}
           setSelectedUserId={setSelectedUserId}
-          onCreateUser={handleCreateUser}
-          onEditUser={handleEditUser}
+          onCreateUser={actions.handleCreateUser}
+          onEditUser={actions.handleEditUser}
         />
 
-        {selectedUserId && selectedUser && (
+        {selectedUserId && data.selectedUser && (
           <ChakraDataTabs
-            concepts={concepts}
-            organs={organs}
-            sciences={sciences}
-            responsibilities={responsibilities}
-            onCreateConcept={() => handleCreate('concept')}
-            onEditConcept={(item) => handleEdit('concept', item)}
-            onDeleteConcept={(id) => handleDelete('concept', id)}
-            onCreateOrgan={() => handleCreate('organ')}
-            onEditOrgan={(item) => handleEdit('organ', item)}
-            onDeleteOrgan={(id) => handleDelete('organ', id)}
-            onCreateScience={() => handleCreate('science')}
-            onEditScience={(item) => handleEdit('science', item)}
-            onDeleteScience={(id) => handleDelete('science', id)}
-            onCreateResponsibility={() => handleCreate('responsibility')}
-            onEditResponsibility={(item) => handleEdit('responsibility', item)}
-            onDeleteResponsibility={(id) => handleDelete('responsibility', id)}
+            concepts={data.concepts}
+            organs={data.organs}
+            sciences={data.sciences}
+            responsibilities={data.responsibilities}
+            onCreateConcept={() => actions.handleCreate('concept')}
+            onEditConcept={(item) => actions.handleEdit('concept', item)}
+            onDeleteConcept={(id) => actions.handleDelete('concept', id)}
+            onCreateOrgan={() => actions.handleCreate('organ')}
+            onEditOrgan={(item) => actions.handleEdit('organ', item)}
+            onDeleteOrgan={(id) => actions.handleDelete('organ', id)}
+            onCreateScience={() => actions.handleCreate('science')}
+            onEditScience={(item) => actions.handleEdit('science', item)}
+            onDeleteScience={(id) => actions.handleDelete('science', id)}
+            onCreateResponsibility={() => actions.handleCreate('responsibility')}
+            onEditResponsibility={(item) => actions.handleEdit('responsibility', item)}
+            onDeleteResponsibility={(id) => actions.handleDelete('responsibility', id)}
           />
         )}
       </div>
 
       <ChakraEditDialog
-        open={editDialog}
-        onOpenChange={setEditDialog}
-        editType={editType}
-        editMode={editMode}
-        editItem={editItem}
-        setEditItem={setEditItem}
-        chakras={chakras}
-        allConcepts={allConcepts}
-        showNewConceptForm={showNewConceptForm}
-        setShowNewConceptForm={setShowNewConceptForm}
-        selectedExistingConceptId={selectedExistingConceptId}
-        setSelectedExistingConceptId={setSelectedExistingConceptId}
-        allOrgans={allOrgans}
-        showNewOrganForm={showNewOrganForm}
-        setShowNewOrganForm={setShowNewOrganForm}
-        selectedExistingOrganId={selectedExistingOrganId}
-        setSelectedExistingOrganId={setSelectedExistingOrganId}
-        allSciences={allSciences}
-        showNewScienceForm={showNewScienceForm}
-        setShowNewScienceForm={setShowNewScienceForm}
-        selectedExistingScienceId={selectedExistingScienceId}
-        setSelectedExistingScienceId={setSelectedExistingScienceId}
-        allResponsibilities={allResponsibilities}
-        showNewResponsibilityForm={showNewResponsibilityForm}
-        setShowNewResponsibilityForm={setShowNewResponsibilityForm}
-        selectedExistingResponsibilityId={selectedExistingResponsibilityId}
-        setSelectedExistingResponsibilityId={setSelectedExistingResponsibilityId}
-        onSave={handleSave}
+        open={actions.editDialog}
+        onOpenChange={actions.setEditDialog}
+        type={actions.editType}
+        mode={actions.editMode}
+        item={actions.editItem}
+        setItem={actions.setEditItem}
+        onSave={actions.handleSave}
+        chakras={data.chakras}
+        allConcepts={data.allConcepts}
+        allOrgans={data.allOrgans}
+        allSciences={data.allSciences}
+        allResponsibilities={data.allResponsibilities}
+        showNewConceptForm={actions.showNewConceptForm}
+        setShowNewConceptForm={actions.setShowNewConceptForm}
+        selectedExistingConceptId={actions.selectedExistingConceptId}
+        setSelectedExistingConceptId={actions.setSelectedExistingConceptId}
+        showNewOrganForm={actions.showNewOrganForm}
+        setShowNewOrganForm={actions.setShowNewOrganForm}
+        selectedExistingOrganId={actions.selectedExistingOrganId}
+        setSelectedExistingOrganId={actions.setSelectedExistingOrganId}
+        showNewScienceForm={actions.showNewScienceForm}
+        setShowNewScienceForm={actions.setShowNewScienceForm}
+        selectedExistingScienceId={actions.selectedExistingScienceId}
+        setSelectedExistingScienceId={actions.setSelectedExistingScienceId}
+        showNewResponsibilityForm={actions.showNewResponsibilityForm}
+        setShowNewResponsibilityForm={actions.setShowNewResponsibilityForm}
+        selectedExistingResponsibilityId={actions.selectedExistingResponsibilityId}
+        setSelectedExistingResponsibilityId={actions.setSelectedExistingResponsibilityId}
       />
     </div>
   );
