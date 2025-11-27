@@ -1,5 +1,7 @@
-const API_URL = 'https://functions.poehali.dev/11f94891-555b-485d-ba38-a93639bb439c';
-const OWNER_ID = '1';
+//const API_URL = 'https://functions.poehali.dev/11f94891-555b-485d-ba38-a93639bb439c';
+const API_URL =
+  "https://functions.poehali.dev/da71a3e9-e449-4dcc-b672-1ca9c9d9575e";
+const OWNER_ID = "1";
 
 interface ApiResponse<T> {
   [key: string]: T;
@@ -7,39 +9,46 @@ interface ApiResponse<T> {
 
 async function apiRequest<T>(
   resource: string,
-  method: string = 'GET',
+  method: string = "GET",
   body?: any,
-  queryParams?: Record<string, string>
+  queryParams?: Record<string, string>,
 ): Promise<T> {
   let url = `${API_URL}?resource=${resource}&owner_id=${OWNER_ID}`;
-  
+
   if (queryParams) {
     Object.entries(queryParams).forEach(([key, value]) => {
       url += `&${key}=${encodeURIComponent(value)}`;
     });
   }
-  
-  if (method === 'DELETE' && body?.id) {
+
+  if (method === "DELETE" && body?.id) {
     url += `&id=${body.id}`;
   }
-  
+
   const options: RequestInit = {
     method,
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   };
 
-  if (body && (method === 'POST' || method === 'PUT')) {
+  if (body && (method === "POST" || method === "PUT")) {
     options.body = JSON.stringify(body);
   }
 
   const response = await fetch(url, options);
-  
-  if (response.status === 409 || response.status === 500 || response.status === 400) {
+
+  if (
+    response.status === 409 ||
+    response.status === 500 ||
+    response.status === 400
+  ) {
     try {
       const errorData = await response.json();
-      console.error(`❌ [API] HTTP ${response.status} для ${resource}:`, errorData);
+      console.error(
+        `❌ [API] HTTP ${response.status} для ${resource}:`,
+        errorData,
+      );
       return errorData;
     } catch {
       const text = await response.text();
@@ -47,7 +56,7 @@ async function apiRequest<T>(
       throw new Error(`HTTP ${response.status}: ${text}`);
     }
   }
-  
+
   if (!response.ok) {
     const text = await response.text();
     throw new Error(`HTTP ${response.status} : ${url}\nResponse: ${text}`);
@@ -59,97 +68,98 @@ async function apiRequest<T>(
 export const api = {
   bookings: {
     getAll: `${API_URL}?resource=bookings&owner_id=${OWNER_ID}`,
-    getAllData: () => apiRequest<ApiResponse<any[]>>('bookings', 'GET'),
-    getByDate: (date: string) => 
-      apiRequest<ApiResponse<any[]>>(`bookings&date=${date}`, 'GET'),
-    create: (booking: any) => 
-      apiRequest('bookings', 'POST', { ...booking, owner_id: OWNER_ID }),
-    update: (id: number, status: string) => 
-      apiRequest('bookings', 'PUT', { id, status }),
+    getAllData: () => apiRequest<ApiResponse<any[]>>("bookings", "GET"),
+    getByDate: (date: string) =>
+      apiRequest<ApiResponse<any[]>>(`bookings&date=${date}`, "GET"),
+    create: (booking: any) =>
+      apiRequest("bookings", "POST", { ...booking, owner_id: OWNER_ID }),
+    update: (id: number, status: string) =>
+      apiRequest("bookings", "PUT", { id, status }),
   },
 
   events: {
-    getAll: () => apiRequest<ApiResponse<any[]>>('events', 'GET'),
-    getByDate: (date: string) => 
-      apiRequest<ApiResponse<any[]>>(`events&date=${date}`, 'GET'),
-    create: (event: any) => 
-      apiRequest('events', 'POST', { ...event, owner_id: OWNER_ID }),
-    delete: (id: number) => 
-      apiRequest('events', 'DELETE', { id }),
+    getAll: () => apiRequest<ApiResponse<any[]>>("events", "GET"),
+    getByDate: (date: string) =>
+      apiRequest<ApiResponse<any[]>>(`events&date=${date}`, "GET"),
+    create: (event: any) =>
+      apiRequest("events", "POST", { ...event, owner_id: OWNER_ID }),
+    delete: (id: number) => apiRequest("events", "DELETE", { id }),
   },
 
   clients: {
-    getAll: () => apiRequest<ApiResponse<any[]>>('clients', 'GET'),
-    create: (client: any) => 
-      apiRequest('clients', 'POST', { ...client, owner_id: OWNER_ID }),
-    update: (id: number, data: any) => 
-      apiRequest('clients', 'PUT', { id, ...data }),
+    getAll: () => apiRequest<ApiResponse<any[]>>("clients", "GET"),
+    create: (client: any) =>
+      apiRequest("clients", "POST", { ...client, owner_id: OWNER_ID }),
+    update: (id: number, data: any) =>
+      apiRequest("clients", "PUT", { id, ...data }),
   },
 
   services: {
-    getAll: () => apiRequest<ApiResponse<any[]>>('services', 'GET'),
-    create: (service: any) => 
-      apiRequest('services', 'POST', { ...service, owner_id: OWNER_ID }),
-    update: (id: number, data: any) => 
-      apiRequest('services', 'PUT', { id, ...data }),
-    delete: (id: number) => 
-      apiRequest('services', 'DELETE', { id }),
+    getAll: () => apiRequest<ApiResponse<any[]>>("services", "GET"),
+    create: (service: any) =>
+      apiRequest("services", "POST", { ...service, owner_id: OWNER_ID }),
+    update: (id: number, data: any) =>
+      apiRequest("services", "PUT", { id, ...data }),
+    delete: (id: number) => apiRequest("services", "DELETE", { id }),
   },
 
   schedule: {
-    getWeek: () => apiRequest<ApiResponse<any[]>>('week_schedule', 'GET'),
-    getForDate: (date: string) => apiRequest<ApiResponse<any[]>>('week_schedule', 'GET', undefined, { date }),
-    getCycles: () => apiRequest<ApiResponse<any[]>>('week_schedule', 'GET'),
-    create: (schedule: any) => 
-      apiRequest('week_schedule', 'POST', { ...schedule, owner_id: OWNER_ID }),
-    delete: (id: number) => 
-      apiRequest('week_schedule', 'DELETE', { id }),
+    getWeek: () => apiRequest<ApiResponse<any[]>>("week_schedule", "GET"),
+    getForDate: (date: string) =>
+      apiRequest<ApiResponse<any[]>>("week_schedule", "GET", undefined, {
+        date,
+      }),
+    getCycles: () => apiRequest<ApiResponse<any[]>>("week_schedule", "GET"),
+    create: (schedule: any) =>
+      apiRequest("week_schedule", "POST", { ...schedule, owner_id: OWNER_ID }),
+    delete: (id: number) => apiRequest("week_schedule", "DELETE", { id }),
   },
 
   blockedDates: {
-    getAll: () => apiRequest<ApiResponse<any[]>>('blocked_dates', 'GET'),
-    add: (date: string, force?: boolean) => 
-      apiRequest('blocked_dates', 'POST', { date, force, owner_id: OWNER_ID }),
-    remove: (id: number) => 
-      apiRequest('blocked_dates', 'DELETE', { id }),
+    getAll: () => apiRequest<ApiResponse<any[]>>("blocked_dates", "GET"),
+    add: (date: string, force?: boolean) =>
+      apiRequest("blocked_dates", "POST", { date, force, owner_id: OWNER_ID }),
+    remove: (id: number) => apiRequest("blocked_dates", "DELETE", { id }),
   },
 
   settings: {
-    get: () => apiRequest<ApiResponse<any>>('settings', 'GET'),
-    update: (data: any) => 
-      apiRequest('settings', 'PUT', { ...data, owner_id: OWNER_ID }),
+    get: () => apiRequest<ApiResponse<any>>("settings", "GET"),
+    update: (data: any) =>
+      apiRequest("settings", "PUT", { ...data, owner_id: OWNER_ID }),
   },
 
   admin: {
-    getAllData: () => apiRequest<{
-      bookings: any[];
-      services: any[];
-      clients: any[];
-      settings: any;
-      events: any[];
-      weekSchedule: any[];
-      blockedDates: any[];
-    }>('admin_data', 'GET'),
+    getAllData: () =>
+      apiRequest<{
+        bookings: any[];
+        services: any[];
+        clients: any[];
+        settings: any;
+        events: any[];
+        weekSchedule: any[];
+        blockedDates: any[];
+      }>("admin_data", "GET"),
   },
 
   booking: {
-    getPageData: () => apiRequest<{
-      services: any[];
-      settings: any;
-    }>('booking_data', 'GET'),
+    getPageData: () =>
+      apiRequest<{
+        services: any[];
+        settings: any;
+      }>("booking_data", "GET"),
   },
 
   auth: {
     login: async (telegramId: number) => {
       const response = await fetch(
-        'https://functions.poehali.dev/81142751-b500-40dc-91f2-9318b9f48791',
+        "https://functions.poehali.dev/81142751-b500-40dc-91f2-9318b9f48791",
         {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ telegram_id: String(telegramId) })
-        }
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ telegram_id: String(telegramId) }),
+        },
       );
-      if (!response.ok) throw new Error('Auth failed');
+      if (!response.ok) throw new Error("Auth failed");
       return response.json();
     },
   },
