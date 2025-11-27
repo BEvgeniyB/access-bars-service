@@ -519,6 +519,52 @@ Email: {booking_data.get('client_email', '')}
                 
                 return success_response({'success': True, 'message': 'Уведомление отправлено клиенту'})
             
+            elif action == 'test_smtp':
+                settings = get_email_settings()
+                
+                if not settings['sender_email'] or not settings['admin_email']:
+                    return error_response('Email не настроен', 400)
+                
+                email_password = os.environ.get('EMAIL_PASSWORD')
+                if not email_password:
+                    return error_response('EMAIL_PASSWORD не настроен. Добавьте секрет EMAIL_PASSWORD в настройках проекта', 500)
+                
+                msg = MIMEMultipart()
+                msg['From'] = settings['sender_email']
+                msg['To'] = settings['admin_email']
+                msg['Subject'] = 'Тест SMTP - Гармония энергий'
+                
+                body = '''
+Это тестовое письмо для проверки SMTP настроек.
+
+Если вы получили это письмо, значит настройки работают корректно!
+
+SMTP сервер: {smtp_host}:{smtp_port}
+Email отправителя: {sender_email}
+Email администратора: {admin_email}
+
+---
+Система "Гармония энергий"
+'''.format(
+                    smtp_host=settings['smtp_host'],
+                    smtp_port=settings['smtp_port'],
+                    sender_email=settings['sender_email'],
+                    admin_email=settings['admin_email']
+                )
+                
+                msg.attach(MIMEText(body, 'plain', 'utf-8'))
+                
+                server = smtplib.SMTP(settings['smtp_host'], settings['smtp_port'])
+                server.starttls()
+                server.login(settings['sender_email'], email_password)
+                server.send_message(msg)
+                server.quit()
+                
+                return success_response({
+                    'success': True,
+                    'message': f'Тестовое письмо успешно отправлено на {settings["admin_email"]}'
+                })
+            
             else:
                 return error_response('Неизвестное действие', 400)
         
