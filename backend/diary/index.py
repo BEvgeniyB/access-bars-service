@@ -1048,7 +1048,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         elif resource == 'booking_data':
             if method == 'GET':
                 with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_services WHERE is_active = TRUE ORDER BY name')
+                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_services WHERE active = TRUE ORDER BY name')
                     services = cur.fetchall()
                     
                     cur.execute(f'SELECT * FROM {SCHEMA}.diary_settings LIMIT 1')
@@ -1059,8 +1059,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         services_list.append({
                             'id': str(service['id']),
                             'name': service['name'],
-                            'duration': service['duration'],
-                            'price': service['price'],
+                            'duration': service['duration_minutes'],
+                            'price': float(service['price']),
                             'description': service.get('description', '')
                         })
                     
@@ -1102,7 +1102,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             'body': json.dumps({'slots': []})
                         }
                     
-                    service_duration = service['duration']
+                    service_duration = service['duration_minutes']
                     prep_time = service.get('prep_time', 0)
                     buffer_time = service.get('buffer_time', 0)
                     

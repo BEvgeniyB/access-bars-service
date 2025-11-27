@@ -62,7 +62,7 @@
     {
       "name": "Get available slots",
       "method": "GET",
-      "path": "/?resource=available_slots&service_id=1&date=2025-12-01",
+      "path": "/?resource=available_slots&service_id=10&date=2025-12-01",
       "expectedStatus": 200,
       "expectedBody": {
         "slots": "array"
