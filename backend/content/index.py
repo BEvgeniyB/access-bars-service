@@ -311,6 +311,24 @@ def handle_notifications(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     if method == 'OPTIONS':
         return cors_response('GET, POST, OPTIONS')
     
+    if method == 'GET':
+        try:
+            settings = get_email_settings()
+            email_password = os.environ.get('EMAIL_PASSWORD')
+            
+            return success_response({
+                'success': True,
+                'settings': settings,
+                'smtp_host': settings['smtp_host'],
+                'smtp_port': settings['smtp_port'],
+                'sender_email': settings['sender_email'],
+                'admin_email': settings['admin_email'],
+                'notifications_enabled': settings['notifications_enabled'],
+                'has_email_password': email_password is not None
+            })
+        except Exception as e:
+            return error_response(str(e), 500)
+    
     if method == 'POST':
         try:
             body_data = json.loads(event.get('body', '{}'))
