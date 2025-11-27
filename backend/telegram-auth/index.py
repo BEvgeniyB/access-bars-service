@@ -89,6 +89,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         user_id, name, email, role, tg_id, phone = user
         is_admin = (role == 'owner')
         
+        if not is_admin:
+            return {
+                'statusCode': 403,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                'body': json.dumps({'error': 'Доступ запрещён. Требуется роль owner'})
+            }
+        
         jwt_secret = os.environ.get('ADMIN_TOKEN', 'default-secret-key')
         token_payload = {
             'user_id': user_id,
