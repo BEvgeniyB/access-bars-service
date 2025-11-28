@@ -1,22 +1,6 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -26,11 +10,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import Icon from '@/components/ui/icon';
 import { useData } from '@/contexts/diary/DataContext';
 import { useAppContext } from '@/contexts/diary/AppContext';
 import { api } from '@/services/diary/api';
 import { useToast } from '@/hooks/use-toast';
+import CreateBookingDialog from './bookings/CreateBookingDialog';
+import EditBookingDialog from './bookings/EditBookingDialog';
+import BookingsTable from './bookings/BookingsTable';
 
 const BookingsTab = () => {
   const { getStatusColor, getStatusText } = useAppContext();
@@ -189,100 +175,15 @@ const BookingsTab = () => {
           <h2 className="text-3xl font-bold text-gray-900">Записи</h2>
           <p className="text-gray-500 mt-1">Управление записями клиентов</p>
         </div>
-        <Dialog open={showDialog} onOpenChange={setShowDialog}>
-          <DialogTrigger asChild>
-            <Button className="gap-2">
-              <Icon name="Plus" size={16} />
-              Новая запись
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Создать запись</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Клиент</Label>
-                <Select
-                  value={newBooking.client_id}
-                  onValueChange={(value) =>
-                    setNewBooking({ ...newBooking, client_id: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Выберите клиента" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {clients.map((client) => (
-                      <SelectItem key={client.id} value={String(client.id)}>
-                        {client.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Услуга</Label>
-                <Select
-                  value={newBooking.service_id}
-                  onValueChange={(value) =>
-                    setNewBooking({ ...newBooking, service_id: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Выберите услугу" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {services.map((service) => (
-                      <SelectItem key={service.id} value={String(service.id)}>
-                        {service.name} ({service.duration_minutes} мин)
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Дата</Label>
-                <Input
-                  type="date"
-                  value={newBooking.date}
-                  onChange={(e) =>
-                    setNewBooking({ ...newBooking, date: e.target.value })
-                  }
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Начало</Label>
-                  <Input
-                    type="time"
-                    value={newBooking.start_time}
-                    onChange={(e) =>
-                      setNewBooking({ ...newBooking, start_time: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Конец</Label>
-                  <Input
-                    type="time"
-                    value={newBooking.end_time}
-                    onChange={(e) =>
-                      setNewBooking({ ...newBooking, end_time: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-
-              <Button onClick={handleCreate} className="w-full">
-                Создать запись
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <CreateBookingDialog
+          open={showDialog}
+          onOpenChange={setShowDialog}
+          clients={clients}
+          services={services}
+          newBooking={newBooking}
+          setNewBooking={setNewBooking}
+          onSubmit={handleCreate}
+        />
       </div>
 
       <Card>
@@ -326,193 +227,25 @@ const BookingsTab = () => {
           </div>
         </CardHeader>
         <CardContent>
-          {loading ? (
-            <p className="text-center text-gray-500 py-8">Загрузка...</p>
-          ) : filteredBookings.length === 0 ? (
-            <p className="text-center text-gray-500 py-8">Нет записей</p>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Дата</TableHead>
-                  <TableHead>Время</TableHead>
-                  <TableHead>Клиент</TableHead>
-                  <TableHead>Услуга</TableHead>
-                  <TableHead>Длительность</TableHead>
-                  <TableHead>Статус</TableHead>
-                  <TableHead>Действия</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredBookings.map((booking) => (
-                  <TableRow key={booking.id}>
-                    <TableCell>{booking.date}</TableCell>
-                    <TableCell>{booking.time}</TableCell>
-                    <TableCell className="font-medium">{booking.client}</TableCell>
-                    <TableCell>{booking.service}</TableCell>
-                    <TableCell>{booking.duration} мин</TableCell>
-                    <TableCell>
-                      <Badge className={getStatusColor(booking.status)}>
-                        {getStatusText(booking.status)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => handleEditClick(booking)}
-                          className="gap-1"
-                        >
-                          <Icon name="Edit" size={14} />
-                          Изменить
-                        </Button>
-                        {booking.status === 'pending' && (
-                          <>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleStatusChange(booking.id, 'confirmed')}
-                            >
-                              Подтвердить
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              onClick={() => handleStatusChange(booking.id, 'cancelled')}
-                            >
-                              Отменить
-                            </Button>
-                          </>
-                        )}
-                        {booking.status === 'confirmed' && (
-                          <>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleStatusChange(booking.id, 'completed')}
-                            >
-                              Завершить
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              onClick={() => handleStatusChange(booking.id, 'cancelled')}
-                            >
-                              Отменить
-                            </Button>
-                          </>
-                        )}
-                        {booking.status === 'completed' && (
-                          <span className="text-sm text-gray-500">Завершена</span>
-                        )}
-                        {booking.status === 'cancelled' && (
-                          <span className="text-sm text-gray-500">Отменена</span>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
+          <BookingsTable
+            bookings={filteredBookings}
+            loading={loading}
+            getStatusColor={getStatusColor}
+            getStatusText={getStatusText}
+            onEditClick={handleEditClick}
+            onStatusChange={handleStatusChange}
+          />
         </CardContent>
       </Card>
 
-      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Редактировать запись</DialogTitle>
-          </DialogHeader>
-          
-          {editingBooking && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Клиент</Label>
-                <Input
-                  value={editingBooking.client_name}
-                  disabled
-                  className="bg-gray-100"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Услуга</Label>
-                <Select
-                  value={editingBooking.service_id}
-                  onValueChange={(value) =>
-                    setEditingBooking({ ...editingBooking, service_id: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Выберите услугу" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {services.map((service) => (
-                      <SelectItem key={service.id} value={String(service.id)}>
-                        {service.name} ({service.duration_minutes} мин)
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <Label>Дата записи</Label>
-                <Input
-                  type="date"
-                  value={editingBooking.date}
-                  onChange={(e) => setEditingBooking({...editingBooking, date: e.target.value})}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label>Время</Label>
-                <Input
-                  type="time"
-                  value={editingBooking.start_time}
-                  onChange={(e) => setEditingBooking({...editingBooking, start_time: e.target.value})}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label>Статус</Label>
-                <Select
-                  value={editingBooking.status}
-                  onValueChange={(value) =>
-                    setEditingBooking({ ...editingBooking, status: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pending">Ожидает</SelectItem>
-                    <SelectItem value="confirmed">Подтверждена</SelectItem>
-                    <SelectItem value="completed">Завершена</SelectItem>
-                    <SelectItem value="cancelled">Отменена</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="flex gap-2 pt-4">
-                <Button
-                  onClick={handleSaveEdit}
-                  className="flex-1"
-                >
-                  Сохранить
-                </Button>
-                <Button
-                  onClick={() => setShowEditDialog(false)}
-                  variant="outline"
-                >
-                  Отмена
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <EditBookingDialog
+        open={showEditDialog}
+        onOpenChange={setShowEditDialog}
+        services={services}
+        editingBooking={editingBooking}
+        setEditingBooking={setEditingBooking}
+        onSubmit={handleSaveEdit}
+      />
     </div>
   );
 };
