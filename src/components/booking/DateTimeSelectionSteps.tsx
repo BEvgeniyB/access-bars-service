@@ -37,7 +37,11 @@ export default function DateTimeSelectionSteps({
     
     if (date <= today) return true;
     
-    const dateStr = date.toISOString().split('T')[0];
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+    
     const isBlocked = blockedDates.includes(dateStr);
     
     if (isBlocked) {
@@ -55,7 +59,11 @@ export default function DateTimeSelectionSteps({
 
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
-      const dateStr = date.toISOString().split('T')[0];
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
+      
       console.log('📅 [CALENDAR] Выбрана дата:', dateStr);
       console.log('🔍 [CALENDAR] Заблокирована?', blockedDates.includes(dateStr));
       onSelectDate(date);
@@ -86,7 +94,10 @@ export default function DateTimeSelectionSteps({
             className="rounded-md border"
             modifiers={{
               blocked: (day) => {
-                const dateStr = day.toISOString().split('T')[0];
+                const year = day.getFullYear();
+                const month = String(day.getMonth() + 1).padStart(2, '0');
+                const dayNum = String(day.getDate()).padStart(2, '0');
+                const dateStr = `${year}-${month}-${dayNum}`;
                 return blockedDates.includes(dateStr);
               }
             }}
