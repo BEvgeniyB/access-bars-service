@@ -1075,24 +1075,21 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         
         elif resource == 'appointments':
             if method == 'POST':
-                try:
-                    body_data = json.loads(event.get('body', '{}'))
-                    print(f'[APPOINTMENTS] Получены данные: {body_data}')
-                    
-                    service_id = body_data.get('service_id')
-                    appointment_date = body_data.get('appointment_date')
-                    appointment_time = body_data.get('appointment_time')
-                    client_name = body_data.get('client_name')
-                    client_phone = body_data.get('client_phone')
-                    client_telegram = body_data.get('client_telegram')
-                    owner_id = body_data.get('owner_id', 1)
-                    
-                    # Создаем новое соединение для appointments
-                    appointments_conn = psycopg2.connect(db_url)
-                    try:
-                        with appointments_conn.cursor(cursor_factory=RealDictCursor) as cur:
-                            query = f"SELECT duration_minutes, prep_time, buffer_time FROM {SCHEMA}.diary_services WHERE id = {int(service_id)}"
-                            print(f'[APPOINTMENTS] SQL запрос: {query}')
+                body_data = json.loads(event.get('body', '{}'))
+                print(f'[APPOINTMENTS] Получены данные: {body_data}')
+                
+                service_id = body_data.get('service_id')
+                appointment_date = body_data.get('appointment_date')
+                appointment_time = body_data.get('appointment_time')
+                client_name = body_data.get('client_name')
+                client_phone = body_data.get('client_phone')
+                client_telegram = body_data.get('client_telegram')
+                owner_id = body_data.get('owner_id', 1)
+                
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                            # Получаем данные услуги
+                            query = f"SELECT duration_minutes FROM {SCHEMA}.diary_services WHERE id = {int(service_id)}"
+                            print(f'[APPOINTMENTS] SQL запрос услуги: {query}')
                             cur.execute(query)
                             service = cur.fetchone()
                             print(f'[APPOINTMENTS] Результат запроса: {service}')
@@ -1106,11 +1103,17 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                     'body': json.dumps({'error': 'Service not found'})
                                 }
                             
-                            print(f'[APPOINTMENTS] Шаг 1: Получены данные услуги')
                             duration_minutes = service['duration_minutes'] or 60
-                            prep_time = service.get('prep_time', 0) or 0
-                            buffer_time = service.get('buffer_time', 0) or 0
-                            print(f'[APPOINTMENTS] duration={duration_minutes}, prep={prep_time}, buffer={buffer_time}')
+                            
+                            # Получаем prep_time и buffer_time из settings
+                            cur.execute(f'SELECT key, value FROM {SCHEMA}.diary_settings')
+                            settings_rows = cur.fetchall()
+                            settings = {row['key']: row['value'] for row in settings_rows}
+                            
+                            prep_time = int(settings.get('prep_time', '0'))
+                            buffer_time = int(settings.get('buffer_time', '0'))
+                            
+                            print(f'[APPOINTMENTS] Шаг 1: duration={duration_minutes}, prep={prep_time}, buffer={buffer_time}')
                         
                             print(f'[APPOINTMENTS] Шаг 2: Ищем/создаем пользователя')
                             phone_escaped = client_phone.replace("'", "''")
@@ -1130,7 +1133,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                     RETURNING id
                                 """)
                                 user_id = cur.fetchone()['id']
-                                appointments_conn.commit()
+                                conn.commit()
                                 print(f'[APPOINTMENTS] Создан новый user_id={user_id}')
                         
                             print(f'[APPOINTMENTS] Шаг 3: Ищем/создаем клиента')
@@ -1147,7 +1150,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                     RETURNING id
                                 """)
                                 client_id = cur.fetchone()['id']
-                                appointments_conn.commit()
+                                conn.commit()
                                 print(f'[APPOINTMENTS] Создан новый client_id={client_id}')
                         
                             print(f'[APPOINTMENTS] Шаг 4: Создаем бронирование')
@@ -1164,7 +1167,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                 RETURNING id
                             """)
                             booking_id = cur.fetchone()['id']
-                            appointments_conn.commit()
+                            conn.commit()
                             print(f'[APPOINTMENTS] Создана запись booking_id={booking_id}')
                         
                             cur.execute(f"""
@@ -1212,31 +1215,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                 except Exception as e:
                                     print(f'Failed to send Telegram notification: {e}')
                     
-                        print(f'[APPOINTMENTS] УСПЕХ! Возвращаем результат')
-                        return {
-                            'statusCode': 201,
-                            'headers': {
-                                'Content-Type': 'application/json',
-                                'Access-Control-Allow-Origin': '*'
-                            },
-                            'isBase64Encoded': False,
-                            'body': json.dumps({'id': booking_id, 'message': 'Appointment created successfully'})
-                        }
-                    finally:
-                        appointments_conn.close()
-                except Exception as e:
-                    print(f'[APPOINTMENTS] ОШИБКА: {str(e)}')
-                    import traceback
-                    print(f'[APPOINTMENTS] Traceback: {traceback.format_exc()}')
-                    return {
-                        'statusCode': 500,
-                        'headers': {
-                            'Content-Type': 'application/json',
-                            'Access-Control-Allow-Origin': '*'
-                        },
-                        'isBase64Encoded': False,
-                        'body': json.dumps({'error': str(e)})
-                    }
+                print(f'[APPOINTMENTS] УСПЕХ! Возвращаем результат')
+                return {
+                    'statusCode': 201,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'isBase64Encoded': False,
+                    'body': json.dumps({'id': booking_id, 'message': 'Appointment created successfully'})
+                }
         
         elif resource == 'available_slots':
             if method == 'GET':
