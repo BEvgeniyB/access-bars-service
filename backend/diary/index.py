@@ -1090,12 +1090,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 
                 target_date = datetime.strptime(date_str, '%Y-%m-%d').date()
                 target_weekday = target_date.isoweekday()
+                print(f'[SLOTS] Запрос слотов для даты: {date_str}, service_id: {service_id}, weekday: {target_weekday}')
                 
                 with conn.cursor(cursor_factory=RealDictCursor) as cur:
                     cur.execute(f'SELECT * FROM {SCHEMA}.diary_services WHERE id = {int(service_id)}')
                     service = cur.fetchone()
                     
                     if not service:
+                        print(f'[SLOTS] Услуга {service_id} не найдена')
                         return {
                             'statusCode': 404,
                             'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
@@ -1113,9 +1115,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     buffer_time = int(settings_dict.get('booking_buffer_minutes', 0))
                     work_start = settings_dict.get('work_hours_start', '09:00')
                     work_end = settings_dict.get('work_hours_end', '18:00')
+                    print(f'[SLOTS] Настройки: prep={prep_time}, buffer={buffer_time}, work={work_start}-{work_end}')
                     
                     cur.execute(f"SELECT * FROM {SCHEMA}.diary_blocked_dates WHERE blocked_date = '{date_str}'")
-                    if cur.fetchone():
+                    blocked = cur.fetchone()
+                    if blocked:
+                        print(f'[SLOTS] Дата {date_str} заблокирована')
                         return {
                             'statusCode': 200,
                             'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
@@ -1133,6 +1138,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     schedules = cur.fetchall()
                     
                     if not schedules:
+                        print(f'[SLOTS] Нет расписания для weekday={target_weekday}, date={date_str}')
                         return {
                             'statusCode': 200,
                             'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
@@ -1152,6 +1158,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             break
                     
                     if not active_cycle:
+                        print(f'[SLOTS] Не найден активный цикл для даты {date_str}')
                         return {
                             'statusCode': 200,
                             'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
@@ -1161,6 +1168,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     
                     study_start = active_cycle['start_time']
                     study_end = active_cycle['end_time']
+                    print(f'[SLOTS] Активный цикл найден. Занятия: {study_start} - {study_end}')
                     
                     cur.execute(f'''
                         SELECT appointment_time, service_id FROM {SCHEMA}.diary_appointments 
@@ -1170,6 +1178,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     existing_appointments = cur.fetchall()
                     
                     busy_ranges = []
+                    print(f'[SLOTS] Найдено записей на эту дату: {len(existing_appointments)}')
                     for apt in existing_appointments:
                         cur.execute(f'SELECT duration_minutes FROM {SCHEMA}.diary_services WHERE id = {apt["service_id"]}')
                         apt_service = cur.fetchone()
@@ -1185,6 +1194,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     
                     if study_start and study_end:
                         busy_ranges.append((study_start, study_end))
+                    print(f'[SLOTS] Всего занятых диапазонов: {len(busy_ranges)}')
                     
                     work_start_time = datetime.strptime(work_start, '%H:%M').time()
                     work_end_time = datetime.strptime(work_end, '%H:%M').time()
@@ -1194,6 +1204,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     end_time = datetime.combine(target_date, work_end_time)
                     
                     slot_duration = service_duration + prep_time + buffer_time
+                    print(f'[SLOTS] Длительность слота: {slot_duration} мин (сервис={service_duration}, prep={prep_time}, buffer={buffer_time})')
                     
                     while current_time + timedelta(minutes=slot_duration) <= end_time:
                         slot_start = current_time.time()
@@ -1209,6 +1220,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             slots.append(current_time.strftime('%H:%M'))
                         
                         current_time += timedelta(minutes=30)
+                    
+                    print(f'[SLOTS] Сгенерировано слотов: {len(slots)}')
+                    print(f'[SLOTS] Слоты: {slots}')
                     
                     return {
                         'statusCode': 200,

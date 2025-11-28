@@ -74,24 +74,33 @@ export const getMinDate = (): string => {
 
 export const loadAvailableSlots = async (date: string, serviceId: number): Promise<string[]> => {
   try {
-    const response = await fetch(`${SCHEDULE_API_URL}?date=${date}&service_id=${serviceId}`);
+    const url = `${SCHEDULE_API_URL}?date=${date}&service_id=${serviceId}`;
+    console.log('[FRONTEND] Запрос слотов:', { date, serviceId, url });
+    
+    const response = await fetch(url);
+    console.log('[FRONTEND] Ответ сервера:', { status: response.status, ok: response.ok });
+    
     if (response.ok) {
       const data = await response.json();
+      console.log('[FRONTEND] Данные от API:', data);
+      
       if (data && data.length > 0) {
         // Используем слоты из API, но если их нет - возвращаем наши статические
-        return data[0].available_slots && data[0].available_slots.length > 0 
+        const slots = data[0].available_slots && data[0].available_slots.length > 0 
           ? data[0].available_slots 
           : TIME_SLOTS;
+        console.log('[FRONTEND] Финальные слоты:', slots);
+        return slots;
       } else {
-        // Если нет данных от API - используем статические слоты
+        console.log('[FRONTEND] Нет данных от API, используем статические слоты');
         return TIME_SLOTS;
       }
     } else {
-      // Fallback к статическим слотам
+      console.warn('[FRONTEND] Fallback к статическим слотам, status:', response.status);
       return TIME_SLOTS;
     }
   } catch (error) {
-    console.warn('Не удалось загрузить слоты из API, используем статические:', error);
+    console.error('[FRONTEND] Ошибка загрузки слотов:', error);
     return TIME_SLOTS;
   }
 };
