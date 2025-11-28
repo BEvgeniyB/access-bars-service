@@ -1087,7 +1087,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     client_telegram = body_data.get('client_telegram')
                     owner_id = body_data.get('owner_id', 1)
                     
-                    with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    # Создаем новое соединение для appointments
+                    appointments_conn = psycopg2.connect(db_url)
+                    try:
+                        with appointments_conn.cursor(cursor_factory=RealDictCursor) as cur:
                             query = f"SELECT duration_minutes, prep_time, buffer_time FROM {SCHEMA}.diary_services WHERE id = {int(service_id)}"
                             print(f'[APPOINTMENTS] SQL запрос: {query}')
                             cur.execute(query)
@@ -1127,7 +1130,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                     RETURNING id
                                 """)
                                 user_id = cur.fetchone()['id']
-                                conn.commit()
+                                appointments_conn.commit()
                                 print(f'[APPOINTMENTS] Создан новый user_id={user_id}')
                         
                             print(f'[APPOINTMENTS] Шаг 3: Ищем/создаем клиента')
@@ -1144,7 +1147,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                     RETURNING id
                                 """)
                                 client_id = cur.fetchone()['id']
-                                conn.commit()
+                                appointments_conn.commit()
                                 print(f'[APPOINTMENTS] Создан новый client_id={client_id}')
                         
                             print(f'[APPOINTMENTS] Шаг 4: Создаем бронирование')
@@ -1161,7 +1164,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                 RETURNING id
                             """)
                             booking_id = cur.fetchone()['id']
-                            conn.commit()
+                            appointments_conn.commit()
                             print(f'[APPOINTMENTS] Создана запись booking_id={booking_id}')
                         
                             cur.execute(f"""
@@ -1209,16 +1212,18 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                 except Exception as e:
                                     print(f'Failed to send Telegram notification: {e}')
                     
-                    print(f'[APPOINTMENTS] УСПЕХ! Возвращаем результат')
-                    return {
-                        'statusCode': 201,
-                        'headers': {
-                            'Content-Type': 'application/json',
-                            'Access-Control-Allow-Origin': '*'
-                        },
-                        'isBase64Encoded': False,
-                        'body': json.dumps({'id': booking_id, 'message': 'Appointment created successfully'})
-                    }
+                        print(f'[APPOINTMENTS] УСПЕХ! Возвращаем результат')
+                        return {
+                            'statusCode': 201,
+                            'headers': {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Allow-Origin': '*'
+                            },
+                            'isBase64Encoded': False,
+                            'body': json.dumps({'id': booking_id, 'message': 'Appointment created successfully'})
+                        }
+                    finally:
+                        appointments_conn.close()
                 except Exception as e:
                     print(f'[APPOINTMENTS] ОШИБКА: {str(e)}')
                     import traceback
