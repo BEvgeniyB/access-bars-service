@@ -687,6 +687,11 @@ def update_booking_full(cursor, conn, body):
             updates.append('client_email = %s')
             params.append(body['client_email'])
         
+        if 'status' in body:
+            if body['status'] in ['pending', 'confirmed', 'completed', 'cancelled']:
+                updates.append('status = %s')
+                params.append(body['status'])
+        
         if 'service_id' in body:
             updates.append('service_id = %s')
             params.append(body['service_id'])

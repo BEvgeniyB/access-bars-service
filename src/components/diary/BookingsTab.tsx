@@ -131,13 +131,11 @@ const BookingsTab = () => {
   const handleEditClick = (booking: any) => {
     setEditingBooking({
       id: booking.id,
-      client_id: booking.client_id?.toString() || '',
       service_id: booking.service_id?.toString() || '',
       date: booking.date,
       start_time: booking.time,
+      status: booking.status,
       client_name: booking.client,
-      client_phone: booking.phone || '',
-      client_email: booking.email || '',
     });
     setShowEditDialog(true);
   };
@@ -154,9 +152,8 @@ const BookingsTab = () => {
           booking_id: editingBooking.id,
           booking_date: editingBooking.date,
           start_time: editingBooking.start_time,
-          client_name: editingBooking.client_name,
-          client_phone: editingBooking.client_phone,
-          client_email: editingBooking.client_email || undefined,
+          service_id: editingBooking.service_id,
+          status: editingBooking.status,
         })
       });
 
@@ -431,6 +428,36 @@ const BookingsTab = () => {
           {editingBooking && (
             <div className="space-y-4">
               <div className="space-y-2">
+                <Label>Клиент</Label>
+                <Input
+                  value={editingBooking.client_name}
+                  disabled
+                  className="bg-gray-100"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Услуга</Label>
+                <Select
+                  value={editingBooking.service_id}
+                  onValueChange={(value) =>
+                    setEditingBooking({ ...editingBooking, service_id: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Выберите услугу" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {services.map((service) => (
+                      <SelectItem key={service.id} value={String(service.id)}>
+                        {service.name} ({service.duration_minutes} мин)
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
                 <Label>Дата записи</Label>
                 <Input
                   type="date"
@@ -449,28 +476,23 @@ const BookingsTab = () => {
               </div>
               
               <div className="space-y-2">
-                <Label>Имя клиента</Label>
-                <Input
-                  value={editingBooking.client_name}
-                  onChange={(e) => setEditingBooking({...editingBooking, client_name: e.target.value})}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label>Телефон</Label>
-                <Input
-                  value={editingBooking.client_phone}
-                  onChange={(e) => setEditingBooking({...editingBooking, client_phone: e.target.value})}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label>Email (необязательно)</Label>
-                <Input
-                  type="email"
-                  value={editingBooking.client_email}
-                  onChange={(e) => setEditingBooking({...editingBooking, client_email: e.target.value})}
-                />
+                <Label>Статус</Label>
+                <Select
+                  value={editingBooking.status}
+                  onValueChange={(value) =>
+                    setEditingBooking({ ...editingBooking, status: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pending">Ожидает</SelectItem>
+                    <SelectItem value="confirmed">Подтверждена</SelectItem>
+                    <SelectItem value="completed">Завершена</SelectItem>
+                    <SelectItem value="cancelled">Отменена</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               
               <div className="flex gap-2 pt-4">
