@@ -1305,7 +1305,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             first_slot_in_period = True
                             
                             while True:
+                                # Prep time нужен перед каждым слотом, кроме самого первого в первом периоде
                                 current_prep = 0 if (is_first_period and first_slot_in_period) else prep_time
+                                
+                                # Вариант А: Клиент видит время T, но резервируется (T - prep) до (T + duration + buffer)
+                                # slot_start_time - это время, которое видит клиент
+                                slot_start_time = current + current_prep
+                                
+                                # Проверяем, что весь блок (prep + услуга + buffer) помещается в период
                                 slot_time_needed = current_prep + duration + buffer_time
                                 slot_fits = current + slot_time_needed <= period_end
                                 
@@ -1317,10 +1324,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                 if not slot_fits:
                                     break
                                 
-                                slot_start = f"{(current + current_prep) // 60:02d}:{(current + current_prep) % 60:02d}"
-                                actual_start_min = current
-                                actual_end_min = current + slot_time_needed
+                                # Показываем клиенту время после prep
+                                slot_start = f"{slot_start_time // 60:02d}:{slot_start_time % 60:02d}"
                                 
+                                # Фактическое резервирование: с prep до конца buffer
+                                actual_start_min = current  # Начало prep
+                                actual_end_min = current + slot_time_needed  # Конец buffer
+                                
+                                print(f'[SLOTS DEBUG] Слот {slot_start}: резерв {actual_start_min//60:02d}:{actual_start_min%60:02d} - {actual_end_min//60:02d}:{actual_end_min%60:02d} (prep:{current_prep}, услуга:{duration}, buffer:{buffer_time})')
+                                
+                                # Проверяем конфликты с существующими записями
                                 is_available = True
                                 for booking in bookings:
                                     booking_start_min = time_to_minutes(booking['start_time'])
@@ -1328,6 +1341,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                     
                                     if actual_start_min < booking_end_min and actual_end_min > booking_start_min:
                                         is_available = False
+                                        print(f'[SLOTS DEBUG] Конфликт с записью {booking_start_min//60:02d}:{booking_start_min%60:02d} - {booking_end_min//60:02d}:{booking_end_min%60:02d}')
                                         break
                                 
                                 if is_available:
