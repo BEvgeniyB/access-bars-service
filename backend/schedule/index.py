@@ -94,6 +94,8 @@ def handler(event, context):
                     return update_booking_status(cursor, conn, body)
                 elif action == 'update_booking_service':
                     return update_booking_service(cursor, conn, body)
+                elif action == 'update_booking':
+                    return update_booking_full(cursor, conn, body)
                 else:
                     return create_booking(cursor, conn, event)
             finally:
@@ -649,6 +651,87 @@ def update_booking_service(cursor, conn, body):
     except Exception as e:
         conn.rollback()
         return error_response(f'Failed to update booking service: {str(e)}', 400)
+
+def update_booking_full(cursor, conn, body):
+    """Полное обновление записи (дата, время, клиент, услуга)"""
+    try:
+        booking_id = body.get('booking_id')
+        
+        if not booking_id:
+            return error_response('Booking ID is required', 400)
+        
+        updates = []
+        params = []
+        
+        if 'booking_date' in body:
+            updates.append('booking_date = %s')
+            params.append(body['booking_date'])
+        
+        if 'start_time' in body:
+            updates.append('start_time = %s')
+            params.append(body['start_time'])
+        
+        if 'end_time' in body:
+            updates.append('end_time = %s')
+            params.append(body['end_time'])
+        
+        if 'client_name' in body:
+            updates.append('client_name = %s')
+            params.append(body['client_name'])
+        
+        if 'client_phone' in body:
+            updates.append('client_phone = %s')
+            params.append(body['client_phone'])
+        
+        if 'client_email' in body:
+            updates.append('client_email = %s')
+            params.append(body['client_email'])
+        
+        if 'service_id' in body:
+            updates.append('service_id = %s')
+            params.append(body['service_id'])
+            
+            cursor.execute("""
+                SELECT duration_minutes FROM t_p89870318_access_bars_service.services 
+                WHERE id = %s AND is_active = true
+            """, (body['service_id'],))
+            service = cursor.fetchone()
+            
+            if service and 'start_time' in body:
+                start_time = datetime.strptime(body['start_time'], '%H:%M').time()
+                start_datetime = datetime.combine(datetime.today(), start_time)
+                end_datetime = start_datetime + timedelta(minutes=service['duration_minutes'])
+                updates.append('end_time = %s')
+                params.append(end_datetime.time().strftime('%H:%M'))
+        
+        if not updates:
+            return error_response('No fields to update', 400)
+        
+        updates.append('updated_at = CURRENT_TIMESTAMP')
+        params.append(booking_id)
+        
+        query = f"""
+            UPDATE t_p89870318_access_bars_service.bookings 
+            SET {', '.join(updates)}
+            WHERE id = %s
+            RETURNING id
+        """
+        
+        cursor.execute(query, params)
+        
+        if cursor.rowcount == 0:
+            return error_response('Booking not found', 404)
+        
+        conn.commit()
+        
+        return success_response({
+            'success': True,
+            'message': 'Booking updated successfully'
+        })
+        
+    except Exception as e:
+        conn.rollback()
+        return error_response(f'Failed to update booking: {str(e)}', 400)
 
 def send_new_booking_notification(booking_data):
     """Отправляет уведомление о новой записи"""

@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select';
-import { SERVICES } from '@/components/booking/BookingFormTypes';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { SERVICES, SCHEDULE_API_URL } from '@/components/booking/BookingFormTypes';
 
 interface Booking {
   id: number;
@@ -27,18 +30,34 @@ interface BookingsTabProps {
   onUpdateService: (bookingId: number, newServiceId: number) => void;
 }
 
-const STATUS_COLORS = {
-  pending: 'bg-yellow-100 text-yellow-800 border-yellow-300',
-  confirmed: 'bg-green-100 text-green-800 border-green-300', 
-  completed: 'bg-blue-100 text-blue-800 border-blue-300',
-  cancelled: 'bg-red-100 text-red-800 border-red-300'
-};
+interface EditBookingData {
+  booking_id: number;
+  booking_date: string;
+  start_time: string;
+  client_name: string;
+  client_phone: string;
+  client_email?: string;
+}
 
-const STATUS_LABELS = {
+const STATUS_LABELS: Record<string, string> = {
   pending: 'Ожидает',
   confirmed: 'Подтверждена',
   completed: 'Завершена',
   cancelled: 'Отменена'
+};
+
+const getStatusLabel = (status: string) => {
+  return STATUS_LABELS[status] || status;
+};
+
+const getStatusColor = (status: string) => {
+  const colors: Record<string, string> = {
+    pending: 'bg-yellow-100 text-yellow-800 border-yellow-300',
+    confirmed: 'bg-green-100 text-green-800 border-green-300', 
+    completed: 'bg-blue-100 text-blue-800 border-blue-300',
+    cancelled: 'bg-red-100 text-red-800 border-red-300'
+  };
+  return colors[status] || 'bg-gray-100 text-gray-800 border-gray-300';
 };
 
 export default function BookingsTab({ 
@@ -48,6 +67,51 @@ export default function BookingsTab({
   onUpdateStatus, 
   onUpdateService 
 }: BookingsTabProps) {
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
+  const [editData, setEditData] = useState<EditBookingData | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleEditClick = (booking: Booking) => {
+    setEditingBooking(booking);
+    setEditData({
+      booking_id: booking.id,
+      booking_date: booking.appointment_date,
+      start_time: booking.appointment_time,
+      client_name: booking.client_name,
+      client_phone: booking.client_phone,
+      client_email: booking.client_email || ''
+    });
+    setEditDialogOpen(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editData) return;
+    
+    setIsSaving(true);
+    try {
+      const response = await fetch(SCHEDULE_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'update_booking',
+          ...editData
+        })
+      });
+
+      if (response.ok) {
+        setEditDialogOpen(false);
+        onRefresh();
+      } else {
+        console.error('Ошибка обновления записи');
+      }
+    } catch (error) {
+      console.error('Ошибка обновления записи:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const getServiceName = (serviceId: number) => {
     const service = SERVICES.find(s => s.apiId === serviceId);
     return service ? service.name : 'Неизвестная услуга';
@@ -181,13 +245,23 @@ export default function BookingsTab({
                         </div>
                         
                         <div className="flex items-center gap-3">
+                          <Button
+                            onClick={() => handleEditClick(booking)}
+                            variant="outline"
+                            size="sm"
+                            className="flex items-center gap-1"
+                          >
+                            <Icon name="Edit" size={14} />
+                            Изменить
+                          </Button>
+                          
                           <Select
                             value={booking.status}
                             onValueChange={(newStatus) => onUpdateStatus(booking.id, newStatus)}
                           >
                             <SelectTrigger className="w-32 h-8">
-                              <Badge className={`text-xs ${STATUS_COLORS[booking.status]}`}>
-                                {STATUS_LABELS[booking.status]}
+                              <Badge className={`text-xs ${getStatusColor(booking.status)}`}>
+                                {getStatusLabel(booking.status)}
                               </Badge>
                             </SelectTrigger>
                             <SelectContent>
@@ -214,6 +288,78 @@ export default function BookingsTab({
           </Card>
         )}
       </div>
+
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Редактировать запись</DialogTitle>
+          </DialogHeader>
+          
+          {editData && (
+            <div className="space-y-4">
+              <div>
+                <Label>Дата записи</Label>
+                <Input
+                  type="date"
+                  value={editData.booking_date}
+                  onChange={(e) => setEditData({...editData, booking_date: e.target.value})}
+                />
+              </div>
+              
+              <div>
+                <Label>Время</Label>
+                <Input
+                  type="time"
+                  value={editData.start_time}
+                  onChange={(e) => setEditData({...editData, start_time: e.target.value})}
+                />
+              </div>
+              
+              <div>
+                <Label>Имя клиента</Label>
+                <Input
+                  value={editData.client_name}
+                  onChange={(e) => setEditData({...editData, client_name: e.target.value})}
+                />
+              </div>
+              
+              <div>
+                <Label>Телефон</Label>
+                <Input
+                  value={editData.client_phone}
+                  onChange={(e) => setEditData({...editData, client_phone: e.target.value})}
+                />
+              </div>
+              
+              <div>
+                <Label>Email (необязательно)</Label>
+                <Input
+                  type="email"
+                  value={editData.client_email}
+                  onChange={(e) => setEditData({...editData, client_email: e.target.value})}
+                />
+              </div>
+              
+              <div className="flex gap-2 pt-4">
+                <Button
+                  onClick={handleSaveEdit}
+                  disabled={isSaving}
+                  className="flex-1"
+                >
+                  {isSaving ? 'Сохранение...' : 'Сохранить'}
+                </Button>
+                <Button
+                  onClick={() => setEditDialogOpen(false)}
+                  variant="outline"
+                  disabled={isSaving}
+                >
+                  Отмена
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
