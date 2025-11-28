@@ -1156,15 +1156,26 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     
                         print(f'[APPOINTMENTS] Шаг 4: Создаем бронирование')
                         from datetime import datetime, timedelta
+                        
+                        # booking_time - это время, которое видит клиент
+                        booking_time = appointment_time
+                        
+                        # start_time - начало с учетом prep_time (если не первая запись дня)
                         start_dt = datetime.strptime(appointment_time, '%H:%M')
-                        end_dt = start_dt + timedelta(minutes=duration_minutes + buffer_time)
+                        if prep_time > 0:
+                            start_dt = start_dt - timedelta(minutes=prep_time)
+                        start_time_str = start_dt.strftime('%H:%M')
+                        
+                        # end_time - окончание с учетом duration + buffer_time
+                        end_dt = datetime.strptime(appointment_time, '%H:%M') + timedelta(minutes=duration_minutes + buffer_time)
                         end_time_str = end_dt.strftime('%H:%M')
-                        print(f'[APPOINTMENTS] Время: {appointment_time} - {end_time_str}')
+                        
+                        print(f'[APPOINTMENTS] Время записи: booking={booking_time}, start={start_time_str}, end={end_time_str}')
                         
                         cur.execute(f"""
                             INSERT INTO {SCHEMA}.diary_bookings 
-                            (client_id, service_id, owner_id, booking_date, start_time, end_time, status, created_at)
-                            VALUES ({int(client_id)}, {int(service_id)}, {int(owner_id)}, '{appointment_date}', '{appointment_time}', '{end_time_str}', 'pending', CURRENT_TIMESTAMP)
+                            (client_id, service_id, owner_id, booking_date, booking_time, start_time, end_time, status, created_at)
+                            VALUES ({int(client_id)}, {int(service_id)}, {int(owner_id)}, '{appointment_date}', '{booking_time}', '{start_time_str}', '{end_time_str}', 'pending', CURRENT_TIMESTAMP)
                             RETURNING id
                         """)
                         booking_id = cur.fetchone()['id']
