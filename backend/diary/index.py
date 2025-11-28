@@ -1096,250 +1096,263 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 
                 from datetime import datetime, timedelta
                 
-                with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                    # Проверяем, не заблокирована ли дата
-                    cur.execute(f"SELECT id FROM {SCHEMA}.diary_blocked_dates WHERE blocked_date = '{date}'")
-                    
-                    if cur.fetchone():
-                        return {
-                            'statusCode': 200,
-                            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                            'isBase64Encoded': False,
-                            'body': json.dumps({'slots': [], 'message': 'Date is blocked'})
-                        }
-                    
-                    # Get service duration
-                    cur.execute(f'SELECT duration_minutes FROM {SCHEMA}.diary_services WHERE id = {int(service_id)}')
-                    service = cur.fetchone()
-                    if not service:
-                        return {
-                            'statusCode': 404,
-                            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                            'body': json.dumps({'error': 'Service not found'})
-                        }
-                    
-                    duration = service['duration_minutes']
-                    
-                    # Get settings
-                    cur.execute(f'SELECT key, value FROM {SCHEMA}.diary_settings')
-                    settings_rows = cur.fetchall()
-                    settings = {row['key']: row['value'] for row in settings_rows}
-                    
-                    work_start = settings.get('work_hours_start', '10:00')
-                    work_end = settings.get('work_hours_end', '20:00')
-                    prep_time = int(settings.get('max_bookings_per_day', '0'))
-                    buffer_time = int(settings.get('booking_buffer_minutes', '0'))
-                    work_priority = settings.get('work_priority', 'False') == 'True'
-                    
-                    # Total time needed: prep + service + buffer
-                    total_time_needed = prep_time + duration + buffer_time
-                    
-                    # Определяем день недели для даты
-                    date_obj = datetime.strptime(date, '%Y-%m-%d')
-                    day_names = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
-                    day_of_week = day_names[date_obj.weekday()]
-                    target_weekday = date_obj.isoweekday()
-                    
-                    # Получаем расписание учёбы для этого дня с учётом цикла
-                    cur.execute(f'''
-                        SELECT DISTINCT cycle_start_date 
-                        FROM {SCHEMA}.diary_week_schedule 
-                        WHERE cycle_start_date <= '{date}'
-                        ORDER BY cycle_start_date DESC 
-                        LIMIT 1
-                    ''')
-                    
-                    cycle_row = cur.fetchone()
-                    study_periods = []
-                    
-                    if cycle_row:
-                        cycle_start_date = cycle_row['cycle_start_date']
+                try:
+                    with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                        # Проверяем, не заблокирована ли дата
+                        cur.execute(f"SELECT id FROM {SCHEMA}.diary_blocked_dates WHERE blocked_date = '{date}'")
                         
-                        # Считаем номер недели
-                        days_diff = (date_obj - datetime.strptime(str(cycle_start_date), '%Y-%m-%d')).days
-                        weeks_passed = days_diff // 7
-                        week_number = (weeks_passed % 2) + 1
+                        if cur.fetchone():
+                            return {
+                                'statusCode': 200,
+                                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                                'isBase64Encoded': False,
+                                'body': json.dumps({'slots': [], 'message': 'Date is blocked'})
+                            }
                         
-                        # Получаем расписание для этой недели и дня
+                        # Get service duration
+                        cur.execute(f'SELECT duration_minutes FROM {SCHEMA}.diary_services WHERE id = {int(service_id)}')
+                        service = cur.fetchone()
+                        if not service:
+                            return {
+                                'statusCode': 404,
+                                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                                'body': json.dumps({'error': 'Service not found'})
+                            }
+                        
+                        duration = service['duration_minutes']
+                        
+                        # Get settings
+                        cur.execute(f'SELECT key, value FROM {SCHEMA}.diary_settings')
+                        settings_rows = cur.fetchall()
+                        settings = {row['key']: row['value'] for row in settings_rows}
+                        
+                        work_start = settings.get('work_hours_start', '10:00')
+                        work_end = settings.get('work_hours_end', '20:00')
+                        prep_time = int(settings.get('max_bookings_per_day', '0'))
+                        buffer_time = int(settings.get('booking_buffer_minutes', '0'))
+                        work_priority = settings.get('work_priority', 'False') == 'True'
+                        
+                        # Total time needed: prep + service + buffer
+                        total_time_needed = prep_time + duration + buffer_time
+                        
+                        # Определяем день недели для даты
+                        date_obj = datetime.strptime(date, '%Y-%m-%d')
+                        day_names = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+                        day_of_week = day_names[date_obj.weekday()]
+                        target_weekday = date_obj.isoweekday()
+                    
+                        # Получаем расписание учёбы для этого дня с учётом цикла
                         cur.execute(f'''
-                            SELECT start_time, end_time
-                            FROM {SCHEMA}.diary_week_schedule
-                            WHERE day_of_week = {target_weekday}
-                              AND cycle_start_date = '{cycle_start_date}' 
-                              AND week_number = {week_number}
+                            SELECT DISTINCT cycle_start_date 
+                            FROM {SCHEMA}.diary_week_schedule 
+                            WHERE cycle_start_date <= '{date}'
+                            ORDER BY cycle_start_date DESC 
+                            LIMIT 1
                         ''')
                         
-                        study_periods = cur.fetchall()
-                    
-                    # Получаем разовые события на эту дату
-                    cur.execute(f'''
-                        SELECT start_time, end_time
-                        FROM {SCHEMA}.diary_calendar_events
-                        WHERE event_date = '{date}'
-                    ''')
-                    
-                    events = cur.fetchall()
-                    
-                    # Get existing bookings for the date
-                    cur.execute(f'''
-                        SELECT start_time, end_time
-                        FROM {SCHEMA}.diary_bookings 
-                        WHERE booking_date = '{date}' AND status != 'cancelled'
-                    ''')
-                    bookings = cur.fetchall()
-                    
-                    # Generate time slots
-                    slots = []
-                    
-                    def time_to_minutes(time_val):
-                        if isinstance(time_val, str):
-                            parts = time_val.split(':')
-                            return int(parts[0]) * 60 + int(parts[1])
-                        else:
-                            return time_val.hour * 60 + time_val.minute
-                    
-                    # ЛОГИКА ПРИОРИТЕТОВ
-                    available_periods = []
-                    
-                    if work_priority:
-                        # Приоритет рабочего времени
-                        start_minutes = time_to_minutes(work_start)
-                        end_minutes = time_to_minutes(work_end)
+                        cycle_row = cur.fetchone()
+                        study_periods = []
                         
-                        current_start = start_minutes
-                        sorted_events = sorted(events, key=lambda e: time_to_minutes(e['start_time'])) if events else []
+                        if cycle_row:
+                            cycle_start_date = cycle_row['cycle_start_date']
+                            
+                            # Считаем номер недели
+                            days_diff = (date_obj - datetime.strptime(str(cycle_start_date), '%Y-%m-%d')).days
+                            weeks_passed = days_diff // 7
+                            week_number = (weeks_passed % 2) + 1
+                            
+                            # Получаем расписание для этой недели и дня
+                            cur.execute(f'''
+                                SELECT start_time, end_time
+                                FROM {SCHEMA}.diary_week_schedule
+                                WHERE day_of_week = {target_weekday}
+                                  AND cycle_start_date = '{cycle_start_date}' 
+                                  AND week_number = {week_number}
+                            ''')
+                            
+                            study_periods = cur.fetchall()
                         
-                        for event in sorted_events:
-                            event_start = time_to_minutes(event['start_time'])
-                            event_end = time_to_minutes(event['end_time'])
-                            
-                            if event_start > current_start and event_start < end_minutes:
-                                if event_start - current_start >= total_time_needed:
-                                    available_periods.append((current_start, min(event_start, end_minutes)))
-                                current_start = max(event_end, current_start)
+                        # Получаем разовые события на эту дату
+                        cur.execute(f'''
+                            SELECT start_time, end_time
+                            FROM {SCHEMA}.diary_calendar_events
+                            WHERE event_date = '{date}'
+                        ''')
                         
-                        if current_start < end_minutes and end_minutes - current_start >= total_time_needed:
-                            available_periods.append((current_start, end_minutes))
-                    else:
-                        # Учёба имеет приоритет
-                        work_start_min = time_to_minutes(work_start)
-                        work_end_min = time_to_minutes(work_end)
+                        events = cur.fetchall()
                         
-                        if study_periods:
-                            temp_periods = [(work_start_min, work_end_min)]
+                        # Get existing bookings for the date
+                        cur.execute(f'''
+                            SELECT start_time, end_time
+                            FROM {SCHEMA}.diary_bookings 
+                            WHERE booking_date = '{date}' AND status != 'cancelled'
+                        ''')
+                        bookings = cur.fetchall()
+                        
+                        # Generate time slots
+                        slots = []
+                        
+                        def time_to_minutes(time_val):
+                            if isinstance(time_val, str):
+                                parts = time_val.split(':')
+                                return int(parts[0]) * 60 + int(parts[1])
+                            else:
+                                return time_val.hour * 60 + time_val.minute
+                        
+                        # ЛОГИКА ПРИОРИТЕТОВ
+                        available_periods = []
+                        
+                        if work_priority:
+                            # Приоритет рабочего времени
+                            start_minutes = time_to_minutes(work_start)
+                            end_minutes = time_to_minutes(work_end)
                             
-                            for study in study_periods:
-                                study_start = time_to_minutes(study['start_time'])
-                                study_end = time_to_minutes(study['end_time'])
-                                
-                                new_temp_periods = []
-                                for period_start, period_end in temp_periods:
-                                    if study_end <= period_start or study_start >= period_end:
-                                        new_temp_periods.append((period_start, period_end))
-                                    elif study_start <= period_start < study_end < period_end:
-                                        new_temp_periods.append((study_end, period_end))
-                                    elif period_start < study_start < period_end <= study_end:
-                                        new_temp_periods.append((period_start, study_start))
-                                    elif period_start < study_start and study_end < period_end:
-                                        new_temp_periods.append((period_start, study_start))
-                                        new_temp_periods.append((study_end, period_end))
-                                
-                                temp_periods = new_temp_periods
-                            
-                            sorted_events = sorted(events, key=lambda e: time_to_minutes(e['start_time'])) if events else []
-                            
-                            for period_start, period_end in temp_periods:
-                                current_start = period_start
-                                
-                                for event in sorted_events:
-                                    event_start = time_to_minutes(event['start_time'])
-                                    event_end = time_to_minutes(event['end_time'])
-                                    
-                                    if event_start > current_start and event_start < period_end:
-                                        if event_start - current_start >= total_time_needed:
-                                            available_periods.append((current_start, event_start))
-                                        current_start = max(event_end, current_start)
-                                
-                                if current_start < period_end and period_end - current_start >= total_time_needed:
-                                    available_periods.append((current_start, period_end))
-                        else:
-                            current_start = work_start_min
+                            current_start = start_minutes
                             sorted_events = sorted(events, key=lambda e: time_to_minutes(e['start_time'])) if events else []
                             
                             for event in sorted_events:
                                 event_start = time_to_minutes(event['start_time'])
                                 event_end = time_to_minutes(event['end_time'])
                                 
-                                if event_start > current_start and event_start < work_end_min:
+                                if event_start > current_start and event_start < end_minutes:
                                     if event_start - current_start >= total_time_needed:
-                                        available_periods.append((current_start, event_start))
+                                        available_periods.append((current_start, min(event_start, end_minutes)))
                                     current_start = max(event_end, current_start)
                             
-                            if current_start < work_end_min and work_end_min - current_start >= total_time_needed:
-                                available_periods.append((current_start, work_end_min))
-                    
-                    # Генерируем слоты для каждого доступного периода
-                    for period_idx, (period_start, period_end) in enumerate(available_periods):
-                        current = period_start
-                        is_first_period = (period_idx == 0)
-                        is_last_period = (period_idx == len(available_periods) - 1)
-                        first_slot_in_period = True
+                            if current_start < end_minutes and end_minutes - current_start >= total_time_needed:
+                                available_periods.append((current_start, end_minutes))
+                        else:
+                            # Учёба имеет приоритет
+                            work_start_min = time_to_minutes(work_start)
+                            work_end_min = time_to_minutes(work_end)
+                            
+                            if study_periods:
+                                temp_periods = [(work_start_min, work_end_min)]
+                                
+                                for study in study_periods:
+                                    study_start = time_to_minutes(study['start_time'])
+                                    study_end = time_to_minutes(study['end_time'])
+                                    
+                                    new_temp_periods = []
+                                    for period_start, period_end in temp_periods:
+                                        if study_end <= period_start or study_start >= period_end:
+                                            new_temp_periods.append((period_start, period_end))
+                                        elif study_start <= period_start < study_end < period_end:
+                                            new_temp_periods.append((study_end, period_end))
+                                        elif period_start < study_start < period_end <= study_end:
+                                            new_temp_periods.append((period_start, study_start))
+                                        elif period_start < study_start and study_end < period_end:
+                                            new_temp_periods.append((period_start, study_start))
+                                            new_temp_periods.append((study_end, period_end))
+                                    
+                                    temp_periods = new_temp_periods
+                                
+                                sorted_events = sorted(events, key=lambda e: time_to_minutes(e['start_time'])) if events else []
+                                
+                                for period_start, period_end in temp_periods:
+                                    current_start = period_start
+                                    
+                                    for event in sorted_events:
+                                        event_start = time_to_minutes(event['start_time'])
+                                        event_end = time_to_minutes(event['end_time'])
+                                        
+                                        if event_start > current_start and event_start < period_end:
+                                            if event_start - current_start >= total_time_needed:
+                                                available_periods.append((current_start, event_start))
+                                            current_start = max(event_end, current_start)
+                                    
+                                    if current_start < period_end and period_end - current_start >= total_time_needed:
+                                        available_periods.append((current_start, period_end))
+                            else:
+                                current_start = work_start_min
+                                sorted_events = sorted(events, key=lambda e: time_to_minutes(e['start_time'])) if events else []
+                                
+                                for event in sorted_events:
+                                    event_start = time_to_minutes(event['start_time'])
+                                    event_end = time_to_minutes(event['end_time'])
+                                    
+                                    if event_start > current_start and event_start < work_end_min:
+                                        if event_start - current_start >= total_time_needed:
+                                            available_periods.append((current_start, event_start))
+                                        current_start = max(event_end, current_start)
+                                
+                                if current_start < work_end_min and work_end_min - current_start >= total_time_needed:
+                                    available_periods.append((current_start, work_end_min))
                         
-                        while True:
-                            current_prep = 0 if (is_first_period and first_slot_in_period) else prep_time
-                            slot_time_needed = current_prep + duration + buffer_time
-                            slot_fits = current + slot_time_needed <= period_end
+                        # Генерируем слоты для каждого доступного периода
+                        for period_idx, (period_start, period_end) in enumerate(available_periods):
+                            current = period_start
+                            is_first_period = (period_idx == 0)
+                            is_last_period = (period_idx == len(available_periods) - 1)
+                            first_slot_in_period = True
                             
-                            if not slot_fits and is_last_period:
-                                overhang = (current + slot_time_needed) - period_end
-                                if overhang <= 60:
-                                    slot_fits = True
-                            
-                            if not slot_fits:
-                                break
-                            
-                            slot_start = f"{(current + current_prep) // 60:02d}:{(current + current_prep) % 60:02d}"
-                            actual_start_min = current
-                            actual_end_min = current + slot_time_needed
-                            
-                            is_available = True
-                            for booking in bookings:
-                                booking_start_min = time_to_minutes(booking['start_time'])
-                                booking_end_min = time_to_minutes(booking['end_time'])
+                            while True:
+                                current_prep = 0 if (is_first_period and first_slot_in_period) else prep_time
+                                slot_time_needed = current_prep + duration + buffer_time
+                                slot_fits = current + slot_time_needed <= period_end
                                 
-                                if actual_start_min < booking_end_min and actual_end_min > booking_start_min:
-                                    is_available = False
+                                if not slot_fits and is_last_period:
+                                    overhang = (current + slot_time_needed) - period_end
+                                    if overhang <= 60:
+                                        slot_fits = True
+                                
+                                if not slot_fits:
                                     break
-                            
-                            if is_available:
-                                slots.append(slot_start)
-                            
-                            first_slot_in_period = False
-                            current += 30
-                    
-                    # Фильтруем прошедшие слоты если передано текущее время
-                    if current_time_str:
-                        try:
-                            current_time_parts = current_time_str.split(':')
-                            current_minutes = int(current_time_parts[0]) * 60 + int(current_time_parts[1]) + 20
-                            
-                            filtered_slots = []
-                            for slot in slots:
-                                slot_time_parts = slot.split(':')
-                                slot_minutes = int(slot_time_parts[0]) * 60 + int(slot_time_parts[1])
                                 
-                                if slot_minutes > current_minutes:
-                                    filtered_slots.append(slot)
-                            
-                            slots = filtered_slots
-                        except:
-                            pass
-                    
+                                slot_start = f"{(current + current_prep) // 60:02d}:{(current + current_prep) % 60:02d}"
+                                actual_start_min = current
+                                actual_end_min = current + slot_time_needed
+                                
+                                is_available = True
+                                for booking in bookings:
+                                    booking_start_min = time_to_minutes(booking['start_time'])
+                                    booking_end_min = time_to_minutes(booking['end_time'])
+                                    
+                                    if actual_start_min < booking_end_min and actual_end_min > booking_start_min:
+                                        is_available = False
+                                        break
+                                
+                                if is_available:
+                                    slots.append(slot_start)
+                                
+                                first_slot_in_period = False
+                                current += 30
+                        
+                        # Фильтруем прошедшие слоты если передано текущее время
+                        if current_time_str:
+                            try:
+                                current_time_parts = current_time_str.split(':')
+                                current_minutes = int(current_time_parts[0]) * 60 + int(current_time_parts[1]) + 20
+                                
+                                filtered_slots = []
+                                for slot in slots:
+                                    slot_time_parts = slot.split(':')
+                                    slot_minutes = int(slot_time_parts[0]) * 60 + int(slot_time_parts[1])
+                                    
+                                    if slot_minutes > current_minutes:
+                                        filtered_slots.append(slot)
+                                
+                                slots = filtered_slots
+                            except:
+                                pass
+                        
+                        return {
+                            'statusCode': 200,
+                            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                            'isBase64Encoded': False,
+                            'body': json.dumps({'slots': slots})
+                        }
+                except Exception as slot_error:
+                    import traceback
                     return {
-                        'statusCode': 200,
+                        'statusCode': 500,
                         'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
                         'isBase64Encoded': False,
-                        'body': json.dumps({'slots': slots})
+                        'body': json.dumps({
+                            'error': f'Slot generation error: {str(slot_error)}',
+                            'type': type(slot_error).__name__,
+                            'trace': traceback.format_exc()[:2000]
+                        })
                     }
         
         return {
