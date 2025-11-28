@@ -90,8 +90,11 @@ export default function PublicBooking() {
     setIsLoadingSlots(true);
     try {
       const dateStr = selectedDate.toISOString().split('T')[0];
+      const now = new Date();
+      const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      
       const response = await fetch(
-        `${DIARY_API_URL}?resource=available_slots&service_id=${selectedServiceId}&date=${dateStr}`,
+        `${DIARY_API_URL}?resource=available_slots&service_id=${selectedServiceId}&date=${dateStr}&current_time=${currentTime}`,
         {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' }
