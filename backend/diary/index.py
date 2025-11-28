@@ -1087,6 +1087,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 date = event.get('queryStringParameters', {}).get('date')
                 current_time_str = event.get('queryStringParameters', {}).get('current_time')
                 
+                print(f'[SLOTS] === НАЧАЛО ЗАПРОСА ===')
+                print(f'[SLOTS] Параметры: service_id={service_id}, date={date}, current_time={current_time_str}')
+                
                 if not all([date, service_id]):
                     return {
                         'statusCode': 400,
@@ -1120,11 +1123,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             }
                         
                         duration = service['duration_minutes']
+                        print(f'[SLOTS] Длительность услуги: {duration} мин')
                         
                         # Get settings
                         cur.execute(f'SELECT key, value FROM {SCHEMA}.diary_settings')
                         settings_rows = cur.fetchall()
                         settings = {row['key']: row['value'] for row in settings_rows}
+                        
+                        print(f'[SLOTS] Все настройки из БД: {settings}')
                         
                         work_start = settings.get('work_hours_start', '10:00')
                         work_end = settings.get('work_hours_end', '20:00')
@@ -1132,14 +1138,20 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         buffer_time = int(settings.get('booking_buffer_minutes', '0'))
                         work_priority = settings.get('work_priority', 'False') == 'True'
                         
+                        print(f'[SLOTS] Рабочие часы: {work_start} - {work_end}')
+                        print(f'[SLOTS] prep_time: {prep_time}, buffer_time: {buffer_time}, work_priority: {work_priority}')
+                        
                         # Total time needed: prep + service + buffer
                         total_time_needed = prep_time + duration + buffer_time
+                        print(f'[SLOTS] Общее время для слота: {total_time_needed} мин')
                         
                         # Определяем день недели для даты
                         date_obj = datetime.strptime(date, '%Y-%m-%d')
                         day_names = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
                         day_of_week = day_names[date_obj.weekday()]
                         target_weekday = date_obj.isoweekday()
+                        
+                        print(f'[SLOTS] Дата: {date}, день недели: {day_of_week} ({target_weekday})')
                     
                         # Получаем расписание учёбы для этого дня с учётом цикла
                         cur.execute(f'''
@@ -1153,6 +1165,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         cycle_row = cur.fetchone()
                         study_periods = []
                         
+                        print(f'[SLOTS] Найден цикл расписания: {cycle_row}')
+                        
                         if cycle_row:
                             cycle_start_date = cycle_row['cycle_start_date']
                             
@@ -1160,6 +1174,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             days_diff = (date_obj - datetime.strptime(str(cycle_start_date), '%Y-%m-%d')).days
                             weeks_passed = days_diff // 7
                             week_number = (weeks_passed % 2) + 1
+                            
+                            print(f'[SLOTS] Цикл начат: {cycle_start_date}, прошло дней: {days_diff}, недель: {weeks_passed}, номер недели в цикле: {week_number}')
                             
                             # Получаем расписание для этой недели и дня
                             cur.execute(f'''
@@ -1171,15 +1187,17 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             ''')
                             
                             study_periods = cur.fetchall()
+                            print(f'[SLOTS] Периоды учёбы: {study_periods}')
                         
                         # Получаем разовые события на эту дату
                         cur.execute(f'''
                             SELECT start_time, end_time
                             FROM {SCHEMA}.diary_calendar_events
-                            WHERE event_date = '{date}'
+                            WHERE start_date = '{date}'
                         ''')
                         
                         events = cur.fetchall()
+                        print(f'[SLOTS] Разовые события на {date}: {events}')
                         
                         # Get existing bookings for the date
                         cur.execute(f'''
@@ -1188,6 +1206,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             WHERE booking_date = '{date}' AND status != 'cancelled'
                         ''')
                         bookings = cur.fetchall()
+                        print(f'[SLOTS] Существующие записи на {date}: {bookings}')
                         
                         # Generate time slots
                         slots = []
@@ -1201,6 +1220,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         
                         # ЛОГИКА ПРИОРИТЕТОВ
                         available_periods = []
+                        
+                        print(f'[SLOTS] Начало расчёта доступных периодов...')
+                        print(f'[SLOTS] work_priority = {work_priority}')
                         
                         if work_priority:
                             # Приоритет рабочего времени
@@ -1318,11 +1340,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                 first_slot_in_period = False
                                 current += 30
                         
+                        print(f'[SLOTS] Всего сгенерировано слотов (до фильтрации): {len(slots)}')
+                        print(f'[SLOTS] Доступные периоды: {available_periods}')
+                        
                         # Фильтруем прошедшие слоты если передано текущее время
                         if current_time_str:
                             try:
                                 current_time_parts = current_time_str.split(':')
                                 current_minutes = int(current_time_parts[0]) * 60 + int(current_time_parts[1]) + 20
+                                
+                                print(f'[SLOTS] Текущее время + 20 мин: {current_minutes // 60:02d}:{current_minutes % 60:02d}')
                                 
                                 filtered_slots = []
                                 for slot in slots:
@@ -1332,9 +1359,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                     if slot_minutes > current_minutes:
                                         filtered_slots.append(slot)
                                 
+                                print(f'[SLOTS] Слотов после фильтрации по времени: {len(filtered_slots)}')
                                 slots = filtered_slots
-                            except:
+                            except Exception as filter_err:
+                                print(f'[SLOTS] ОШИБКА при фильтрации: {filter_err}')
                                 pass
+                        
+                        print(f'[SLOTS] === ИТОГОВЫЙ РЕЗУЛЬТАТ: {len(slots)} слотов ===')
+                        print(f'[SLOTS] Слоты: {slots}')
                         
                         return {
                             'statusCode': 200,
