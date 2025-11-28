@@ -19,8 +19,8 @@ const SettingsTab = () => {
   const [systemSettings, setSystemSettings] = useState({
     prep_time: 0,
     buffer_time: 0,
-    work_start: '10:00',
-    work_end: '20:00',
+    work_hours_start: '09:00',
+    work_hours_end: '18:00',
     work_priority: true,
     reminder_hours: 0,
   });
@@ -35,8 +35,8 @@ const SettingsTab = () => {
     setSystemSettings({
       prep_time: Number(contextSettings.prep_time) || 0,
       buffer_time: Number(contextSettings.buffer_time) || 0,
-      work_start: contextSettings.work_start || '10:00',
-      work_end: contextSettings.work_end || '20:00',
+      work_hours_start: contextSettings.work_hours_start || '09:00',
+      work_hours_end: contextSettings.work_hours_end || '18:00',
       work_priority: contextSettings.work_priority === 'True' || contextSettings.work_priority === 'true',
       reminder_hours: Number(contextSettings.reminder_hours) || 0,
     });
@@ -129,16 +129,16 @@ const SettingsTab = () => {
                       <Label>Начало работы</Label>
                       <Input
                         type="time"
-                        value={systemSettings.work_start}
-                        onChange={(e) => setSystemSettings({ ...systemSettings, work_start: e.target.value })}
+                        value={systemSettings.work_hours_start}
+                        onChange={(e) => setSystemSettings({ ...systemSettings, work_hours_start: e.target.value })}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label>Конец работы</Label>
                       <Input
                         type="time"
-                        value={systemSettings.work_end}
-                        onChange={(e) => setSystemSettings({ ...systemSettings, work_end: e.target.value })}
+                        value={systemSettings.work_hours_end}
+                        onChange={(e) => setSystemSettings({ ...systemSettings, work_hours_end: e.target.value })}
                       />
                     </div>
                   </div>
