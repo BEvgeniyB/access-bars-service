@@ -1103,8 +1103,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     with conn.cursor(cursor_factory=RealDictCursor) as cur:
                         # Проверяем, не заблокирована ли дата
                         cur.execute(f"SELECT id FROM {SCHEMA}.diary_blocked_dates WHERE blocked_date = '{date}'")
+                        blocked_result = cur.fetchone()
                         
-                        if cur.fetchone():
+                        print(f'[SLOTS] Проверка блокировки для {date}: {blocked_result}')
+                        
+                        if blocked_result:
+                            print(f'[SLOTS] ДАТА ЗАБЛОКИРОВАНА! Возвращаем пустой массив слотов')
                             return {
                                 'statusCode': 200,
                                 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
