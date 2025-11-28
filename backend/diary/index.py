@@ -1171,15 +1171,15 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     print(f'[SLOTS] Активный цикл найден. Занятия: {study_start} - {study_end}')
                     print(f'[SLOTS] Тип study_start: {type(study_start)}, study_end: {type(study_end)}')
                     
-                    print(f'[SLOTS] Начинаю запрос appointments для даты {date_str}')
+                    print(f'[SLOTS] Начинаю запрос bookings для даты {date_str}')
                     try:
                         cur.execute(f'''
-                            SELECT appointment_time, service_id FROM {SCHEMA}.diary_appointments 
-                            WHERE appointment_date = '{date_str}' 
+                            SELECT start_time, service_id FROM {SCHEMA}.diary_bookings 
+                            WHERE booking_date = '{date_str}' 
                             AND status IN ('pending', 'confirmed')
                         ''')
                         existing_appointments = cur.fetchall()
-                        print(f'[SLOTS] Запрос appointments выполнен успешно')
+                        print(f'[SLOTS] Запрос bookings выполнен успешно')
                     except Exception as e:
                         print(f'[SLOTS] ОШИБКА при запросе appointments: {str(e)}')
                         raise
@@ -1192,7 +1192,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             cur.execute(f'SELECT duration_minutes FROM {SCHEMA}.diary_services WHERE id = {apt["service_id"]}')
                             apt_service = cur.fetchone()
                             if apt_service:
-                                apt_start = datetime.strptime(apt['appointment_time'], '%H:%M').time()
+                                apt_start = apt['start_time'] if isinstance(apt['start_time'], type(datetime.now().time())) else datetime.strptime(apt['start_time'], '%H:%M').time()
                                 apt_duration = apt_service['duration_minutes']
                                 
                                 total_minutes = apt_duration + prep_time + buffer_time
