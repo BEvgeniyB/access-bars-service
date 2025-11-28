@@ -1138,8 +1138,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         
                         work_start = settings.get('work_hours_start', '10:00')
                         work_end = settings.get('work_hours_end', '20:00')
-                        prep_time = int(settings.get('max_bookings_per_day', '0'))
-                        buffer_time = int(settings.get('booking_buffer_minutes', '0'))
+                        prep_time = int(settings.get('prep_time', '0'))
+                        buffer_time = int(settings.get('buffer_time', '0'))
                         work_priority = settings.get('work_priority', 'False') == 'True'
                         
                         print(f'[SLOTS] Рабочие часы: {work_start} - {work_end}')
