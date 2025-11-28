@@ -557,18 +557,34 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 
                 with conn.cursor(cursor_factory=RealDictCursor) as cur:
                     try:
-                        query = f'SELECT * FROM {SCHEMA}.diary_bookings WHERE owner_id = {int(owner_id)} LIMIT 100'
-                        cur.execute(query)
+                        cur.execute(f'SELECT * FROM {SCHEMA}.diary_bookings WHERE owner_id = {int(owner_id)} ORDER BY booking_date DESC, start_time DESC LIMIT 100')
                         bookings_raw = cur.fetchall()
-                        bookings = [{
-                            'id': b['id'],
-                            'client_id': b.get('client_id'),
-                            'service_id': b.get('service_id'),
-                            'time': b['start_time'].strftime('%H:%M') if b.get('start_time') else '00:00',
-                            'date': b['booking_date'].strftime('%Y-%m-%d') if b.get('booking_date') else '',
-                            'status': b.get('status', 'pending'),
-                            'end_time': b['end_time'].strftime('%H:%M') if b.get('end_time') else '00:00'
-                        } for b in bookings_raw]
+                        
+                        cur.execute(f'SELECT * FROM {SCHEMA}.diary_clients')
+                        clients_map = {c['id']: c for c in cur.fetchall()}
+                        
+                        cur.execute(f'SELECT * FROM {SCHEMA}.diary_services')
+                        services_map = {s['id']: s for s in cur.fetchall()}
+                        
+                        bookings = []
+                        for b in bookings_raw:
+                            client = clients_map.get(b.get('client_id'))
+                            service = services_map.get(b.get('service_id'))
+                            
+                            bookings.append({
+                                'id': b['id'],
+                                'client_id': b.get('client_id'),
+                                'service_id': b.get('service_id'),
+                                'client': client.get('name') if client else 'Не указан',
+                                'phone': client.get('phone') if client else '',
+                                'email': client.get('email') if client else '',
+                                'service': service.get('name') if service else 'Не указана',
+                                'duration': service.get('duration_minutes') if service else 0,
+                                'time': b['start_time'].strftime('%H:%M') if b.get('start_time') else '00:00',
+                                'date': b['booking_date'].strftime('%Y-%m-%d') if b.get('booking_date') else '',
+                                'status': b.get('status', 'pending'),
+                                'end_time': b['end_time'].strftime('%H:%M') if b.get('end_time') else '00:00'
+                            })
                     except Exception as e:
                         import traceback
                         print(f'[ERROR] Could not load bookings: {type(e).__name__}: {str(e)}')
