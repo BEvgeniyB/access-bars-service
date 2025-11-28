@@ -38,9 +38,13 @@ export default function DateTimeSelectionSteps({
     if (date <= today) return true;
     
     const dateStr = date.toISOString().split('T')[0];
-    if (blockedDates.includes(dateStr)) return true;
+    const isBlocked = blockedDates.includes(dateStr);
     
-    return false;
+    if (isBlocked) {
+      console.log('🚫 [CALENDAR] Дата заблокирована:', dateStr);
+    }
+    
+    return isBlocked;
   };
 
   useEffect(() => {
@@ -51,6 +55,9 @@ export default function DateTimeSelectionSteps({
 
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
+      const dateStr = date.toISOString().split('T')[0];
+      console.log('📅 [CALENDAR] Выбрана дата:', dateStr);
+      console.log('🔍 [CALENDAR] Заблокирована?', blockedDates.includes(dateStr));
       onSelectDate(date);
       setStep('time');
     }

@@ -73,7 +73,11 @@ export default function PublicBooking() {
       
       if (blockedResponse.ok) {
         const blockedData = await blockedResponse.json();
-        setBlockedDates((blockedData.blockedDates || []).map((item: any) => item.date));
+        const dates = (blockedData.blockedDates || []).map((item: any) => item.date);
+        console.log('🚫 [BOOKING] Заблокированные даты загружены:', dates);
+        setBlockedDates(dates);
+      } else {
+        console.error('❌ [BOOKING] Ошибка загрузки заблокированных дат:', blockedResponse.status);
       }
     } catch (error) {
       toast({
@@ -93,6 +97,10 @@ export default function PublicBooking() {
       const now = new Date();
       const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
       
+      console.log('📅 [BOOKING] Запрос слотов для даты:', dateStr, 'service_id:', selectedServiceId, 'current_time:', currentTime);
+      console.log('🚫 [BOOKING] Текущий список заблокированных дат:', blockedDates);
+      console.log('🔍 [BOOKING] Дата заблокирована?', blockedDates.includes(dateStr));
+      
       const response = await fetch(
         `${DIARY_API_URL}?resource=available_slots&service_id=${selectedServiceId}&date=${dateStr}&current_time=${currentTime}`,
         {
@@ -101,9 +109,14 @@ export default function PublicBooking() {
         }
       );
 
-      if (!response.ok) throw new Error('Failed to load slots');
+      if (!response.ok) {
+        console.error('❌ [BOOKING] Ошибка ответа backend:', response.status);
+        throw new Error('Failed to load slots');
+      }
 
       const data = await response.json();
+      console.log('✅ [BOOKING] Ответ от backend:', data);
+      console.log('🕐 [BOOKING] Количество слотов:', data.slots?.length || 0, 'слотов:', data.slots);
       setAvailableSlots(data.slots || []);
     } catch (error) {
       toast({
