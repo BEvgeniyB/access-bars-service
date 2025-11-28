@@ -1088,8 +1088,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     owner_id = body_data.get('owner_id', 1)
                     
                     with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                        cur.execute(f"SELECT duration_minutes, prep_time, buffer_time FROM {SCHEMA}.diary_services WHERE id = {int(service_id)}")
+                        query = f"SELECT duration_minutes, prep_time, buffer_time FROM {SCHEMA}.diary_services WHERE id = {int(service_id)}"
+                        print(f'[APPOINTMENTS] SQL запрос: {query}')
+                        cur.execute(query)
                         service = cur.fetchone()
+                        print(f'[APPOINTMENTS] Результат запроса: {service}')
                         
                         if not service:
                             return {
