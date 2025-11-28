@@ -38,8 +38,10 @@ const BookingsTab = () => {
   const { toast } = useToast();
   
   const [showDialog, setShowDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [editingBooking, setEditingBooking] = useState<any>(null);
   const [newBooking, setNewBooking] = useState({
     client_id: '',
     service_id: '',
@@ -121,6 +123,57 @@ const BookingsTab = () => {
       toast({
         title: 'Ошибка',
         description: 'Не удалось обновить статус',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleEditClick = (booking: any) => {
+    setEditingBooking({
+      id: booking.id,
+      client_id: booking.client_id?.toString() || '',
+      service_id: booking.service_id?.toString() || '',
+      date: booking.date,
+      start_time: booking.time,
+      client_name: booking.client,
+      client_phone: booking.phone || '',
+      client_email: booking.email || '',
+    });
+    setShowEditDialog(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingBooking) return;
+    
+    try {
+      const response = await fetch('https://functions.poehali.dev/162a7498-295a-4897-a0d8-695fadc8f40b', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'update_booking',
+          booking_id: editingBooking.id,
+          booking_date: editingBooking.date,
+          start_time: editingBooking.start_time,
+          client_name: editingBooking.client_name,
+          client_phone: editingBooking.client_phone,
+          client_email: editingBooking.client_email || undefined,
+        })
+      });
+
+      if (response.ok) {
+        toast({
+          title: 'Запись обновлена',
+          description: 'Изменения успешно сохранены',
+        });
+        setShowEditDialog(false);
+        refreshBookings();
+      } else {
+        throw new Error('Update failed');
+      }
+    } catch (error) {
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось обновить запись',
         variant: 'destructive',
       });
     }
@@ -308,6 +361,15 @@ const BookingsTab = () => {
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleEditClick(booking)}
+                          className="gap-1"
+                        >
+                          <Icon name="Edit" size={14} />
+                          Изменить
+                        </Button>
                         {booking.status === 'pending' && (
                           <>
                             <Button
@@ -359,6 +421,76 @@ const BookingsTab = () => {
           )}
         </CardContent>
       </Card>
+
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Редактировать запись</DialogTitle>
+          </DialogHeader>
+          
+          {editingBooking && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Дата записи</Label>
+                <Input
+                  type="date"
+                  value={editingBooking.date}
+                  onChange={(e) => setEditingBooking({...editingBooking, date: e.target.value})}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label>Время</Label>
+                <Input
+                  type="time"
+                  value={editingBooking.start_time}
+                  onChange={(e) => setEditingBooking({...editingBooking, start_time: e.target.value})}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label>Имя клиента</Label>
+                <Input
+                  value={editingBooking.client_name}
+                  onChange={(e) => setEditingBooking({...editingBooking, client_name: e.target.value})}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label>Телефон</Label>
+                <Input
+                  value={editingBooking.client_phone}
+                  onChange={(e) => setEditingBooking({...editingBooking, client_phone: e.target.value})}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label>Email (необязательно)</Label>
+                <Input
+                  type="email"
+                  value={editingBooking.client_email}
+                  onChange={(e) => setEditingBooking({...editingBooking, client_email: e.target.value})}
+                />
+              </div>
+              
+              <div className="flex gap-2 pt-4">
+                <Button
+                  onClick={handleSaveEdit}
+                  className="flex-1"
+                >
+                  Сохранить
+                </Button>
+                <Button
+                  onClick={() => setShowEditDialog(false)}
+                  variant="outline"
+                >
+                  Отмена
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
