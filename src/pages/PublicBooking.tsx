@@ -73,7 +73,7 @@ export default function PublicBooking() {
       
       if (blockedResponse.ok) {
         const blockedData = await blockedResponse.json();
-        setBlockedDates(blockedData.map((item: any) => item.blocked_date));
+        setBlockedDates((blockedData.blockedDates || []).map((item: any) => item.date));
       }
     } catch (error) {
       toast({
