@@ -119,17 +119,29 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 booking_date = event.get('queryStringParameters', {}).get('date')
                 
                 with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                    query = f'SELECT * FROM {SCHEMA}.diary_bookings LIMIT 10'
-                    cur.execute(query)
-                    
+                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_bookings ORDER BY booking_date DESC, start_time DESC LIMIT 100')
                     bookings = cur.fetchall()
+                    
+                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_clients')
+                    clients = {c['id']: c for c in cur.fetchall()}
+                    
+                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_services')
+                    services = {s['id']: s for s in cur.fetchall()}
                     
                     result = []
                     for booking in bookings:
+                        client = clients.get(booking.get('client_id'))
+                        service = services.get(booking.get('service_id'))
+                        
                         result.append({
                             'id': booking['id'],
                             'client_id': booking.get('client_id'),
                             'service_id': booking.get('service_id'),
+                            'client': client.get('name') if client else 'Не указан',
+                            'phone': client.get('phone') if client else '',
+                            'email': client.get('email') if client else '',
+                            'service': service.get('name') if service else 'Не указана',
+                            'duration': service.get('duration_minutes') if service else 0,
                             'time': booking['start_time'].strftime('%H:%M') if booking.get('start_time') else '00:00',
                             'date': booking['booking_date'].strftime('%Y-%m-%d') if booking.get('booking_date') else '',
                             'status': booking.get('status', 'pending'),
