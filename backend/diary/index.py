@@ -1075,156 +1075,174 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         
         elif resource == 'appointments':
             if method == 'POST':
-                body_data = json.loads(event.get('body', '{}'))
-                print(f'[APPOINTMENTS] Получены данные: {body_data}')
-                
-                service_id = body_data.get('service_id')
-                appointment_date = body_data.get('appointment_date')
-                appointment_time = body_data.get('appointment_time')
-                client_name = body_data.get('client_name')
-                client_phone = body_data.get('client_phone')
-                client_telegram = body_data.get('client_telegram')
-                owner_id = body_data.get('owner_id', 1)
-                
-                with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                    # Получаем данные услуги
-                    query = f"SELECT duration_minutes FROM {SCHEMA}.diary_services WHERE id = {int(service_id)}"
-                    print(f'[APPOINTMENTS] SQL запрос услуги: {query}')
-                    cur.execute(query)
-                    service = cur.fetchone()
-                    print(f'[APPOINTMENTS] Результат запроса: {service}')
-                
-                    if not service:
-                        print(f'[APPOINTMENTS] Услуга не найдена!')
-                        return {
-                            'statusCode': 400,
-                            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                            'isBase64Encoded': False,
-                            'body': json.dumps({'error': 'Service not found'})
-                        }
+                try:
+                    body_data = json.loads(event.get('body', '{}'))
+                    print(f'[APPOINTMENTS] Получены данные: {body_data}')
                     
-                    duration_minutes = service['duration_minutes'] or 60
+                    service_id = body_data.get('service_id')
+                    appointment_date = body_data.get('appointment_date')
+                    appointment_time = body_data.get('appointment_time')
+                    client_name = body_data.get('client_name')
+                    client_phone = body_data.get('client_phone')
+                    client_telegram = body_data.get('client_telegram')
+                    owner_id = body_data.get('owner_id', 1)
                     
-                    # Получаем prep_time и buffer_time из settings
-                    cur.execute(f'SELECT key, value FROM {SCHEMA}.diary_settings')
-                    settings_rows = cur.fetchall()
-                    settings = {row['key']: row['value'] for row in settings_rows}
+                    with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                        # Получаем данные услуги
+                        query = f"SELECT duration_minutes FROM {SCHEMA}.diary_services WHERE id = {int(service_id)}"
+                        print(f'[APPOINTMENTS] SQL запрос услуги: {query}')
+                        cur.execute(query)
+                        service = cur.fetchone()
+                        print(f'[APPOINTMENTS] Результат запроса: {service}')
                     
-                    prep_time = int(settings.get('prep_time', '0'))
-                    buffer_time = int(settings.get('buffer_time', '0'))
+                        if not service:
+                            print(f'[APPOINTMENTS] Услуга не найдена!')
+                            return {
+                                'statusCode': 400,
+                                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                                'isBase64Encoded': False,
+                                'body': json.dumps({'error': 'Service not found'})
+                            }
+                        
+                        duration_minutes = service['duration_minutes'] or 60
+                        
+                        # Получаем prep_time и buffer_time из settings
+                        cur.execute(f'SELECT key, value FROM {SCHEMA}.diary_settings')
+                        settings_rows = cur.fetchall()
+                        settings = {row['key']: row['value'] for row in settings_rows}
+                        
+                        prep_time = int(settings.get('prep_time', '0'))
+                        buffer_time = int(settings.get('buffer_time', '0'))
+                        
+                        print(f'[APPOINTMENTS] Шаг 1: duration={duration_minutes}, prep={prep_time}, buffer={buffer_time}')
                     
-                    print(f'[APPOINTMENTS] Шаг 1: duration={duration_minutes}, prep={prep_time}, buffer={buffer_time}')
-                
-                    print(f'[APPOINTMENTS] Шаг 2: Ищем/создаем пользователя')
-                    phone_escaped = client_phone.replace("'", "''")
-                    cur.execute(f"SELECT id FROM {SCHEMA}.diary_users WHERE phone = '{phone_escaped}' LIMIT 1")
-                    existing_user = cur.fetchone()
+                        print(f'[APPOINTMENTS] Шаг 2: Ищем/создаем пользователя')
+                        phone_escaped = client_phone.replace("'", "''")
+                        cur.execute(f"SELECT id FROM {SCHEMA}.diary_users WHERE phone = '{phone_escaped}' LIMIT 1")
+                        existing_user = cur.fetchone()
+                        
+                        if existing_user:
+                            user_id = existing_user['id']
+                            print(f'[APPOINTMENTS] Найден существующий user_id={user_id}')
+                        else:
+                            name_escaped = client_name.replace("'", "''")
+                            telegram_escaped = (client_telegram or '').replace("'", "''")
+                            
+                            cur.execute(f"""
+                                INSERT INTO {SCHEMA}.diary_users (name, phone, telegram_username, role, owner_id)
+                                VALUES ('{name_escaped}', '{phone_escaped}', '{telegram_escaped}', 'client', {int(owner_id)})
+                                RETURNING id
+                            """)
+                            user_id = cur.fetchone()['id']
+                            conn.commit()
+                            print(f'[APPOINTMENTS] Создан новый user_id={user_id}')
                     
-                    if existing_user:
-                        user_id = existing_user['id']
-                        print(f'[APPOINTMENTS] Найден существующий user_id={user_id}')
-                    else:
-                        name_escaped = client_name.replace("'", "''")
-                        telegram_escaped = (client_telegram or '').replace("'", "''")
+                        print(f'[APPOINTMENTS] Шаг 3: Ищем/создаем клиента')
+                        cur.execute(f"SELECT id FROM {SCHEMA}.diary_clients WHERE user_id = {int(user_id)} LIMIT 1")
+                        existing_client = cur.fetchone()
+                        
+                        if existing_client:
+                            client_id = existing_client['id']
+                            print(f'[APPOINTMENTS] Найден существующий client_id={client_id}')
+                        else:
+                            cur.execute(f"""
+                                INSERT INTO {SCHEMA}.diary_clients (user_id, owner_id)
+                                VALUES ({int(user_id)}, {int(owner_id)})
+                                RETURNING id
+                            """)
+                            client_id = cur.fetchone()['id']
+                            conn.commit()
+                            print(f'[APPOINTMENTS] Создан новый client_id={client_id}')
+                    
+                        print(f'[APPOINTMENTS] Шаг 4: Создаем бронирование')
+                        from datetime import datetime, timedelta
+                        start_dt = datetime.strptime(appointment_time, '%H:%M')
+                        end_dt = start_dt + timedelta(minutes=duration_minutes + buffer_time)
+                        end_time_str = end_dt.strftime('%H:%M')
+                        print(f'[APPOINTMENTS] Время: {appointment_time} - {end_time_str}')
                         
                         cur.execute(f"""
-                            INSERT INTO {SCHEMA}.diary_users (name, phone, telegram_username, role, owner_id)
-                            VALUES ('{name_escaped}', '{phone_escaped}', '{telegram_escaped}', 'client', {int(owner_id)})
+                            INSERT INTO {SCHEMA}.diary_bookings 
+                            (client_id, service_id, owner_id, booking_date, start_time, end_time, status, created_at)
+                            VALUES ({int(client_id)}, {int(service_id)}, {int(owner_id)}, '{appointment_date}', '{appointment_time}', '{end_time_str}', 'pending', CURRENT_TIMESTAMP)
                             RETURNING id
                         """)
-                        user_id = cur.fetchone()['id']
+                        booking_id = cur.fetchone()['id']
                         conn.commit()
-                        print(f'[APPOINTMENTS] Создан новый user_id={user_id}')
-                
-                    print(f'[APPOINTMENTS] Шаг 3: Ищем/создаем клиента')
-                    cur.execute(f"SELECT id FROM {SCHEMA}.diary_clients WHERE user_id = {int(user_id)} LIMIT 1")
-                    existing_client = cur.fetchone()
+                        print(f'[APPOINTMENTS] Создана запись booking_id={booking_id}')
                     
-                    if existing_client:
-                        client_id = existing_client['id']
-                        print(f'[APPOINTMENTS] Найден существующий client_id={client_id}')
-                    else:
                         cur.execute(f"""
-                            INSERT INTO {SCHEMA}.diary_clients (user_id, owner_id)
-                            VALUES ({int(user_id)}, {int(owner_id)})
-                            RETURNING id
+                            SELECT 
+                                b.id as booking_id,
+                                b.booking_date,
+                                b.start_time,
+                                u.name as client_name,
+                                u.phone as client_phone,
+                                u.email as client_email,
+                                s.name as service_name,
+                                s.duration_minutes,
+                                s.price
+                            FROM {SCHEMA}.diary_bookings b
+                            LEFT JOIN {SCHEMA}.diary_clients c ON b.client_id = c.id
+                            LEFT JOIN {SCHEMA}.diary_users u ON c.user_id = u.id
+                            LEFT JOIN {SCHEMA}.diary_services s ON b.service_id = s.id
+                            WHERE b.id = {int(booking_id)}
                         """)
-                        client_id = cur.fetchone()['id']
-                        conn.commit()
-                        print(f'[APPOINTMENTS] Создан новый client_id={client_id}')
-                
-                    print(f'[APPOINTMENTS] Шаг 4: Создаем бронирование')
-                    from datetime import datetime, timedelta
-                    start_dt = datetime.strptime(appointment_time, '%H:%M')
-                    end_dt = start_dt + timedelta(minutes=duration_minutes + buffer_time)
-                    end_time_str = end_dt.strftime('%H:%M')
-                    print(f'[APPOINTMENTS] Время: {appointment_time} - {end_time_str}')
+                        
+                        booking_data = cur.fetchone()
+                        
+                        if booking_data:
+                            try:
+                                telegram_bot_url = 'https://functions.poehali.dev/07b2b89b-011e-472f-b782-0f844489a891'
+                                notification_payload = {
+                                    'booking_id': booking_data['booking_id'],
+                                    'client_name': booking_data['client_name'] or 'Не указано',
+                                    'client_phone': booking_data['client_phone'] or 'Не указан',
+                                    'client_email': booking_data['client_email'] or 'не указан',
+                                    'service_name': booking_data['service_name'],
+                                    'duration': booking_data['duration_minutes'],
+                                    'price': str(booking_data['price']).replace('₽', '').strip(),
+                                    'date': booking_data['booking_date'].strftime('%d.%m.%Y'),
+                                    'time': booking_data['start_time'].strftime('%H:%M')
+                                }
+                                
+                                data = json.dumps(notification_payload).encode('utf-8')
+                                req = urllib.request.Request(
+                                    telegram_bot_url,
+                                    data=data,
+                                    headers={'Content-Type': 'application/json'}
+                                )
+                                urllib.request.urlopen(req, timeout=5)
+                            except Exception as e:
+                                print(f'Failed to send Telegram notification: {e}')
                     
-                    cur.execute(f"""
-                        INSERT INTO {SCHEMA}.diary_bookings 
-                        (client_id, service_id, owner_id, booking_date, start_time, end_time, status, created_at)
-                        VALUES ({int(client_id)}, {int(service_id)}, {int(owner_id)}, '{appointment_date}', '{appointment_time}', '{end_time_str}', 'pending', CURRENT_TIMESTAMP)
-                        RETURNING id
-                    """)
-                    booking_id = cur.fetchone()['id']
-                    conn.commit()
-                    print(f'[APPOINTMENTS] Создана запись booking_id={booking_id}')
-                
-                    cur.execute(f"""
-                        SELECT 
-                            b.id as booking_id,
-                            b.booking_date,
-                            b.start_time,
-                            u.name as client_name,
-                            u.phone as client_phone,
-                            u.email as client_email,
-                            s.name as service_name,
-                            s.duration_minutes,
-                            s.price
-                        FROM {SCHEMA}.diary_bookings b
-                        LEFT JOIN {SCHEMA}.diary_clients c ON b.client_id = c.id
-                        LEFT JOIN {SCHEMA}.diary_users u ON c.user_id = u.id
-                        LEFT JOIN {SCHEMA}.diary_services s ON b.service_id = s.id
-                        WHERE b.id = {int(booking_id)}
-                    """)
-                    
-                    booking_data = cur.fetchone()
-                    
-                    if booking_data:
-                        try:
-                            telegram_bot_url = 'https://functions.poehali.dev/07b2b89b-011e-472f-b782-0f844489a891'
-                            notification_payload = {
-                                'booking_id': booking_data['booking_id'],
-                                'client_name': booking_data['client_name'] or 'Не указано',
-                                'client_phone': booking_data['client_phone'] or 'Не указан',
-                                'client_email': booking_data['client_email'] or 'не указан',
-                                'service_name': booking_data['service_name'],
-                                'duration': booking_data['duration_minutes'],
-                                'price': str(booking_data['price']).replace('₽', '').strip(),
-                                'date': booking_data['booking_date'].strftime('%d.%m.%Y'),
-                                'time': booking_data['start_time'].strftime('%H:%M')
-                            }
-                            
-                            data = json.dumps(notification_payload).encode('utf-8')
-                            req = urllib.request.Request(
-                                telegram_bot_url,
-                                data=data,
-                                headers={'Content-Type': 'application/json'}
-                            )
-                            urllib.request.urlopen(req, timeout=5)
-                        except Exception as e:
-                            print(f'Failed to send Telegram notification: {e}')
-                
-                print(f'[APPOINTMENTS] УСПЕХ! Возвращаем результат')
-                return {
-                    'statusCode': 201,
-                    'headers': {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    },
-                    'isBase64Encoded': False,
-                    'body': json.dumps({'id': booking_id, 'message': 'Appointment created successfully'})
-                }
+                    print(f'[APPOINTMENTS] УСПЕХ! Возвращаем результат')
+                    return {
+                        'statusCode': 201,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'id': booking_id, 'message': 'Appointment created successfully'})
+                    }
+                except Exception as e:
+                    import traceback
+                    error_trace = traceback.format_exc()
+                    print(f'[APPOINTMENTS ERROR] {type(e).__name__}: {str(e)}')
+                    print(f'[APPOINTMENTS ERROR TRACE] {error_trace}')
+                    return {
+                        'statusCode': 500,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'isBase64Encoded': False,
+                        'body': json.dumps({
+                            'error': f'{type(e).__name__}: {str(e)}',
+                            'trace': error_trace[:500]
+                        })
+                    }
         
         elif resource == 'available_slots':
             if method == 'GET':
