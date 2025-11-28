@@ -1169,6 +1169,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     study_start = active_cycle['start_time']
                     study_end = active_cycle['end_time']
                     print(f'[SLOTS] Активный цикл найден. Занятия: {study_start} - {study_end}')
+                    print(f'[SLOTS] Тип study_start: {type(study_start)}, study_end: {type(study_end)}')
                     
                     cur.execute(f'''
                         SELECT appointment_time, service_id FROM {SCHEMA}.diary_appointments 
@@ -1179,22 +1180,30 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     
                     busy_ranges = []
                     print(f'[SLOTS] Найдено записей на эту дату: {len(existing_appointments)}')
-                    for apt in existing_appointments:
-                        cur.execute(f'SELECT duration_minutes FROM {SCHEMA}.diary_services WHERE id = {apt["service_id"]}')
-                        apt_service = cur.fetchone()
-                        if apt_service:
-                            apt_start = datetime.strptime(apt['appointment_time'], '%H:%M').time()
-                            apt_duration = apt_service['duration_minutes']
-                            
-                            total_minutes = apt_duration + prep_time + buffer_time
-                            apt_start_dt = datetime.combine(target_date, apt_start)
-                            apt_end_dt = apt_start_dt + timedelta(minutes=total_minutes)
-                            
-                            busy_ranges.append((apt_start_dt.time(), apt_end_dt.time()))
                     
-                    if study_start and study_end:
-                        busy_ranges.append((study_start, study_end))
-                    print(f'[SLOTS] Всего занятых диапазонов: {len(busy_ranges)}')
+                    try:
+                        for apt in existing_appointments:
+                            cur.execute(f'SELECT duration_minutes FROM {SCHEMA}.diary_services WHERE id = {apt["service_id"]}')
+                            apt_service = cur.fetchone()
+                            if apt_service:
+                                apt_start = datetime.strptime(apt['appointment_time'], '%H:%M').time()
+                                apt_duration = apt_service['duration_minutes']
+                                
+                                total_minutes = apt_duration + prep_time + buffer_time
+                                apt_start_dt = datetime.combine(target_date, apt_start)
+                                apt_end_dt = apt_start_dt + timedelta(minutes=total_minutes)
+                                
+                                busy_ranges.append((apt_start_dt.time(), apt_end_dt.time()))
+                        
+                        if study_start and study_end:
+                            print(f'[SLOTS] Добавляю занятия в busy_ranges: {study_start} - {study_end}')
+                            busy_ranges.append((study_start, study_end))
+                        
+                        print(f'[SLOTS] Всего занятых диапазонов: {len(busy_ranges)}')
+                    except Exception as e:
+                        print(f'[SLOTS] ОШИБКА при обработке busy_ranges: {str(e)}')
+                        print(f'[SLOTS] Traceback: {e.__class__.__name__}')
+                        raise
                     
                     work_start_time = datetime.strptime(work_start, '%H:%M').time()
                     work_end_time = datetime.strptime(work_end, '%H:%M').time()
