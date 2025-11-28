@@ -1171,12 +1171,18 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     print(f'[SLOTS] Активный цикл найден. Занятия: {study_start} - {study_end}')
                     print(f'[SLOTS] Тип study_start: {type(study_start)}, study_end: {type(study_end)}')
                     
-                    cur.execute(f'''
-                        SELECT appointment_time, service_id FROM {SCHEMA}.diary_appointments 
-                        WHERE appointment_date = '{date_str}' 
-                        AND status IN ('pending', 'confirmed')
-                    ''')
-                    existing_appointments = cur.fetchall()
+                    print(f'[SLOTS] Начинаю запрос appointments для даты {date_str}')
+                    try:
+                        cur.execute(f'''
+                            SELECT appointment_time, service_id FROM {SCHEMA}.diary_appointments 
+                            WHERE appointment_date = '{date_str}' 
+                            AND status IN ('pending', 'confirmed')
+                        ''')
+                        existing_appointments = cur.fetchall()
+                        print(f'[SLOTS] Запрос appointments выполнен успешно')
+                    except Exception as e:
+                        print(f'[SLOTS] ОШИБКА при запросе appointments: {str(e)}')
+                        raise
                     
                     busy_ranges = []
                     print(f'[SLOTS] Найдено записей на эту дату: {len(existing_appointments)}')
