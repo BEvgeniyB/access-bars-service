@@ -183,7 +183,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     
                     if booking_data:
                         try:
-                            telegram_bot_url = 'https://functions.poehali.dev/07b2b89b-011e-472f-b782-0f844489a891'
+                            telegram_bot_url = 'https://functions.poehali.dev/a4a6cfec-c23a-4a91-bf7b-9574e18236fb'
                             notification_payload = {
                                 'booking_id': booking_data['booking_id'],
                                 'client_name': booking_data['client_name'] or 'Не указано',
