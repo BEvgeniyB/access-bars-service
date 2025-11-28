@@ -38,6 +38,7 @@ export default function PublicBooking() {
   const [clientTelegram, setClientTelegram] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showTelegramDialog, setShowTelegramDialog] = useState(false);
+  const [blockedDates, setBlockedDates] = useState<string[]>([]);
 
   const steps = ['Услуга', 'Дата', 'Время', 'Контакты'];
 
@@ -63,6 +64,17 @@ export default function PublicBooking() {
       const data = await response.json();
       setServices(data.services || []);
       setSettings(data.settings || null);
+      
+      // Загружаем заблокированные даты
+      const blockedResponse = await fetch(`${DIARY_API_URL}?resource=blocked_dates`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      if (blockedResponse.ok) {
+        const blockedData = await blockedResponse.json();
+        setBlockedDates(blockedData.map((item: any) => item.blocked_date));
+      }
     } catch (error) {
       toast({
         title: 'Ошибка загрузки',
@@ -172,6 +184,7 @@ export default function PublicBooking() {
                 selectedDate={selectedDate}
                 selectedTime={selectedTime}
                 availableSlots={availableSlots}
+                blockedDates={blockedDates}
                 onSelectDate={setSelectedDate}
                 onSelectTime={setSelectedTime}
                 onBack={() => setCurrentStep(1)}

@@ -10,6 +10,7 @@ interface DateTimeSelectionStepsProps {
   selectedDate: Date | null;
   selectedTime: string | null;
   availableSlots: string[];
+  blockedDates?: string[];
   onSelectDate: (date: Date) => void;
   onSelectTime: (time: string) => void;
   onBack: () => void;
@@ -21,6 +22,7 @@ export default function DateTimeSelectionSteps({
   selectedDate,
   selectedTime,
   availableSlots,
+  blockedDates = [],
   onSelectDate,
   onSelectTime,
   onBack,
@@ -28,6 +30,18 @@ export default function DateTimeSelectionSteps({
   isLoadingSlots
 }: DateTimeSelectionStepsProps) {
   const [step, setStep] = useState<'date' | 'time'>('date');
+  
+  const isDateDisabled = (date: Date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    if (date <= today) return true;
+    
+    const dateStr = date.toISOString().split('T')[0];
+    if (blockedDates.includes(dateStr)) return true;
+    
+    return false;
+  };
 
   useEffect(() => {
     if (selectedDate && !selectedTime) {
@@ -60,7 +74,7 @@ export default function DateTimeSelectionSteps({
             mode="single"
             selected={selectedDate || undefined}
             onSelect={handleDateSelect}
-            disabled={(date) => date < new Date() || date.getDay() === 0}
+            disabled={isDateDisabled}
             locale={ru}
             className="rounded-md border"
           />
