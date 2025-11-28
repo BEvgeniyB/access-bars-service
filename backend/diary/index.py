@@ -601,20 +601,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         print(f'Warning: Could not load clients: {e}')
                     
                     try:
-                        cur.execute(f'SELECT * FROM {SCHEMA}.diary_settings WHERE owner_id = {int(owner_id)} LIMIT 1')
-                        settings_raw = cur.fetchone()
-                        if settings_raw:
-                            settings = {
-                                'id': settings_raw['id'],
-                                'owner_id': settings_raw['owner_id'],
-                                'key': settings_raw.get('key'),
-                                'value': settings_raw.get('value'),
-                                'created_at': settings_raw['created_at'].strftime('%Y-%m-%d %H:%M:%S') if settings_raw.get('created_at') else None
-                            }
-                        else:
-                            settings = {}
+                        cur.execute(f'SELECT key, value FROM {SCHEMA}.diary_settings WHERE owner_id = {int(owner_id)}')
+                        settings_rows = cur.fetchall()
+                        settings = {row['key']: row['value'] for row in settings_rows}
                     except Exception as e:
                         print(f'Warning: Could not load settings: {e}')
+                        settings = {}
                     
                     try:
                         cur.execute(f'SELECT * FROM {SCHEMA}.diary_calendar_events WHERE owner_id = {int(owner_id)} LIMIT 100')
