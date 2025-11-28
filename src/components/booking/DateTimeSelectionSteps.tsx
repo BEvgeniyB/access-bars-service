@@ -35,7 +35,8 @@ export default function DateTimeSelectionSteps({
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
-    if (date <= today) return true;
+    // Блокируем только ПРОШЕДШИЕ дни, не сегодняшний
+    if (date < today) return true;
     
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
