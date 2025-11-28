@@ -84,6 +84,21 @@ export default function DateTimeSelectionSteps({
             disabled={isDateDisabled}
             locale={ru}
             className="rounded-md border"
+            modifiers={{
+              blocked: (day) => {
+                const dateStr = day.toISOString().split('T')[0];
+                return blockedDates.includes(dateStr);
+              }
+            }}
+            modifiersStyles={{
+              blocked: {
+                backgroundColor: '#fecaca',
+                color: '#7f1d1d',
+                fontWeight: 'bold',
+                textDecoration: 'line-through',
+                cursor: 'not-allowed'
+              }
+            }}
           />
         </div>
 
