@@ -93,7 +93,12 @@ export default function PublicBooking() {
 
     setIsLoadingSlots(true);
     try {
-      const dateStr = selectedDate.toISOString().split('T')[0];
+      // Используем локальное форматирование вместо toISOString() чтобы избежать UTC timezone shift
+      const year = selectedDate.getFullYear();
+      const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+      const day = String(selectedDate.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
+      
       const now = new Date();
       const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
       
@@ -135,12 +140,18 @@ export default function PublicBooking() {
 
     setIsSubmitting(true);
     try {
+      // Используем локальное форматирование вместо toISOString() чтобы избежать UTC timezone shift
+      const year = selectedDate.getFullYear();
+      const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+      const day = String(selectedDate.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
+      
       const response = await fetch(`${DIARY_API_URL}?resource=appointments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           service_id: selectedServiceId,
-          appointment_date: selectedDate.toISOString().split('T')[0],
+          appointment_date: dateStr,
           appointment_time: selectedTime,
           client_name: clientName,
           client_phone: clientPhone,
