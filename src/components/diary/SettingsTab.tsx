@@ -32,14 +32,17 @@ const SettingsTab = () => {
   });
 
   useEffect(() => {
-    setSystemSettings({
+    console.log('📥 [SETTINGS] Загрузка настроек из контекста:', contextSettings);
+    const loadedSettings = {
       prep_time: Number(contextSettings.prep_time) || 0,
       buffer_time: Number(contextSettings.buffer_time) || 0,
       work_hours_start: contextSettings.work_hours_start || '09:00',
       work_hours_end: contextSettings.work_hours_end || '18:00',
       work_priority: contextSettings.work_priority === 'True' || contextSettings.work_priority === 'true',
       reminder_hours: Number(contextSettings.reminder_hours) || 0,
-    });
+    };
+    console.log('✅ [SETTINGS] Установленные настройки:', loadedSettings);
+    setSystemSettings(loadedSettings);
   }, [contextSettings]);
 
   const handleSaveSystemSettings = async () => {
@@ -49,10 +52,12 @@ const SettingsTab = () => {
         ...systemSettings,
         work_priority: systemSettings.work_priority ? 'True' : 'False',
       };
+      console.log('💾 [SETTINGS] Сохраняем настройки:', settingsToSave);
       await api.settings.update(settingsToSave);
       await refreshSettings();
       toast({ title: 'Успешно', description: 'Системные настройки сохранены' });
     } catch (error) {
+      console.error('❌ [SETTINGS] Ошибка сохранения:', error);
       toast({ title: 'Ошибка', description: 'Не удалось сохранить', variant: 'destructive' });
     } finally {
       setLoading(false);
