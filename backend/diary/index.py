@@ -1348,7 +1348,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                                     slots.append(slot_start)
                                 
                                 first_slot_in_period = False
-                                current += 30
+                                
+                                # Шаг между слотами: duration + buffer (или 30 мин если услуга без длительности)
+                                if duration > 0:
+                                    current += duration + buffer_time
+                                else:
+                                    current += 30  # booking_interval_minutes
                         
                         print(f'[SLOTS] Всего сгенерировано слотов (до фильтрации): {len(slots)}')
                         print(f'[SLOTS] Доступные периоды: {available_periods}')
