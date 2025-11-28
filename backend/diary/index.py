@@ -1075,19 +1075,18 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         
         elif resource == 'appointments':
             if method == 'POST':
-                try:
-                    body_data = json.loads(event.get('body', '{}'))
-                    print(f'[APPOINTMENTS] Получены данные: {body_data}')
-                    
-                    service_id = body_data.get('service_id')
-                    appointment_date = body_data.get('appointment_date')
-                    appointment_time = body_data.get('appointment_time')
-                    client_name = body_data.get('client_name')
-                    client_phone = body_data.get('client_phone')
-                    client_telegram = body_data.get('client_telegram')
-                    owner_id = body_data.get('owner_id', 1)
-                    
-                    with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                body_data = json.loads(event.get('body', '{}'))
+                print(f'[APPOINTMENTS] Получены данные: {body_data}')
+                
+                service_id = body_data.get('service_id')
+                appointment_date = body_data.get('appointment_date')
+                appointment_time = body_data.get('appointment_time')
+                client_name = body_data.get('client_name')
+                client_phone = body_data.get('client_phone')
+                client_telegram = body_data.get('client_telegram')
+                owner_id = body_data.get('owner_id', 1)
+                
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
                         query = f"SELECT duration_minutes, prep_time, buffer_time FROM {SCHEMA}.diary_services WHERE id = {int(service_id)}"
                         print(f'[APPOINTMENTS] SQL запрос: {query}')
                         cur.execute(query)
@@ -1197,28 +1196,15 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             except Exception as e:
                                 print(f'Failed to send Telegram notification: {e}')
                     
-                    return {
-                        'statusCode': 201,
-                        'headers': {
-                            'Content-Type': 'application/json',
-                            'Access-Control-Allow-Origin': '*'
-                        },
-                        'isBase64Encoded': False,
-                        'body': json.dumps({'id': booking_id, 'message': 'Appointment created successfully'})
-                    }
-                except Exception as e:
-                    print(f'[APPOINTMENTS] ОШИБКА: {str(e)}')
-                    import traceback
-                    print(f'[APPOINTMENTS] Traceback: {traceback.format_exc()}')
-                    return {
-                        'statusCode': 500,
-                        'headers': {
-                            'Content-Type': 'application/json',
-                            'Access-Control-Allow-Origin': '*'
-                        },
-                        'isBase64Encoded': False,
-                        'body': json.dumps({'error': str(e)})
-                    }
+                return {
+                    'statusCode': 201,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'isBase64Encoded': False,
+                    'body': json.dumps({'id': booking_id, 'message': 'Appointment created successfully'})
+                }
         
         elif resource == 'available_slots':
             if method == 'GET':
