@@ -1129,8 +1129,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             telegram_escaped = (client_telegram or '').replace("'", "''")
                             
                             cur.execute(f"""
-                                INSERT INTO {SCHEMA}.diary_users (name, phone, telegram_username, role, owner_id)
-                                VALUES ('{name_escaped}', '{phone_escaped}', '{telegram_escaped}', 'client', {int(owner_id)})
+                                INSERT INTO {SCHEMA}.diary_users (name, phone, email, role, telegram_id)
+                                VALUES ('{name_escaped}', '{phone_escaped}', '', 'client', 0)
                                 RETURNING id
                             """)
                             user_id = cur.fetchone()['id']
