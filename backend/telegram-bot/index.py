@@ -412,6 +412,11 @@ def show_available_times(chat_id: int, service_id: int, date_str: str):
         
         work_start_str = settings.get('work_hours_start', '10:00')
         work_end_str = settings.get('work_hours_end', '20:00')
+        prep_time = int(settings.get('prep_time', '0'))
+        buffer_time = int(settings.get('buffer_time', '0'))
+        
+        # Полное время слота = подготовка + услуга + буфер
+        total_time_needed = prep_time + duration + buffer_time
         
         # Если расписания учёбы нет - используем весь рабочий день
         if not schedule:
@@ -445,9 +450,10 @@ def show_available_times(chat_id: int, service_id: int, date_str: str):
         keyboard = {'inline_keyboard': []}
         current = start
         
-        while current + timedelta(minutes=duration) <= end:
+        # Проверяем что можем вместить полный слот
+        while current + timedelta(minutes=total_time_needed) <= end:
             slot_start = current.time()
-            slot_end = (current + timedelta(minutes=duration)).time()
+            slot_end = (current + timedelta(minutes=total_time_needed)).time()
             
             # Проверяем пересечение с существующими записями
             is_available = True
@@ -466,6 +472,7 @@ def show_available_times(chat_id: int, service_id: int, date_str: str):
                     'callback_data': f"time_{service_id}_{date_str}_{slot_start.strftime('%H:%M')}"
                 }])
             
+            # Сдвигаем на 30 минут для следующего слота
             current += timedelta(minutes=30)
         
         text = f"🕐 Выберите время на {date_str}:\n\n"
