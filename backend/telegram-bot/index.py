@@ -492,6 +492,24 @@ def create_booking(chat_id: int, user_id: int, service_id: int, date_str: str, t
     try:
         SCHEMA = 't_p89870318_access_bars_service'
         
+        # Находим client_id для этого user_id
+        cur.execute(
+            f"SELECT id FROM {SCHEMA}.diary_clients WHERE user_id = %s AND owner_id = 1 LIMIT 1",
+            (user_id,)
+        )
+        client_row = cur.fetchone()
+        
+        if not client_row:
+            # Если клиента нет - создаём
+            cur.execute(
+                f"INSERT INTO {SCHEMA}.diary_clients (user_id, owner_id) VALUES (%s, 1) RETURNING id",
+                (user_id,)
+            )
+            client_id = cur.fetchone()['id']
+            conn.commit()
+        else:
+            client_id = client_row['id']
+        
         # Получаем информацию об услуге
         cur.execute(
             f"SELECT name, price, duration_minutes FROM {SCHEMA}.diary_services WHERE id = %s",
@@ -513,7 +531,7 @@ def create_booking(chat_id: int, user_id: int, service_id: int, date_str: str, t
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id
             """,
-            (user_id, service_id, date_str, time_str, end_time_str, time_str, 'confirmed', 1)
+            (client_id, service_id, date_str, time_str, end_time_str, time_str, 'confirmed', 1)
         )
         booking_id = cur.fetchone()['id']
         conn.commit()
