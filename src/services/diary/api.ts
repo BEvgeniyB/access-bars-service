@@ -73,8 +73,8 @@ export const api = {
       apiRequest<ApiResponse<any[]>>(`bookings&date=${date}`, "GET"),
     create: (booking: any) =>
       apiRequest("bookings", "POST", { ...booking, owner_id: OWNER_ID }),
-    update: (id: number, status: string) =>
-      apiRequest("bookings", "PUT", { id, status }),
+    update: (id: number, data: any) =>
+      apiRequest("bookings", "PUT", { id, ...data }),
   },
 
   events: {

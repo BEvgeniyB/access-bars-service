@@ -103,7 +103,7 @@ const BookingsTab = () => {
 
   const handleStatusChange = async (id: number, status: string) => {
     try {
-      await api.bookings.update(id, status);
+      await api.bookings.update(id, { status });
       toast({
         title: 'Статус обновлен',
         description: 'Статус записи успешно изменен',
@@ -134,29 +134,18 @@ const BookingsTab = () => {
     if (!editingBooking) return;
     
     try {
-      const response = await fetch('https://functions.poehali.dev/162a7498-295a-4897-a0d8-695fadc8f40b', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'update_booking',
-          booking_id: editingBooking.id,
-          booking_date: editingBooking.date,
-          start_time: editingBooking.start_time,
-          service_id: editingBooking.service_id,
-          status: editingBooking.status,
-        })
+      await api.bookings.update(editingBooking.id, {
+        service_id: editingBooking.service_id,
+        booking_date: editingBooking.date,
+        start_time: editingBooking.start_time,
+        status: editingBooking.status,
       });
-
-      if (response.ok) {
-        toast({
-          title: 'Запись обновлена',
-          description: 'Изменения успешно сохранены',
-        });
-        setShowEditDialog(false);
-        refreshBookings();
-      } else {
-        throw new Error('Update failed');
-      }
+      toast({
+        title: 'Запись обновлена',
+        description: 'Изменения успешно сохранены',
+      });
+      setShowEditDialog(false);
+      refreshBookings();
     } catch (error) {
       toast({
         title: 'Ошибка',

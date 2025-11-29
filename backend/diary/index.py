@@ -235,9 +235,25 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 booking_id = body_data.get('id')
                 
                 with conn.cursor() as cur:
+                    update_fields = []
+                    
+                    if 'status' in body_data:
+                        update_fields.append(f"status = '{body_data['status']}'")
+                    if 'service_id' in body_data:
+                        update_fields.append(f"service_id = {int(body_data['service_id'])}")
+                    if 'booking_date' in body_data:
+                        update_fields.append(f"booking_date = '{body_data['booking_date']}'")
+                    if 'start_time' in body_data:
+                        update_fields.append(f"start_time = '{body_data['start_time']}'")
+                        update_fields.append(f"booking_time = '{body_data['start_time']}'")
+                    if 'end_time' in body_data:
+                        update_fields.append(f"end_time = '{body_data['end_time']}'")
+                    
+                    update_fields.append("updated_at = CURRENT_TIMESTAMP")
+                    
                     query = f'''
                         UPDATE {SCHEMA}.diary_bookings 
-                        SET status = '{body_data['status']}', updated_at = CURRENT_TIMESTAMP
+                        SET {', '.join(update_fields)}
                         WHERE id = {int(booking_id)}
                     '''
                     cur.execute(query)

@@ -44,7 +44,7 @@ const EditBookingDialog = ({
             <div className="space-y-2">
               <Label>Клиент</Label>
               <Input
-                value={editingBooking.client_name}
+                value={editingBooking.client_name || 'Не указан'}
                 disabled
                 className="bg-gray-100"
               />
