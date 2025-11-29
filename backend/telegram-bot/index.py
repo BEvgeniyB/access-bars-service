@@ -395,6 +395,10 @@ def show_available_times(chat_id: int, service_id: int, date_str: str):
             debug_info += f"Понедельник недели: {monday_of_week}\n"
             debug_info += f"Полных недель: {weeks_diff}\n"
             debug_info += f"Номер недели: {week_number}\n"
+            if schedule:
+                debug_info += f"Учёба: {schedule['start_time']} - {schedule['end_time']}\n"
+            else:
+                debug_info += f"Учёбы нет, рабочий день: {work_start_str} - {work_end_str}\n"
             send_telegram_message(chat_id, debug_info)
             
             # Получаем расписание для конкретного дня и недели
@@ -414,9 +418,21 @@ def show_available_times(chat_id: int, service_id: int, date_str: str):
             send_telegram_message(chat_id, f"❌ Ошибка при получении расписания: {str(e)}")
             return
         
+        # Получаем настройки рабочих часов
+        cur.execute(f'SELECT key, value FROM {SCHEMA}.diary_settings WHERE owner_id = 1')
+        settings_rows = cur.fetchall()
+        settings = {row['key']: row['value'] for row in settings_rows}
+        
+        work_start_str = settings.get('work_hours_start', '10:00')
+        work_end_str = settings.get('work_hours_end', '20:00')
+        
+        # Если расписания учёбы нет - используем весь рабочий день
         if not schedule:
-            send_telegram_message(chat_id, "❌ В этот день не ведется прием")
-            return
+            start_time = datetime.strptime(work_start_str, '%H:%M').time()
+            end_time = datetime.strptime(work_end_str, '%H:%M').time()
+        else:
+            start_time = schedule['start_time']
+            end_time = schedule['end_time']
         
         # Получаем занятые слоты
         try:
@@ -436,8 +452,8 @@ def show_available_times(chat_id: int, service_id: int, date_str: str):
             return
         
         # Генерируем временные слоты
-        start = datetime.combine(date_obj, schedule['start_time'])
-        end = datetime.combine(date_obj, schedule['end_time'])
+        start = datetime.combine(date_obj, start_time)
+        end = datetime.combine(date_obj, end_time)
         
         keyboard = {'inline_keyboard': []}
         current = start
