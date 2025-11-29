@@ -388,19 +388,6 @@ def show_available_times(chat_id: int, service_id: int, date_str: str):
             weeks_diff = (monday_of_week - cycle_start).days // 7
             week_number = (weeks_diff % 2) + 1
             
-            # DEBUG - отправляем информацию о вычислениях
-            debug_info = f"🔍 Дата: {date_str}\n"
-            debug_info += f"День недели: {day_of_week} ({['Пн','Вт','Ср','Чт','Пт','Сб','Вс'][day_of_week-1]})\n"
-            debug_info += f"Начало цикла: {cycle_start}\n"
-            debug_info += f"Понедельник недели: {monday_of_week}\n"
-            debug_info += f"Полных недель: {weeks_diff}\n"
-            debug_info += f"Номер недели: {week_number}\n"
-            if schedule:
-                debug_info += f"Учёба: {schedule['start_time']} - {schedule['end_time']}\n"
-            else:
-                debug_info += f"Учёбы нет, рабочий день: {work_start_str} - {work_end_str}\n"
-            send_telegram_message(chat_id, debug_info)
-            
             # Получаем расписание для конкретного дня и недели
             cur.execute(
                 f"""
@@ -425,6 +412,16 @@ def show_available_times(chat_id: int, service_id: int, date_str: str):
         
         work_start_str = settings.get('work_hours_start', '10:00')
         work_end_str = settings.get('work_hours_end', '20:00')
+        
+        # DEBUG - отправляем информацию о вычислениях
+        debug_info = f"🔍 Дата: {date_str}\n"
+        debug_info += f"День недели: {day_of_week} ({['Пн','Вт','Ср','Чт','Пт','Сб','Вс'][day_of_week-1]})\n"
+        debug_info += f"Номер недели: {week_number}\n"
+        if schedule:
+            debug_info += f"Учёба: {schedule['start_time']} - {schedule['end_time']}\n"
+        else:
+            debug_info += f"Учёбы нет, весь день доступен: {work_start_str} - {work_end_str}\n"
+        send_telegram_message(chat_id, debug_info)
         
         # Если расписания учёбы нет - используем весь рабочий день
         if not schedule:
