@@ -148,7 +148,15 @@ def handle_message(message: Dict[str, Any]) -> Dict[str, Any]:
         if text == '/start':
             if not user:
                 # Регистрируем нового пользователя
-                user_name = message['from'].get('first_name', 'Клиент')
+                # Приоритет: username с @, потом first_name
+                username = message['from'].get('username')
+                if username:
+                    user_name = f"@{username}"
+                else:
+                    first_name = message['from'].get('first_name', 'Клиент')
+                    last_name = message['from'].get('last_name', '')
+                    user_name = f"{first_name} {last_name}".strip()
+                
                 cur.execute(
                     """
                     INSERT INTO t_p89870318_access_bars_service.diary_users 
