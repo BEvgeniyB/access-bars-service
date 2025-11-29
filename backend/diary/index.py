@@ -160,6 +160,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             elif method == 'POST':
                 body_data = json.loads(event.get('body', '{}'))
+                print(f'[DEBUG] POST bookings body_data: {body_data}')
                 
                 with conn.cursor(cursor_factory=RealDictCursor) as cur:
                     query = f'''
@@ -168,6 +169,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         VALUES ({int(body_data['client_id'])}, {int(body_data['service_id'])}, {int(body_data['owner_id'])}, '{body_data['booking_date']}', '{body_data['start_time']}', '{body_data['end_time']}', '{body_data.get('status', 'pending')}')
                         RETURNING id
                     '''
+                    print(f'[DEBUG] SQL Query: {query}')
                     cur.execute(query)
                     
                     booking_id = cur.fetchone()['id']
