@@ -165,8 +165,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 with conn.cursor(cursor_factory=RealDictCursor) as cur:
                     query = f'''
                         INSERT INTO {SCHEMA}.diary_bookings 
-                        (client_id, service_id, owner_id, booking_date, start_time, end_time, status)
-                        VALUES ({int(body_data['client_id'])}, {int(body_data['service_id'])}, {int(body_data['owner_id'])}, '{body_data['booking_date']}', '{body_data['start_time']}', '{body_data['end_time']}', '{body_data.get('status', 'pending')}')
+                        (client_id, service_id, owner_id, booking_date, booking_time, start_time, end_time, status)
+                        VALUES ({int(body_data['client_id'])}, {int(body_data['service_id'])}, {int(body_data['owner_id'])}, '{body_data['booking_date']}', '{body_data['start_time']}', '{body_data['start_time']}', '{body_data['end_time']}', '{body_data.get('status', 'pending')}')
                         RETURNING id
                     '''
                     print(f'[DEBUG] SQL Query: {query}')
