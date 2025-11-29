@@ -382,6 +382,14 @@ def show_available_times(chat_id: int, service_id: int, date_str: str):
             days_diff = (date_obj.date() - cycle_start).days
             week_number = (days_diff // 7) % 2 + 1
             
+            # DEBUG - отправляем информацию о вычислениях
+            debug_info = f"🔍 Дата: {date_str}\n"
+            debug_info += f"День недели: {day_of_week} ({['Пн','Вт','Ср','Чт','Пт','Сб','Вс'][day_of_week-1]})\n"
+            debug_info += f"Начало цикла: {cycle_start}\n"
+            debug_info += f"Дней от начала: {days_diff}\n"
+            debug_info += f"Номер недели: {week_number}\n"
+            send_telegram_message(chat_id, debug_info)
+            
             # Получаем расписание для конкретного дня и недели
             cur.execute(
                 f"""
