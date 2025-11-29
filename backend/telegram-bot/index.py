@@ -357,7 +357,7 @@ def show_available_times(chat_id: int, service_id: int, date_str: str):
         
         duration = service['duration_minutes']
         
-        # Определяем день недели
+        # Определяем день недели и неделю цикла
         date_obj = datetime.strptime(date_str, '%Y-%m-%d')
         day_of_week = date_obj.isoweekday()
         
@@ -365,12 +365,34 @@ def show_available_times(chat_id: int, service_id: int, date_str: str):
         try:
             cur.execute(
                 f"""
-                SELECT start_time, end_time, slot_duration_minutes
+                SELECT start_time, end_time, cycle_start_date
                 FROM {SCHEMA}.diary_week_schedule
-                WHERE owner_id = 1 AND day_of_week = %s AND is_working_day = true
+                WHERE owner_id = 1
                 LIMIT 1
                 """,
-                (day_of_week,)
+            )
+            first_schedule = cur.fetchone()
+            
+            if not first_schedule:
+                send_telegram_message(chat_id, "❌ Расписание не настроено")
+                return
+            
+            # Вычисляем номер недели в цикле
+            cycle_start = first_schedule['cycle_start_date']
+            days_diff = (date_obj.date() - cycle_start).days
+            week_number = (days_diff // 7) % 2 + 1
+            
+            # Получаем расписание для конкретного дня и недели
+            cur.execute(
+                f"""
+                SELECT start_time, end_time
+                FROM {SCHEMA}.diary_week_schedule
+                WHERE owner_id = 1 
+                AND day_of_week = %s 
+                AND week_number = %s
+                LIMIT 1
+                """,
+                (day_of_week, week_number)
             )
             schedule = cur.fetchone()
         except Exception as e:
@@ -383,10 +405,12 @@ def show_available_times(chat_id: int, service_id: int, date_str: str):
         
         # DEBUG: показываем что получили из расписания
         debug_msg = f"DEBUG расписание:\n"
-        debug_msg += f"start_time type: {type(schedule['start_time'])}\n"
-        debug_msg += f"start_time value: {schedule['start_time']}\n"
-        debug_msg += f"end_time type: {type(schedule['end_time'])}\n"
-        debug_msg += f"end_time value: {schedule['end_time']}\n"
+        debug_msg += f"Дата: {date_str}\n"
+        debug_msg += f"День недели: {day_of_week}\n"
+        debug_msg += f"Неделя цикла: {week_number}\n"
+        debug_msg += f"start_time: {schedule['start_time']}\n"
+        debug_msg += f"end_time: {schedule['end_time']}\n"
+        debug_msg += f"Длительность услуги: {duration} мин\n"
         send_telegram_message(chat_id, debug_msg)
         
         # Получаем занятые слоты
@@ -409,7 +433,6 @@ def show_available_times(chat_id: int, service_id: int, date_str: str):
         # Генерируем временные слоты
         start = datetime.combine(date_obj, schedule['start_time'])
         end = datetime.combine(date_obj, schedule['end_time'])
-        slot_duration = schedule['slot_duration_minutes']
         
         keyboard = {'inline_keyboard': []}
         current = start
