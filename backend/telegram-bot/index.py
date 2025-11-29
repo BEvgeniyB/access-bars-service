@@ -376,6 +376,14 @@ def show_available_times(chat_id: int, service_id: int, date_str: str):
             send_telegram_message(chat_id, "❌ В этот день не ведется прием")
             return
         
+        # DEBUG: показываем что получили из расписания
+        debug_msg = f"DEBUG расписание:\n"
+        debug_msg += f"start_time type: {type(schedule['start_time'])}\n"
+        debug_msg += f"start_time value: {schedule['start_time']}\n"
+        debug_msg += f"end_time type: {type(schedule['end_time'])}\n"
+        debug_msg += f"end_time value: {schedule['end_time']}\n"
+        send_telegram_message(chat_id, debug_msg)
+        
         # Получаем занятые слоты
         cur.execute(
             f"""
