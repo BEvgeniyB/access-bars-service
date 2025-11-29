@@ -413,16 +413,6 @@ def show_available_times(chat_id: int, service_id: int, date_str: str):
         work_start_str = settings.get('work_hours_start', '10:00')
         work_end_str = settings.get('work_hours_end', '20:00')
         
-        # DEBUG - отправляем информацию о вычислениях
-        debug_info = f"🔍 Дата: {date_str}\n"
-        debug_info += f"День недели: {day_of_week} ({['Пн','Вт','Ср','Чт','Пт','Сб','Вс'][day_of_week-1]})\n"
-        debug_info += f"Номер недели: {week_number}\n"
-        if schedule:
-            debug_info += f"Учёба: {schedule['start_time']} - {schedule['end_time']}\n"
-        else:
-            debug_info += f"Учёбы нет, весь день доступен: {work_start_str} - {work_end_str}\n"
-        send_telegram_message(chat_id, debug_info)
-        
         # Если расписания учёбы нет - используем весь рабочий день
         if not schedule:
             start_time = datetime.strptime(work_start_str, '%H:%M').time()
@@ -476,7 +466,7 @@ def show_available_times(chat_id: int, service_id: int, date_str: str):
                     'callback_data': f"time_{service_id}_{date_str}_{slot_start.strftime('%H:%M')}"
                 }])
             
-            current += timedelta(minutes=slot_duration)
+            current += timedelta(minutes=30)
         
         text = f"🕐 Выберите время на {date_str}:\n\n"
         
