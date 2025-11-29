@@ -92,6 +92,34 @@ def send_telegram_message(chat_id: int, text: str, reply_markup: Optional[Dict] 
         return {'ok': False, 'error': str(e)}
 
 
+def answer_callback_query(callback_query_id: str, text: str = ''):
+    """Ответить на callback query"""
+    import urllib.request
+    
+    token = os.environ.get('TELEGRAM_BOT_TOKEN')
+    if not token:
+        return {'ok': False, 'error': 'Token not configured'}
+    
+    url = f'https://api.telegram.org/bot{token}/answerCallbackQuery'
+    
+    data = {
+        'callback_query_id': callback_query_id,
+        'text': text
+    }
+    
+    req = urllib.request.Request(
+        url,
+        data=json.dumps(data).encode('utf-8'),
+        headers={'Content-Type': 'application/json'}
+    )
+    
+    try:
+        with urllib.request.urlopen(req) as response:
+            return json.loads(response.read().decode('utf-8'))
+    except Exception as e:
+        return {'ok': False, 'error': str(e)}
+
+
 def handle_message(message: Dict[str, Any]) -> Dict[str, Any]:
     """Обработка текстовых сообщений"""
     chat_id = message['chat']['id']
@@ -165,6 +193,10 @@ def handle_callback(callback: Dict[str, Any]) -> Dict[str, Any]:
     chat_id = callback['message']['chat']['id']
     data = callback['data']
     telegram_id = callback['from']['id']
+    callback_query_id = callback['id']
+    
+    # Сразу отвечаем на callback_query чтобы убрать "часики"
+    answer_callback_query(callback_query_id)
     
     conn = get_db_connection()
     cur = conn.cursor()
