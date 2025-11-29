@@ -119,6 +119,7 @@ const BookingsTab = () => {
   };
 
   const handleEditClick = (booking: any) => {
+    console.log('📝 Редактирование записи:', booking);
     setEditingBooking({
       id: booking.id,
       service_id: booking.service_id?.toString() || '',
