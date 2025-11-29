@@ -311,44 +311,84 @@ def show_available_times(chat_id: int, service_id: int, date_str: str):
     cur = conn.cursor()
     
     try:
-        # Получаем настройки рабочего времени
-        cur.execute(
-            """
-            SELECT key, value FROM t_p89870318_access_bars_service.diary_settings 
-            WHERE owner_id = 1 AND key IN ('work_hours_start', 'work_hours_end', 'booking_interval_minutes')
-            """
-        )
-        settings = {row['key']: row['value'] for row in cur.fetchall()}
+        SCHEMA = 't_p89870318_access_bars_service'
         
-        start_time = datetime.strptime(settings.get('work_hours_start', '09:00'), '%H:%M').time()
-        end_time = datetime.strptime(settings.get('work_hours_end', '20:00'), '%H:%M').time()
-        interval = int(settings.get('booking_interval_minutes', '30'))
+        # Получаем длительность услуги
+        cur.execute(
+            f"SELECT duration_minutes FROM {SCHEMA}.diary_services WHERE id = %s",
+            (service_id,)
+        )
+        service = cur.fetchone()
+        if not service:
+            send_telegram_message(chat_id, "❌ Услуга не найдена")
+            return
+        
+        duration = service['duration_minutes']
+        
+        # Определяем день недели
+        date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+        day_of_week = date_obj.isoweekday()
+        
+        # Получаем расписание для этого дня
+        cur.execute(
+            f"""
+            SELECT start_time, end_time, slot_duration_minutes
+            FROM {SCHEMA}.diary_week_schedule
+            WHERE owner_id = 1 AND day_of_week = %s AND is_working_day = true
+            """,
+            (day_of_week,)
+        )
+        schedule = cur.fetchone()
+        
+        if not schedule:
+            send_telegram_message(chat_id, "❌ В этот день не ведется прием")
+            return
         
         # Получаем занятые слоты
         cur.execute(
-            """
-            SELECT booking_time FROM t_p89870318_access_bars_service.diary_bookings 
-            WHERE booking_date = %s AND status != 'cancelled'
+            f"""
+            SELECT start_time, end_time
+            FROM {SCHEMA}.diary_bookings
+            WHERE owner_id = 1 
+            AND booking_date = %s
+            AND status IN ('pending', 'confirmed')
             """,
             (date_str,)
         )
-        booked_times = {row['booking_time'] for row in cur.fetchall()}
+        bookings = cur.fetchall()
         
-        # Генерируем доступные слоты
+        # Генерируем временные слоты
+        start = datetime.combine(date_obj, schedule['start_time'])
+        end = datetime.combine(date_obj, schedule['end_time'])
+        slot_duration = schedule['slot_duration_minutes']
+        
         keyboard = {'inline_keyboard': []}
-        current = datetime.combine(datetime.today(), start_time)
-        end = datetime.combine(datetime.today(), end_time)
+        current = start
+        
+        while current + timedelta(minutes=duration) <= end:
+            slot_start = current.time()
+            slot_end = (current + timedelta(minutes=duration)).time()
+            
+            # Проверяем пересечение с существующими записями
+            is_available = True
+            for booking in bookings:
+                booking_start = booking['start_time']
+                booking_end = booking['end_time']
+                
+                # Проверка пересечения: если НЕ (конец слота <= начало записи ИЛИ начало слота >= конец записи)
+                if not (slot_end <= booking_start or slot_start >= booking_end):
+                    is_available = False
+                    break
+            
+            if is_available:
+                keyboard['inline_keyboard'].append([{
+                    'text': slot_start.strftime('%H:%M'),
+                    'callback_data': f"time_{service_id}_{date_str}_{slot_start.strftime('%H:%M')}"
+                }])
+            
+            current += timedelta(minutes=slot_duration)
         
         text = f"🕐 Выберите время на {date_str}:\n\n"
-        
-        while current < end:
-            time_slot = current.time()
-            if time_slot not in booked_times:
-                keyboard['inline_keyboard'].append([{
-                    'text': time_slot.strftime('%H:%M'),
-                    'callback_data': f"time_{service_id}_{date_str}_{time_slot.strftime('%H:%M')}"
-                }])
-            current += timedelta(minutes=interval)
         
         if not keyboard['inline_keyboard']:
             text += "❌ К сожалению, все слоты заняты. Выберите другую дату."
@@ -363,22 +403,30 @@ def show_available_times(chat_id: int, service_id: int, date_str: str):
 def create_booking(chat_id: int, user_id: int, service_id: int, date_str: str, time_str: str, cur, conn):
     """Создать запись"""
     try:
+        SCHEMA = 't_p89870318_access_bars_service'
+        
         # Получаем информацию об услуге
         cur.execute(
-            "SELECT name, price FROM t_p89870318_access_bars_service.diary_services WHERE id = %s",
+            f"SELECT name, price, duration_minutes FROM {SCHEMA}.diary_services WHERE id = %s",
             (service_id,)
         )
         service = cur.fetchone()
         
+        # Вычисляем end_time
+        start_time_obj = datetime.strptime(time_str, '%H:%M').time()
+        start_datetime = datetime.combine(datetime.today(), start_time_obj)
+        end_datetime = start_datetime + timedelta(minutes=service['duration_minutes'])
+        end_time_str = end_datetime.strftime('%H:%M')
+        
         # Создаем запись
         cur.execute(
-            """
-            INSERT INTO t_p89870318_access_bars_service.diary_bookings 
-            (client_id, service_id, booking_date, booking_time, status) 
-            VALUES (%s, %s, %s, %s, %s)
+            f"""
+            INSERT INTO {SCHEMA}.diary_bookings 
+            (client_id, service_id, booking_date, start_time, end_time, booking_time, status, owner_id) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id
             """,
-            (user_id, service_id, date_str, time_str, 'confirmed')
+            (user_id, service_id, date_str, time_str, end_time_str, time_str, 'confirmed', 1)
         )
         booking_id = cur.fetchone()['id']
         conn.commit()
@@ -386,7 +434,7 @@ def create_booking(chat_id: int, user_id: int, service_id: int, date_str: str, t
         text = f"✅ <b>Запись успешно создана!</b>\n\n"
         text += f"📋 Услуга: {service['name']}\n"
         text += f"📅 Дата: {date_str}\n"
-        text += f"🕐 Время: {time_str}\n"
+        text += f"🕐 Время: {time_str} - {end_time_str}\n"
         text += f"💰 Стоимость: {service['price']} ₽\n\n"
         text += f"Номер записи: #{booking_id}"
         
