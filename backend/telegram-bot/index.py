@@ -362,15 +362,20 @@ def show_available_times(chat_id: int, service_id: int, date_str: str):
         day_of_week = date_obj.isoweekday()
         
         # Получаем расписание для этого дня
-        cur.execute(
-            f"""
-            SELECT start_time, end_time, slot_duration_minutes
-            FROM {SCHEMA}.diary_week_schedule
-            WHERE owner_id = 1 AND day_of_week = %s AND is_working_day = true
-            """,
-            (day_of_week,)
-        )
-        schedule = cur.fetchone()
+        try:
+            cur.execute(
+                f"""
+                SELECT start_time, end_time, slot_duration_minutes
+                FROM {SCHEMA}.diary_week_schedule
+                WHERE owner_id = 1 AND day_of_week = %s AND is_working_day = true
+                LIMIT 1
+                """,
+                (day_of_week,)
+            )
+            schedule = cur.fetchone()
+        except Exception as e:
+            send_telegram_message(chat_id, f"❌ Ошибка при получении расписания: {str(e)}")
+            return
         
         if not schedule:
             send_telegram_message(chat_id, "❌ В этот день не ведется прием")
@@ -385,17 +390,21 @@ def show_available_times(chat_id: int, service_id: int, date_str: str):
         send_telegram_message(chat_id, debug_msg)
         
         # Получаем занятые слоты
-        cur.execute(
-            f"""
-            SELECT start_time, end_time
-            FROM {SCHEMA}.diary_bookings
-            WHERE owner_id = 1 
-            AND booking_date = %s
-            AND status IN ('pending', 'confirmed')
-            """,
-            (date_str,)
-        )
-        bookings = cur.fetchall()
+        try:
+            cur.execute(
+                f"""
+                SELECT start_time, end_time
+                FROM {SCHEMA}.diary_bookings
+                WHERE owner_id = 1 
+                AND booking_date = %s
+                AND status IN ('pending', 'confirmed')
+                """,
+                (date_str,)
+            )
+            bookings = cur.fetchall()
+        except Exception as e:
+            send_telegram_message(chat_id, f"❌ Ошибка при получении записей: {str(e)}")
+            return
         
         # Генерируем временные слоты
         start = datetime.combine(date_obj, schedule['start_time'])
