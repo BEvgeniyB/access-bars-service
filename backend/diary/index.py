@@ -122,7 +122,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     cur.execute(f'SELECT * FROM {SCHEMA}.diary_bookings ORDER BY booking_date DESC, start_time DESC LIMIT 100')
                     bookings = cur.fetchall()
                     
-                    cur.execute(f'SELECT * FROM {SCHEMA}.diary_clients')
+                    cur.execute(f'''
+                        SELECT c.id, c.user_id, u.name, u.phone, u.email 
+                        FROM {SCHEMA}.diary_clients c 
+                        LEFT JOIN {SCHEMA}.diary_users u ON c.user_id = u.id
+                    ''')
                     clients = {c['id']: c for c in cur.fetchall()}
                     
                     cur.execute(f'SELECT * FROM {SCHEMA}.diary_services')
