@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 
 const ADMIN_API_URL = 'https://functions.poehali.dev/9471e2dc-0dfa-4927-9d58-74f7dc75819c';
 
@@ -70,7 +70,7 @@ export const useChakraData = (token: string | null, selectedUserId: number | nul
 
   const selectedUser = useMemo(() => users.find((u) => u.id === selectedUserId), [users, selectedUserId]);
 
-  const authFetch = async (url: string, options: RequestInit = {}) => {
+  const authFetch = useCallback(async (url: string, options: RequestInit = {}) => {
     if (!token) throw new Error('No token');
     
     return fetch(url, {
@@ -80,9 +80,9 @@ export const useChakraData = (token: string | null, selectedUserId: number | nul
         'X-Auth-Token': token,
       },
     });
-  };
+  }, [token]);
 
-  const loadAllData = async () => {
+  const loadAllData = useCallback(async () => {
     if (!token) return;
 
     try {
@@ -123,9 +123,9 @@ export const useChakraData = (token: string | null, selectedUserId: number | nul
     } catch (err: any) {
       console.error('Ошибка загрузки данных:', err.message || err);
     }
-  };
+  }, [token]);
 
-  const loadUserData = async () => {
+  const loadUserData = useCallback(async () => {
     if (!token || !selectedUserId) return;
 
     const selectedUser = users.find((u) => u.id === selectedUserId);
@@ -175,7 +175,7 @@ export const useChakraData = (token: string | null, selectedUserId: number | nul
     } catch (err) {
       console.error('Ошибка загрузки данных пользователя:', err);
     }
-  };
+  }, [token, selectedUserId, users]);
 
   useEffect(() => {
     if (token) {
