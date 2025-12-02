@@ -135,10 +135,6 @@ export const useChakraActions = ({
       return;
     }
 
-    setEditType(type);
-    setEditMode('create');
-    console.log('📝 Установлены editType и editMode:', { type, mode: 'create' });
-
     const newItem: any = {
       chakra_id: selectedUser.chakra_id,
       user_id: selectedUserId,
@@ -169,10 +165,15 @@ export const useChakraActions = ({
       loadAllData();
     }
 
-    setEditItem(newItem);
     console.log('📋 Создан новый item:', newItem);
+    console.log('📝 Установка стейтов:', { type, mode: 'create', item: newItem });
+    
+    setEditItem(newItem);
+    setEditType(type);
+    setEditMode('create');
     setEditDialog(true);
-    console.log('✅ Диалог должен открыться: editDialog = true');
+    
+    console.log('✅ Все стейты установлены, диалог открывается');
   };
 
   const handleEdit = (type: 'concept' | 'organ' | 'science' | 'responsibility', item: any) => {
