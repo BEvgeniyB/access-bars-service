@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, useRef } from 'react';
 
 const ADMIN_API_URL = 'https://functions.poehali.dev/9471e2dc-0dfa-4927-9d58-74f7dc75819c';
 
@@ -79,6 +79,38 @@ export const useChakraActions = ({
 }: UseChakraActionsProps) => {
   console.log('⚡ useChakraActions ПЕРЕСОЗДАН');
   
+  // Используем refs для стабильных ссылок на данные
+  const tokenRef = useRef(token);
+  const selectedUserIdRef = useRef(selectedUserId);
+  const usersRef = useRef(users);
+  const conceptsRef = useRef(concepts);
+  const organsRef = useRef(organs);
+  const sciencesRef = useRef(sciences);
+  const responsibilitiesRef = useRef(responsibilities);
+  const allConceptsRef = useRef(allConcepts);
+  const allOrgansRef = useRef(allOrgans);
+  const allSciencesRef = useRef(allSciences);
+  const allResponsibilitiesRef = useRef(allResponsibilities);
+  const authFetchRef = useRef(authFetch);
+  const loadAllDataRef = useRef(loadAllData);
+  const loadUserDataRef = useRef(loadUserData);
+  
+  // Обновляем refs при изменении пропсов
+  tokenRef.current = token;
+  selectedUserIdRef.current = selectedUserId;
+  usersRef.current = users;
+  conceptsRef.current = concepts;
+  organsRef.current = organs;
+  sciencesRef.current = sciences;
+  responsibilitiesRef.current = responsibilities;
+  allConceptsRef.current = allConcepts;
+  allOrgansRef.current = allOrgans;
+  allSciencesRef.current = allSciences;
+  allResponsibilitiesRef.current = allResponsibilities;
+  authFetchRef.current = authFetch;
+  loadAllDataRef.current = loadAllData;
+  loadUserDataRef.current = loadUserData;
+  
   const [dialogState, setDialogState] = useState({
     open: false,
     type: 'concept' as 'concept' | 'organ' | 'science' | 'responsibility' | 'user',
@@ -98,7 +130,7 @@ export const useChakraActions = ({
   const [showNewResponsibilityForm, setShowNewResponsibilityForm] = useState(false);
   const [selectedExistingResponsibilityId, setSelectedExistingResponsibilityId] = useState<number | null>(null);
 
-  const handleCreateUser = () => {
+  const handleCreateUser = useCallback(() => {
     setDialogState({
       open: true,
       type: 'user',
@@ -113,13 +145,13 @@ export const useChakraActions = ({
         is_admin: false,
       },
     });
-  };
+  }, []);
 
-  const handleEditUser = () => {
-    if (!selectedUserId) {
+  const handleEditUser = useCallback(() => {
+    if (!selectedUserIdRef.current) {
       return;
     }
-    const user = users.find((u) => u.id === selectedUserId);
+    const user = usersRef.current.find((u) => u.id === selectedUserIdRef.current);
     if (!user) {
       return;
     }
@@ -130,11 +162,11 @@ export const useChakraActions = ({
       mode: 'edit',
       item: { ...user },
     });
-  };
+  }, []);
 
-  const handleCreate = (type: 'concept' | 'organ' | 'science' | 'responsibility') => {
-    console.log('🟢 handleCreate вызван:', { type, selectedUserId });
-    const selectedUser = users.find((u) => u.id === selectedUserId);
+  const handleCreate = useCallback((type: 'concept' | 'organ' | 'science' | 'responsibility') => {
+    console.log('🟢 handleCreate вызван:', { type, selectedUserId: selectedUserIdRef.current });
+    const selectedUser = usersRef.current.find((u) => u.id === selectedUserIdRef.current);
     console.log('👤 Найден пользователь:', selectedUser);
     
     if (!selectedUser?.chakra_id) {
@@ -145,7 +177,7 @@ export const useChakraActions = ({
 
     const newItem: any = {
       chakra_id: selectedUser.chakra_id,
-      user_id: selectedUserId,
+      user_id: selectedUserIdRef.current,
     };
 
     if (type === 'concept') {
@@ -180,9 +212,9 @@ export const useChakraActions = ({
     });
     
     console.log('✅ dialogState установлен, диалог открывается');
-  };
+  }, []);
 
-  const handleEdit = (type: 'concept' | 'organ' | 'science' | 'responsibility', item: any) => {
+  const handleEdit = useCallback((type: 'concept' | 'organ' | 'science' | 'responsibility', item: any) => {
     console.log('🟡 handleEdit вызван:', { type, item });
     setDialogState({
       open: true,
@@ -191,7 +223,7 @@ export const useChakraActions = ({
       item: { ...item },
     });
     console.log('✅ Диалог редактирования установлен');
-  };
+  }, []);
 
   const addExistingItemToUser = async (
     type: 'concept' | 'organ' | 'science' | 'responsibility',
@@ -232,9 +264,9 @@ export const useChakraActions = ({
     }
   };
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     const { item: editItem, type: editType, mode: editMode } = dialogState;
-    if (!token || !editItem) return;
+    if (!tokenRef.current || !editItem) return;
 
     if (editType === 'concept' && editMode === 'create' && showNewConceptForm) {
       if (!editItem.concept?.trim() || !editItem.category?.trim()) {
@@ -265,7 +297,7 @@ export const useChakraActions = ({
     }
 
     if (editType === 'concept' && (editMode === 'create' && showNewConceptForm || editMode === 'edit')) {
-      const duplicate = allConcepts.find(
+      const duplicate = allConceptsRef.current.find(
         (c) => 
           c.id !== editItem.id &&
           c.concept.toLowerCase().trim() === editItem.concept.toLowerCase().trim() && 
@@ -279,7 +311,7 @@ export const useChakraActions = ({
     }
 
     if (editType === 'organ' && (editMode === 'create' && showNewOrganForm || editMode === 'edit')) {
-      const duplicate = allOrgans.find(
+      const duplicate = allOrgansRef.current.find(
         (o) => 
           o.id !== editItem.id &&
           o.organ_name.toLowerCase().trim() === editItem.organ_name.toLowerCase().trim()
@@ -292,7 +324,7 @@ export const useChakraActions = ({
     }
 
     if (editType === 'science' && (editMode === 'create' && showNewScienceForm || editMode === 'edit')) {
-      const duplicate = allSciences.find(
+      const duplicate = allSciencesRef.current.find(
         (s) => 
           s.id !== editItem.id &&
           s.science_name.toLowerCase().trim() === editItem.science_name.toLowerCase().trim()
@@ -305,7 +337,7 @@ export const useChakraActions = ({
     }
 
     if (editType === 'responsibility' && (editMode === 'create' && showNewResponsibilityForm || editMode === 'edit')) {
-      const duplicate = allResponsibilities.find(
+      const duplicate = allResponsibilitiesRef.current.find(
         (r) => 
           r.id !== editItem.id &&
           r.responsibility.toLowerCase().trim() === editItem.responsibility.toLowerCase().trim()
@@ -318,14 +350,14 @@ export const useChakraActions = ({
     }
 
     if (editType === 'concept' && editMode === 'create' && !showNewConceptForm && selectedExistingConceptId) {
-      const existingConcept = allConcepts.find((c) => c.id === selectedExistingConceptId);
+      const existingConcept = allConceptsRef.current.find((c) => c.id === selectedExistingConceptId);
       if (!existingConcept) return;
 
       const success = await addExistingItemToUser(
         'concept',
         existingConcept,
         'chakra_concepts',
-        (item) => concepts.find(
+        (item) => conceptsRef.current.find(
           (c) => c.concept.toLowerCase().trim() === item.concept.toLowerCase().trim() && c.category === item.category
         ) !== undefined,
         `Энергия "${existingConcept.concept}" с категорией "${existingConcept.category}" уже добавлена для этого пользователя.`,
@@ -336,14 +368,14 @@ export const useChakraActions = ({
     }
 
     if (editType === 'organ' && editMode === 'create' && !showNewOrganForm && selectedExistingOrganId) {
-      const existingOrgan = allOrgans.find((o) => o.id === selectedExistingOrganId);
+      const existingOrgan = allOrgansRef.current.find((o) => o.id === selectedExistingOrganId);
       if (!existingOrgan) return;
 
       await addExistingItemToUser(
         'organ',
         existingOrgan,
         'chakra_organs',
-        (item) => organs.find((o) => o.organ_name.toLowerCase().trim() === item.organ_name.toLowerCase().trim()) !== undefined,
+        (item) => organsRef.current.find((o) => o.organ_name.toLowerCase().trim() === item.organ_name.toLowerCase().trim()) !== undefined,
         `Орган "${existingOrgan.organ_name}" уже добавлен для этого пользователя.`,
         (item) => ({ organ_name: item.organ_name, description: item.description })
       );
@@ -351,14 +383,14 @@ export const useChakraActions = ({
     }
 
     if (editType === 'science' && editMode === 'create' && !showNewScienceForm && selectedExistingScienceId) {
-      const existingScience = allSciences.find((s) => s.id === selectedExistingScienceId);
+      const existingScience = allSciencesRef.current.find((s) => s.id === selectedExistingScienceId);
       if (!existingScience) return;
 
       await addExistingItemToUser(
         'science',
         existingScience,
         'chakra_sciences',
-        (item) => sciences.find((s) => s.science_name.toLowerCase().trim() === item.science_name.toLowerCase().trim()) !== undefined,
+        (item) => sciencesRef.current.find((s) => s.science_name.toLowerCase().trim() === item.science_name.toLowerCase().trim()) !== undefined,
         `Наука "${existingScience.science_name}" уже добавлена для этого пользователя.`,
         (item) => ({ science_name: item.science_name, description: item.description })
       );
@@ -366,14 +398,14 @@ export const useChakraActions = ({
     }
 
     if (editType === 'responsibility' && editMode === 'create' && !showNewResponsibilityForm && selectedExistingResponsibilityId) {
-      const existingResponsibility = allResponsibilities.find((r) => r.id === selectedExistingResponsibilityId);
+      const existingResponsibility = allResponsibilitiesRef.current.find((r) => r.id === selectedExistingResponsibilityId);
       if (!existingResponsibility) return;
 
       await addExistingItemToUser(
         'responsibility',
         existingResponsibility,
         'chakra_responsibilities',
-        (item) => responsibilities.find((r) => r.responsibility.toLowerCase().trim() === item.responsibility.toLowerCase().trim()) !== undefined,
+        (item) => responsibilitiesRef.current.find((r) => r.responsibility.toLowerCase().trim() === item.responsibility.toLowerCase().trim()) !== undefined,
         `Ответственность "${existingResponsibility.responsibility}" уже добавлена для этого пользователя.`,
         (item) => ({ responsibility: item.responsibility })
       );
@@ -392,7 +424,7 @@ export const useChakraActions = ({
 
     try {
       const method = editMode === 'create' ? 'POST' : 'PUT';
-      const response = await authFetch(ADMIN_API_URL, {
+      const response = await authFetchRef.current(ADMIN_API_URL, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ table, data: editItem }),
@@ -400,8 +432,8 @@ export const useChakraActions = ({
 
       if (response.ok) {
         setDialogState(prev => ({ ...prev, open: false }));
-        await loadAllData();
-        await loadUserData();
+        await loadAllDataRef.current();
+        await loadUserDataRef.current();
       } else {
         const data = await response.json();
         alert(data.error || 'Ошибка сохранения');
@@ -409,9 +441,9 @@ export const useChakraActions = ({
     } catch (err) {
       console.error('Ошибка сохранения:', err);
     }
-  };
+  }, [dialogState, showNewConceptForm, showNewOrganForm, showNewScienceForm, showNewResponsibilityForm, selectedExistingConceptId, selectedExistingOrganId, selectedExistingScienceId, selectedExistingResponsibilityId]);
 
-  const handleDelete = async (type: 'concept' | 'organ' | 'science' | 'responsibility', id: number) => {
+  const handleDelete = useCallback(async (type: 'concept' | 'organ' | 'science' | 'responsibility', id: number) => {
     if (!confirm('Вы уверены, что хотите удалить эту запись?')) {
       return;
     }
@@ -426,14 +458,14 @@ export const useChakraActions = ({
     const table = tableMap[type];
 
     try {
-      const response = await authFetch(ADMIN_API_URL, {
+      const response = await authFetchRef.current(ADMIN_API_URL, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ table, id }),
       });
 
       if (response.ok) {
-        await loadUserData();
+        await loadUserDataRef.current();
       } else {
         const data = await response.json();
         alert(data.error || 'Ошибка удаления');
@@ -441,7 +473,7 @@ export const useChakraActions = ({
     } catch (err) {
       console.error('Ошибка удаления:', err);
     }
-  };
+  }, []);
 
   return {
     editDialog: dialogState.open,
