@@ -153,24 +153,20 @@ export const useChakraActions = ({
       newItem.category = '';
       setShowNewConceptForm(false);
       setSelectedExistingConceptId(null);
-      loadAllData();
     } else if (type === 'organ') {
       newItem.organ_name = '';
       newItem.description = '';
       setShowNewOrganForm(false);
       setSelectedExistingOrganId(null);
-      loadAllData();
     } else if (type === 'science') {
       newItem.science_name = '';
       newItem.description = '';
       setShowNewScienceForm(false);
       setSelectedExistingScienceId(null);
-      loadAllData();
     } else if (type === 'responsibility') {
       newItem.responsibility = '';
       setShowNewResponsibilityForm(false);
       setSelectedExistingResponsibilityId(null);
-      loadAllData();
     }
 
     console.log('📋 Создан новый item:', newItem);
