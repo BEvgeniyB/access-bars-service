@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -140,6 +141,9 @@ const ChakraEditDialog = ({
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>{getDialogTitle()}</DialogTitle>
+          <DialogDescription>
+            Заполните поля формы и нажмите "Сохранить"
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
