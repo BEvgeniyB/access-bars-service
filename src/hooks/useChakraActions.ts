@@ -219,6 +219,34 @@ export const useChakraActions = ({
   const handleSave = async () => {
     if (!token || !editItem) return;
 
+    if (editType === 'concept' && editMode === 'create' && showNewConceptForm) {
+      if (!editItem.concept?.trim() || !editItem.category?.trim()) {
+        alert('Заполните все обязательные поля: концепт и категория');
+        return;
+      }
+    }
+
+    if (editType === 'organ' && editMode === 'create' && showNewOrganForm) {
+      if (!editItem.organ_name?.trim()) {
+        alert('Заполните название органа');
+        return;
+      }
+    }
+
+    if (editType === 'science' && editMode === 'create' && showNewScienceForm) {
+      if (!editItem.science_name?.trim()) {
+        alert('Заполните название науки');
+        return;
+      }
+    }
+
+    if (editType === 'responsibility' && editMode === 'create' && showNewResponsibilityForm) {
+      if (!editItem.responsibility?.trim()) {
+        alert('Заполните ответственность');
+        return;
+      }
+    }
+
     if (editType === 'concept' && (editMode === 'create' && showNewConceptForm || editMode === 'edit')) {
       const duplicate = allConcepts.find(
         (c) => 
