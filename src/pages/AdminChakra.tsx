@@ -63,6 +63,12 @@ interface ChakraResponsibility {
 
 const AdminChakra = () => {
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [dialogState, setDialogState] = useState({
+    open: false,
+    type: 'concept' as 'concept' | 'organ' | 'science' | 'responsibility' | 'user',
+    mode: 'create' as 'create' | 'edit',
+    item: null as any,
+  });
 
   const auth = useAdminAuth();
   const data = useChakraData(auth.token, selectedUserId);
@@ -81,6 +87,8 @@ const AdminChakra = () => {
     authFetch: data.authFetch,
     loadAllData: data.loadAllData,
     loadUserData: data.loadUserData,
+    dialogState,
+    setDialogState,
   });
 
   if (!auth.isAuthenticated) {
@@ -159,12 +167,12 @@ const AdminChakra = () => {
       </div>
 
       <ChakraEditDialog
-        open={actions.editDialog}
-        onOpenChange={actions.setEditDialog}
-        type={actions.editType}
-        mode={actions.editMode}
-        item={actions.editItem}
-        setItem={actions.setEditItem}
+        open={dialogState.open}
+        onOpenChange={(open) => setDialogState(prev => ({ ...prev, open }))}
+        editType={dialogState.type}
+        editMode={dialogState.mode}
+        editItem={dialogState.item}
+        setEditItem={(item) => setDialogState(prev => ({ ...prev, item }))}
         onSave={actions.handleSave}
         chakras={data.chakras}
         allConcepts={data.allConcepts}

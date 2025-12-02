@@ -44,6 +44,13 @@ interface User {
   chakra_id?: number;
 }
 
+interface DialogState {
+  open: boolean;
+  type: 'concept' | 'organ' | 'science' | 'responsibility' | 'user';
+  mode: 'create' | 'edit';
+  item: any;
+}
+
 interface UseChakraActionsProps {
   token: string | null;
   selectedUserId: number | null;
@@ -59,6 +66,8 @@ interface UseChakraActionsProps {
   authFetch: (url: string, options?: RequestInit) => Promise<Response>;
   loadAllData: () => Promise<void>;
   loadUserData: () => Promise<void>;
+  dialogState: DialogState;
+  setDialogState: (state: DialogState | ((prev: DialogState) => DialogState)) => void;
 }
 
 export const useChakraActions = ({
@@ -76,6 +85,8 @@ export const useChakraActions = ({
   authFetch,
   loadAllData,
   loadUserData,
+  dialogState,
+  setDialogState,
 }: UseChakraActionsProps) => {
   console.log('⚡ useChakraActions ПЕРЕСОЗДАН');
   
@@ -110,13 +121,6 @@ export const useChakraActions = ({
   authFetchRef.current = authFetch;
   loadAllDataRef.current = loadAllData;
   loadUserDataRef.current = loadUserData;
-  
-  const [dialogState, setDialogState] = useState({
-    open: false,
-    type: 'concept' as 'concept' | 'organ' | 'science' | 'responsibility' | 'user',
-    mode: 'create' as 'create' | 'edit',
-    item: null as any,
-  });
   
   const [showNewConceptForm, setShowNewConceptForm] = useState(false);
   const [selectedExistingConceptId, setSelectedExistingConceptId] = useState<number | null>(null);
@@ -476,14 +480,6 @@ export const useChakraActions = ({
   }, []);
 
   return {
-    editDialog: dialogState.open,
-    setEditDialog: (open: boolean) => setDialogState(prev => ({ ...prev, open })),
-    editType: dialogState.type,
-    setEditType: (type: any) => setDialogState(prev => ({ ...prev, type })),
-    editItem: dialogState.item,
-    setEditItem: (item: any) => setDialogState(prev => ({ ...prev, item })),
-    editMode: dialogState.mode,
-    setEditMode: (mode: any) => setDialogState(prev => ({ ...prev, mode })),
     showNewConceptForm,
     setShowNewConceptForm,
     selectedExistingConceptId,
