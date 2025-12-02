@@ -77,6 +77,8 @@ export const useChakraActions = ({
   loadAllData,
   loadUserData,
 }: UseChakraActionsProps) => {
+  console.log('⚡ useChakraActions ПЕРЕСОЗДАН');
+  
   const [dialogState, setDialogState] = useState({
     open: false,
     type: 'concept' as 'concept' | 'organ' | 'science' | 'responsibility' | 'user',
