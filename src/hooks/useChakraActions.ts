@@ -77,10 +77,12 @@ export const useChakraActions = ({
   loadAllData,
   loadUserData,
 }: UseChakraActionsProps) => {
-  const [editDialog, setEditDialog] = useState(false);
-  const [editType, setEditType] = useState<'concept' | 'organ' | 'science' | 'responsibility' | 'user'>('concept');
-  const [editItem, setEditItem] = useState<any>(null);
-  const [editMode, setEditMode] = useState<'create' | 'edit'>('create');
+  const [dialogState, setDialogState] = useState({
+    open: false,
+    type: 'concept' as 'concept' | 'organ' | 'science' | 'responsibility' | 'user',
+    mode: 'create' as 'create' | 'edit',
+    item: null as any,
+  });
   
   const [showNewConceptForm, setShowNewConceptForm] = useState(false);
   const [selectedExistingConceptId, setSelectedExistingConceptId] = useState<number | null>(null);
@@ -95,18 +97,20 @@ export const useChakraActions = ({
   const [selectedExistingResponsibilityId, setSelectedExistingResponsibilityId] = useState<number | null>(null);
 
   const handleCreateUser = () => {
-    setEditType('user');
-    setEditMode('create');
-    setEditItem({
-      name: '',
-      email: '',
-      telegram_id: '',
-      telegram_username: '',
-      chakra_id: null,
-      role: 'responsible',
-      is_admin: false,
+    setDialogState({
+      open: true,
+      type: 'user',
+      mode: 'create',
+      item: {
+        name: '',
+        email: '',
+        telegram_id: '',
+        telegram_username: '',
+        chakra_id: null,
+        role: 'responsible',
+        is_admin: false,
+      },
     });
-    setEditDialog(true);
   };
 
   const handleEditUser = () => {
@@ -118,10 +122,12 @@ export const useChakraActions = ({
       return;
     }
     
-    setEditType('user');
-    setEditMode('edit');
-    setEditItem({ ...user });
-    setEditDialog(true);
+    setDialogState({
+      open: true,
+      type: 'user',
+      mode: 'edit',
+      item: { ...user },
+    });
   };
 
   const handleCreate = (type: 'concept' | 'organ' | 'science' | 'responsibility') => {
@@ -166,23 +172,27 @@ export const useChakraActions = ({
     }
 
     console.log('📋 Создан новый item:', newItem);
-    console.log('📝 Установка стейтов:', { type, mode: 'create', item: newItem });
+    console.log('📝 Установка dialogState:', { type, mode: 'create', item: newItem });
     
-    setEditItem(newItem);
-    setEditType(type);
-    setEditMode('create');
-    setEditDialog(true);
+    setDialogState({
+      open: true,
+      type,
+      mode: 'create',
+      item: newItem,
+    });
     
-    console.log('✅ Все стейты установлены, диалог открывается');
+    console.log('✅ dialogState установлен, диалог открывается');
   };
 
   const handleEdit = (type: 'concept' | 'organ' | 'science' | 'responsibility', item: any) => {
     console.log('🟡 handleEdit вызван:', { type, item });
-    setEditType(type);
-    setEditMode('edit');
-    setEditItem({ ...item });
-    setEditDialog(true);
-    console.log('✅ Диалог редактирования должен открыться');
+    setDialogState({
+      open: true,
+      type,
+      mode: 'edit',
+      item: { ...item },
+    });
+    console.log('✅ Диалог редактирования установлен');
   };
 
   const addExistingItemToUser = async (
@@ -212,8 +222,6 @@ export const useChakraActions = ({
       });
 
       if (response.ok) {
-        setEditDialog(false);
-        await loadUserData();
         return true;
       } else {
         const data = await response.json();
@@ -227,6 +235,7 @@ export const useChakraActions = ({
   };
 
   const handleSave = async () => {
+    const { item: editItem, type: editType, mode: editMode } = dialogState;
     if (!token || !editItem) return;
 
     if (editType === 'concept' && editMode === 'create' && showNewConceptForm) {
@@ -314,7 +323,7 @@ export const useChakraActions = ({
       const existingConcept = allConcepts.find((c) => c.id === selectedExistingConceptId);
       if (!existingConcept) return;
 
-      await addExistingItemToUser(
+      const success = await addExistingItemToUser(
         'concept',
         existingConcept,
         'chakra_concepts',
@@ -324,6 +333,7 @@ export const useChakraActions = ({
         `Энергия "${existingConcept.concept}" с категорией "${existingConcept.category}" уже добавлена для этого пользователя.`,
         (item) => ({ concept: item.concept, category: item.category })
       );
+      if (success) setDialogState(prev => ({ ...prev, open: false }));
       return;
     }
 
@@ -391,7 +401,7 @@ export const useChakraActions = ({
       });
 
       if (response.ok) {
-        setEditDialog(false);
+        setDialogState(prev => ({ ...prev, open: false }));
         await loadAllData();
         await loadUserData();
       } else {
@@ -436,14 +446,14 @@ export const useChakraActions = ({
   };
 
   return {
-    editDialog,
-    setEditDialog,
-    editType,
-    setEditType,
-    editItem,
-    setEditItem,
-    editMode,
-    setEditMode,
+    editDialog: dialogState.open,
+    setEditDialog: (open: boolean) => setDialogState(prev => ({ ...prev, open })),
+    editType: dialogState.type,
+    setEditType: (type: any) => setDialogState(prev => ({ ...prev, type })),
+    editItem: dialogState.item,
+    setEditItem: (item: any) => setDialogState(prev => ({ ...prev, item })),
+    editMode: dialogState.mode,
+    setEditMode: (mode: any) => setDialogState(prev => ({ ...prev, mode })),
     showNewConceptForm,
     setShowNewConceptForm,
     selectedExistingConceptId,
