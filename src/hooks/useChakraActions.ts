@@ -125,14 +125,19 @@ export const useChakraActions = ({
   };
 
   const handleCreate = (type: 'concept' | 'organ' | 'science' | 'responsibility') => {
+    console.log('🟢 handleCreate вызван:', { type, selectedUserId });
     const selectedUser = users.find((u) => u.id === selectedUserId);
+    console.log('👤 Найден пользователь:', selectedUser);
+    
     if (!selectedUser?.chakra_id) {
+      console.log('❌ У пользователя нет chakra_id');
       alert('Сначала назначьте пользователю чакру');
       return;
     }
 
     setEditType(type);
     setEditMode('create');
+    console.log('📝 Установлены editType и editMode:', { type, mode: 'create' });
 
     const newItem: any = {
       chakra_id: selectedUser.chakra_id,
@@ -165,14 +170,18 @@ export const useChakraActions = ({
     }
 
     setEditItem(newItem);
+    console.log('📋 Создан новый item:', newItem);
     setEditDialog(true);
+    console.log('✅ Диалог должен открыться: editDialog = true');
   };
 
   const handleEdit = (type: 'concept' | 'organ' | 'science' | 'responsibility', item: any) => {
+    console.log('🟡 handleEdit вызван:', { type, item });
     setEditType(type);
     setEditMode('edit');
     setEditItem({ ...item });
     setEditDialog(true);
+    console.log('✅ Диалог редактирования должен открыться');
   };
 
   const addExistingItemToUser = async (

@@ -133,6 +133,8 @@ const ChakraEditDialog = ({
     );
   };
 
+  console.log('🎨 ChakraEditDialog render:', { open, editType, editMode, editItem });
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
