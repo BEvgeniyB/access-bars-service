@@ -268,7 +268,7 @@ const ServicesTab = () => {
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>
-              {editingService ? 'Редактировать услугу' : 'Добавить услугу'}
+              {editingService ? `Редактировать ${formData.name}` : 'Добавить услугу'}
             </DialogTitle>
             <DialogDescription>
               Заполните информацию об услуге
