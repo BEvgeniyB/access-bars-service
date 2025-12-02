@@ -164,7 +164,7 @@ export const useChakraActions = ({
     });
   }, []);
 
-  const handleCreate = useCallback((type: 'concept' | 'organ' | 'science' | 'responsibility') => {
+  const handleCreate = (type: 'concept' | 'organ' | 'science' | 'responsibility') => {
     console.log('🟢 handleCreate вызван:', { type, selectedUserId: selectedUserIdRef.current });
     const selectedUser = usersRef.current.find((u) => u.id === selectedUserIdRef.current);
     console.log('👤 Найден пользователь:', selectedUser);
@@ -212,9 +212,9 @@ export const useChakraActions = ({
     });
     
     console.log('✅ dialogState установлен, диалог открывается');
-  }, []);
+  };
 
-  const handleEdit = useCallback((type: 'concept' | 'organ' | 'science' | 'responsibility', item: any) => {
+  const handleEdit = (type: 'concept' | 'organ' | 'science' | 'responsibility', item: any) => {
     console.log('🟡 handleEdit вызван:', { type, item });
     setDialogState({
       open: true,
@@ -223,7 +223,7 @@ export const useChakraActions = ({
       item: { ...item },
     });
     console.log('✅ Диалог редактирования установлен');
-  }, []);
+  };
 
   const addExistingItemToUser = async (
     type: 'concept' | 'organ' | 'science' | 'responsibility',
