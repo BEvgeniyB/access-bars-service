@@ -86,7 +86,10 @@ const ChakraDataTabs = ({
           <CardHeader className="pb-3">
             <div className="flex justify-between items-center">
               <CardTitle className="text-base">Энергии</CardTitle>
-              <Button size="sm" onClick={onCreateConcept}>
+              <Button size="sm" onClick={() => {
+                console.log('🔵 Кнопка Создать Энергию нажата');
+                onCreateConcept();
+              }}>
                 <Icon name="Plus" size={16} />
               </Button>
             </div>
@@ -103,7 +106,10 @@ const ChakraDataTabs = ({
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => onEditConcept(item)}
+                      onClick={() => {
+                        console.log('🔵 Кнопка Редактировать Энергию нажата, item:', item);
+                        onEditConcept(item);
+                      }}
                     >
                       <Icon name="Edit" size={16} />
                     </Button>

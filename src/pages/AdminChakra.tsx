@@ -136,8 +136,14 @@ const AdminChakra = () => {
             organs={data.organs}
             sciences={data.sciences}
             responsibilities={data.responsibilities}
-            onCreateConcept={() => actions.handleCreate('concept')}
-            onEditConcept={(item) => actions.handleEdit('concept', item)}
+            onCreateConcept={() => {
+              console.log('🟣 AdminChakra: onCreateConcept вызван');
+              actions.handleCreate('concept');
+            }}
+            onEditConcept={(item) => {
+              console.log('🟣 AdminChakra: onEditConcept вызван, item:', item);
+              actions.handleEdit('concept', item);
+            }}
             onDeleteConcept={(id) => actions.handleDelete('concept', id)}
             onCreateOrgan={() => actions.handleCreate('organ')}
             onEditOrgan={(item) => actions.handleEdit('organ', item)}
