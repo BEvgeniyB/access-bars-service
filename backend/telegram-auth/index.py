@@ -12,6 +12,8 @@ from typing import Dict, Any, Optional
 from datetime import datetime, timedelta
 import jwt
 
+SCHEMA = 't_p89870318_access_bars_service'
+
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     method: str = event.get('httpMethod', 'GET')
     
@@ -69,12 +71,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     
     try:
         telegram_id_int = int(telegram_id)
-        query = '''
-            SELECT id, name, email, role, telegram_id, is_admin
-            FROM users
-            WHERE telegram_id = %s
-        '''
-        cur.execute(query, (telegram_id_int,))
+        query = f'''SELECT id, name, email, role, telegram_id FROM {SCHEMA}.diary_users WHERE telegram_id = {telegram_id_int}'''
+        cur.execute(query)
         user = cur.fetchone()
         
         if not user:
@@ -87,7 +85,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'body': json.dumps({'error': 'Пользователь с таким telegram_id не найден'})
             }
         
-        user_id, name, email, role, tg_id, is_admin = user
+        user_id, name, email, role, tg_id = user
+        is_admin = (role == 'owner')
         
         if not is_admin:
             return {
