@@ -10,6 +10,7 @@ const Structure = () => {
   const [chakras, setChakras] = useState<Chakra[]>([]);
   const [selectedChakra, setSelectedChakra] = useState<Chakra | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
 
   useEffect(() => {
@@ -79,7 +80,11 @@ const Structure = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-purple-50">
-      <NavigationMenu isMenuOpen={false} closeMenu={() => {}} />
+      <NavigationMenu 
+        isMenuOpen={isMenuOpen} 
+        setIsMenuOpen={setIsMenuOpen} 
+        closeMenu={() => setIsMenuOpen(false)} 
+      />
       
       <div className="container mx-auto px-4 py-12 mt-16">
         <div className="text-center mb-12">
