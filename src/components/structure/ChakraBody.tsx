@@ -36,7 +36,7 @@ const ChakraBody = ({ chakras, onChakraClick }: ChakraBodyProps) => {
 
   return (
     <div className="relative mx-auto max-w-7xl px-4">
-      <div className="flex flex-col lg:flex-row gap-8 items-start justify-center">
+      <div className="flex justify-center">
         {/* Картинка с кружочками */}
         <div className="relative flex-shrink-0" style={{ width: '350px', height: '400px', maxWidth: '100%' }}>
           <div 
@@ -80,34 +80,6 @@ const ChakraBody = ({ chakras, onChakraClick }: ChakraBodyProps) => {
               </button>
             );
           })}
-        </div>
-
-        {/* Кнопки справа */}
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
-          {sortedChakras.map((chakra) => (
-            <button
-              key={chakra.id}
-              onClick={() => onChakraClick(chakra.id)}
-              className="flex items-center gap-4 p-4 rounded-xl border-2 transition-all hover:scale-105 hover:shadow-lg"
-              style={{
-                borderColor: getChakraColor(chakra),
-                backgroundColor: `${getChakraColor(chakra)}10`,
-              }}
-            >
-              <div 
-                className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-white shrink-0"
-                style={{ background: getChakraColor(chakra) }}
-              >
-                {chakra.position}
-              </div>
-              <div className="text-left flex-1">
-                <h3 className="font-bold text-lg text-emerald-900">{chakra.name}</h3>
-                {chakra.right_statement && (
-                  <p className="text-sm text-emerald-700 mt-1">{chakra.right_statement}</p>
-                )}
-              </div>
-            </button>
-          ))}
         </div>
       </div>
     </div>

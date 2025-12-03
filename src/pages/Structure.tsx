@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import NavigationMenu from '@/components/Index/NavigationMenu';
+import StructureNavigationMenu from '@/components/structure/StructureNavigationMenu';
 import Footer from '@/components/Index/Footer';
 import ChakraBody from '@/components/structure/ChakraBody';
 import ChakraModal from '@/components/structure/ChakraModal';
@@ -80,10 +80,12 @@ const Structure = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-purple-50">
-      <NavigationMenu 
+      <StructureNavigationMenu 
         isMenuOpen={isMenuOpen} 
         setIsMenuOpen={setIsMenuOpen} 
-        closeMenu={() => setIsMenuOpen(false)} 
+        closeMenu={() => setIsMenuOpen(false)}
+        chakras={chakras}
+        onChakraClick={fetchChakraDetail}
       />
       
       <div className="container mx-auto px-4 py-12 mt-16">
