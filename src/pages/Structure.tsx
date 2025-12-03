@@ -3,6 +3,7 @@ import StructureNavigationMenu from '@/components/structure/StructureNavigationM
 import Footer from '@/components/Index/Footer';
 import ChakraBody from '@/components/structure/ChakraBody';
 import ChakraModal from '@/components/structure/ChakraModal';
+import ChakraDataTable from '@/components/structure/ChakraDataTable';
 
 import { Chakra } from '@/types/chakra';
 
@@ -14,11 +15,11 @@ const Structure = () => {
 
 
   useEffect(() => {
-    fetchChakras();
+    fetchAllChakrasWithDetails();
   }, []);
 
-  const fetchChakras = async () => {
-    const CACHE_KEY = 'chakras_list_cache';
+  const fetchAllChakrasWithDetails = async () => {
+    const CACHE_KEY = 'chakras_full_details_cache';
     const CACHE_DURATION = 60 * 60 * 1000;
     
     try {
@@ -27,23 +28,29 @@ const Structure = () => {
         const { data, timestamp } = JSON.parse(cached);
         const isExpired = Date.now() - timestamp > CACHE_DURATION;
         
-        if (!isExpired && data?.chakras) {
-          console.log('Using cached chakras data');
-          setChakras(data.chakras);
+        if (!isExpired && data?.length > 0) {
+          console.log('Using cached chakras full data');
+          setChakras(data);
           setLoading(false);
           return;
         }
       }
       
-      const response = await fetch('https://functions.poehali.dev/802474e6-54c0-4040-a65f-71d604777df5');
-      const data = await response.json();
+      const chakraIds = [1, 2, 3, 4, 5, 6, 7];
+      const promises = chakraIds.map(id => 
+        fetch(`https://functions.poehali.dev/802474e6-54c0-4040-a65f-71d604777df5?id=${id}`)
+          .then(res => res.json())
+          .then(data => data.chakra)
+      );
+      
+      const allChakras = await Promise.all(promises);
       
       localStorage.setItem(CACHE_KEY, JSON.stringify({
-        data,
+        data: allChakras,
         timestamp: Date.now()
       }));
       
-      setChakras(data.chakras || []);
+      setChakras(allChakras.filter(Boolean));
     } catch (error) {
       console.error('Error fetching chakras:', error);
     } finally {
@@ -51,28 +58,10 @@ const Structure = () => {
     }
   };
 
-  const fetchChakraDetail = async (id: number) => {
-    try {
-      console.log('Fetching chakra detail for id:', id);
-      const response = await fetch(`https://functions.poehali.dev/802474e6-54c0-4040-a65f-71d604777df5?id=${id}`);
-      console.log('Response status:', response.status);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Error response:', errorText);
-        return;
-      }
-      
-      const data = await response.json();
-      console.log('Received data:', data);
-      
-      if (data.chakra) {
-        setSelectedChakra(data.chakra);
-      } else {
-        console.error('No chakra data in response');
-      }
-    } catch (error) {
-      console.error('Error fetching chakra detail:', error);
+  const handleChakraClick = (id: number) => {
+    const chakra = chakras.find(c => c.id === id);
+    if (chakra) {
+      setSelectedChakra(chakra);
     }
   };
 
@@ -85,7 +74,7 @@ const Structure = () => {
         setIsMenuOpen={setIsMenuOpen} 
         closeMenu={() => setIsMenuOpen(false)}
         chakras={chakras}
-        onChakraClick={fetchChakraDetail}
+        onChakraClick={handleChakraClick}
       />
       
       <div className="container mx-auto px-4 py-12 mt-16">
@@ -103,10 +92,16 @@ const Structure = () => {
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-emerald-600"></div>
           </div>
         ) : (
-          <ChakraBody 
-            chakras={chakras}
-            onChakraClick={fetchChakraDetail}
-          />
+          <>
+            <ChakraBody 
+              chakras={chakras}
+              onChakraClick={handleChakraClick}
+            />
+            
+            <div className="mt-16">
+              <ChakraDataTable chakras={chakras} />
+            </div>
+          </>
         )}
 
         {selectedChakra && (
