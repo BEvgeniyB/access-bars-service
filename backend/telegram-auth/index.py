@@ -70,8 +70,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     try:
         telegram_id_int = int(telegram_id)
         query = '''
-            SELECT id, name, email, role, telegram_id, phone
-            FROM t_p89870318_access_bars_service.diary_users
+            SELECT id, name, email, role, telegram_id, is_admin
+            FROM users
             WHERE telegram_id = %s
         '''
         cur.execute(query, (telegram_id_int,))
@@ -87,8 +87,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'body': json.dumps({'error': 'Пользователь с таким telegram_id не найден'})
             }
         
-        user_id, name, email, role, tg_id, phone = user
-        is_admin = (role == 'owner')
+        user_id, name, email, role, tg_id, is_admin = user
         
         if not is_admin:
             return {
@@ -97,7 +96,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Origin': '*'
                 },
-                'body': json.dumps({'error': 'Доступ запрещён. Требуется роль owner'})
+                'body': json.dumps({'error': 'Доступ запрещён. Требуется права администратора'})
             }
         
         jwt_secret = os.environ.get('ADMIN_TOKEN', 'default-secret-key')
@@ -118,8 +117,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'email': email or '',
                 'role': role,
                 'is_admin': is_admin,
-                'telegram_id': str(tg_id),
-                'phone': phone or ''
+                'telegram_id': str(tg_id)
             }
         }
         
