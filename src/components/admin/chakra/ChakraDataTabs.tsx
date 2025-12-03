@@ -55,10 +55,10 @@ interface ChakraDataTabsProps {
 }
 
 const ChakraDataTabs = ({
-  concepts,
-  organs,
-  sciences,
-  responsibilities,
+  concepts = [],
+  organs = [],
+  sciences = [],
+  responsibilities = [],
   onCreateConcept,
   onEditConcept,
   onDeleteConcept,
