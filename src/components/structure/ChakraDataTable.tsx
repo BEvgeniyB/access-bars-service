@@ -10,7 +10,8 @@ type Category = 'concepts' | 'organs' | 'sciences' | 'responsibilities' | 'basic
 
 const ChakraDataTable = ({ chakras }: ChakraDataTableProps) => {
   const [selectedCategory, setSelectedCategory] = useState<Category>('concepts');
-  const [expandedItem, setExpandedItem] = useState<string | null>(null);
+  const [expandedChakras, setExpandedChakras] = useState<Set<number>>(new Set());
+  const [allExpanded, setAllExpanded] = useState(false);
 
   const categories = [
     { key: 'concepts' as Category, label: 'Концепции', icon: 'Lightbulb' },
@@ -20,36 +21,37 @@ const ChakraDataTable = ({ chakras }: ChakraDataTableProps) => {
     { key: 'basic_needs' as Category, label: 'Базовые потребности', icon: 'Flame' },
   ];
 
-  const getAllUniqueItems = (category: Category): string[] => {
-    const itemsSet = new Set<string>();
-    
-    chakras.forEach(chakra => {
-      const items = chakra[category] || [];
-      items.forEach((item: any) => {
-        if (category === 'concepts') itemsSet.add(item.concept);
-        else if (category === 'organs') itemsSet.add(item.organ_name);
-        else if (category === 'sciences') itemsSet.add(item.science_name);
-        else if (category === 'responsibilities') itemsSet.add(item.responsibility);
-        else if (category === 'basic_needs') itemsSet.add(item.basic_need);
-      });
-    });
-    
-    return Array.from(itemsSet).sort();
+  const toggleChakra = (chakraId: number) => {
+    const newExpanded = new Set(expandedChakras);
+    if (newExpanded.has(chakraId)) {
+      newExpanded.delete(chakraId);
+    } else {
+      newExpanded.add(chakraId);
+    }
+    setExpandedChakras(newExpanded);
   };
 
-  const getChakraValue = (chakra: Chakra, category: Category, itemName: string): any => {
-    const items = chakra[category] || [];
-    return items.find((item: any) => {
-      if (category === 'concepts') return item.concept === itemName;
-      if (category === 'organs') return item.organ_name === itemName;
-      if (category === 'sciences') return item.science_name === itemName;
-      if (category === 'responsibilities') return item.responsibility === itemName;
-      if (category === 'basic_needs') return item.basic_need === itemName;
-      return false;
-    });
+  const toggleAll = () => {
+    if (allExpanded) {
+      setExpandedChakras(new Set());
+    } else {
+      setExpandedChakras(new Set(chakras.map(c => c.id)));
+    }
+    setAllExpanded(!allExpanded);
   };
 
-  const uniqueItems = getAllUniqueItems(selectedCategory);
+  const getChakraItems = (chakra: Chakra, category: Category): any[] => {
+    return chakra[category] || [];
+  };
+
+  const getItemName = (item: any, category: Category): string => {
+    if (category === 'concepts') return item.concept;
+    if (category === 'organs') return item.organ_name;
+    if (category === 'sciences') return item.science_name;
+    if (category === 'responsibilities') return item.responsibility;
+    if (category === 'basic_needs') return item.basic_need;
+    return '';
+  };
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -58,17 +60,18 @@ const ChakraDataTable = ({ chakras }: ChakraDataTableProps) => {
           Таблица связей чакр
         </h2>
         <p className="text-emerald-700">
-          Выберите категорию и элемент для просмотра связей с чакрами
+          Выберите категорию и чакру для просмотра связей
         </p>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-4">
         {categories.map(cat => (
           <button
             key={cat.key}
             onClick={() => {
               setSelectedCategory(cat.key);
-              setExpandedItem(null);
+              setExpandedChakras(new Set());
+              setAllExpanded(false);
             }}
             className={`p-3 rounded-lg font-medium transition-all flex flex-col items-center gap-2 ${
               selectedCategory === cat.key
@@ -82,81 +85,95 @@ const ChakraDataTable = ({ chakras }: ChakraDataTableProps) => {
         ))}
       </div>
 
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={toggleAll}
+          className="px-4 py-2 bg-white border border-emerald-200 rounded-lg text-emerald-700 hover:bg-emerald-50 transition-colors flex items-center gap-2 font-medium"
+        >
+          <Icon name={allExpanded ? 'ChevronsUp' : 'ChevronsDown'} size={18} />
+          {allExpanded ? 'Свернуть всё' : 'Развернуть всё'}
+        </button>
+      </div>
+
       <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-emerald-100">
-        {uniqueItems.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">
-            <Icon name="Database" size={48} className="mx-auto mb-3 opacity-30" />
-            <p>Нет данных для выбранной категории</p>
-          </div>
-        ) : (
-          <div className="divide-y divide-emerald-100">
-            {uniqueItems.map(item => {
-              const isExpanded = expandedItem === item;
-              
-              return (
-                <div key={item}>
-                  <button
-                    onClick={() => setExpandedItem(isExpanded ? null : item)}
-                    className="w-full p-4 flex items-center justify-between hover:bg-emerald-50 transition-colors text-left"
-                  >
-                    <span className="font-medium text-emerald-900">{item}</span>
-                    <Icon 
-                      name={isExpanded ? 'ChevronUp' : 'ChevronDown'} 
-                      size={20} 
-                      className="text-emerald-600"
+        <div className="divide-y divide-emerald-100">
+          {chakras.map(chakra => {
+            const isExpanded = expandedChakras.has(chakra.id);
+            const items = getChakraItems(chakra, selectedCategory);
+            
+            return (
+              <div key={chakra.id}>
+                <button
+                  onClick={() => toggleChakra(chakra.id)}
+                  className="w-full p-4 flex items-center justify-between hover:bg-emerald-50 transition-colors text-left"
+                >
+                  <div className="flex items-center gap-3">
+                    <div 
+                      className="w-4 h-4 rounded-full"
+                      style={{ backgroundColor: chakra.color }}
                     />
-                  </button>
-                  
-                  {isExpanded && (
-                    <div className="p-4 bg-gradient-to-br from-emerald-50 to-purple-50 space-y-3">
-                      {chakras.map(chakra => {
-                        const value = getChakraValue(chakra, selectedCategory, item);
-                        
-                        if (!value) return null;
-                        
-                        return (
+                    <span className="font-bold text-lg" style={{ color: chakra.color }}>
+                      {chakra.name}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      ({items.length})
+                    </span>
+                  </div>
+                  <Icon 
+                    name={isExpanded ? 'ChevronUp' : 'ChevronDown'} 
+                    size={20} 
+                    className="text-emerald-600"
+                  />
+                </button>
+                
+                {isExpanded && (
+                  <div className="p-4 bg-gradient-to-br from-emerald-50 to-purple-50">
+                    {items.length === 0 ? (
+                      <div className="text-center py-4 text-gray-500">
+                        <Icon name="Database" size={32} className="mx-auto mb-2 opacity-30" />
+                        <p className="text-sm">Нет данных для этой чакры</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {items.map((item, idx) => (
                           <div
-                            key={chakra.id}
-                            className="bg-white rounded-lg p-4 border-l-4 shadow-sm"
+                            key={idx}
+                            className="bg-white rounded-lg p-3 border-l-4 shadow-sm"
                             style={{ borderLeftColor: chakra.color }}
                           >
-                            <div className="flex items-center gap-3 mb-2">
-                              <div 
-                                className="w-3 h-3 rounded-full"
-                                style={{ backgroundColor: chakra.color }}
-                              />
-                              <h4 className="font-bold text-lg" style={{ color: chakra.color }}>
-                                {chakra.name}
-                              </h4>
+                            <div className="font-medium text-emerald-900 mb-1">
+                              {getItemName(item, selectedCategory)}
                             </div>
                             
-                            {value.description && (
+                            {item.description && (
                               <p className="text-gray-700 text-sm mb-2">
-                                {value.description}
+                                {item.description}
                               </p>
                             )}
                             
-                            {value.category && (
-                              <div className="text-xs text-gray-500 mt-2">
-                                Категория: <span className="font-medium">{value.category}</span>
-                              </div>
-                            )}
-                            
-                            {value.user_name && (
-                              <div className="text-xs text-gray-500 mt-1">
-                                Ответственный: <span className="font-medium">{value.user_name}</span>
-                              </div>
-                            )}
+                            <div className="flex flex-wrap gap-3 text-xs text-gray-500 mt-2">
+                              {item.category && (
+                                <div>
+                                  Категория: <span className="font-medium">{item.category}</span>
+                                </div>
+                              )}
+                              
+                              {item.user_name && (
+                                <div>
+                                  Ответственный: <span className="font-medium">{item.user_name}</span>
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
