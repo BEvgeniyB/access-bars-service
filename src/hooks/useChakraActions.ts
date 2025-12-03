@@ -444,10 +444,14 @@ export const useChakraActions = ({
 
     try {
       const method = editMode === 'create' ? 'POST' : 'PUT';
+      const requestBody = editMode === 'create' 
+        ? { table, data: editItem }
+        : { table, id: editItem.id, data: editItem };
+      
       const response = await authFetchRef.current(ADMIN_API_URL, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ table, data: editItem }),
+        body: JSON.stringify(requestBody),
       });
 
       if (response.ok) {
