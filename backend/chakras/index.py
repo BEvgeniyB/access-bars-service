@@ -158,6 +158,14 @@ def get_chakra_detail(cur, chakra_id: str) -> Dict[str, Any]:
     chakra_dict['responsibilities'] = [dict(r) for r in cur.fetchall()]
     
     cur.execute(f'''
+        SELECT cbn.id, cbn.basic_need, cbn.description, cbn.user_id, u.name as user_name
+        FROM chakra_basic_needs cbn
+        LEFT JOIN users u ON cbn.user_id = u.id
+        WHERE cbn.chakra_id = {chakra_id}
+    ''')
+    chakra_dict['basic_needs'] = [dict(bn) for bn in cur.fetchall()]
+    
+    cur.execute(f'''
         SELECT cq.question, cq.is_resolved, cq.user_id, u.name as user_name
         FROM chakra_questions cq
         LEFT JOIN users u ON cq.user_id = u.id
