@@ -55,7 +55,7 @@ interface ChakraResponsibility {
 interface ChakraEditDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  editType: 'concept' | 'organ' | 'science' | 'responsibility' | 'user';
+  editType: 'concept' | 'organ' | 'science' | 'responsibility' | 'basic_need' | 'user';
   editMode: 'create' | 'edit';
   editItem: any;
   setEditItem: (item: any) => void;
@@ -120,6 +120,7 @@ const ChakraEditDialog = ({
       organ: 'орган',
       science: 'науку',
       responsibility: 'ответственность',
+      basic_need: 'базовую потребность',
       user: 'пользователя',
     };
     return `${action} ${entityMap[editType]}`;
@@ -168,7 +169,7 @@ const ChakraEditDialog = ({
             />
           )}
 
-          {(editType === 'organ' || editType === 'science' || editType === 'responsibility') && (
+          {(editType === 'organ' || editType === 'science' || editType === 'responsibility' || editType === 'basic_need') && (
             <ChakraDataEditForm
               editType={editType}
               editMode={editMode}

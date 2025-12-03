@@ -1,5 +1,5 @@
 '''
-Business: CRUD API для админ-панели управления чакрами с правами доступа
+Business: CRUD API для админ-панели управления чакрами с правами доступа (включая базовые потребности)
 Args: event - dict с httpMethod, headers (X-Auth-Token), body, queryStringParameters
       context - object с request_id
 Returns: HTTP response с данными или результатом операции
@@ -21,6 +21,7 @@ TABLES = {
     'chakra_responsibilities': ['id', 'chakra_id', 'responsibility', 'user_id'],
     'chakra_sciences': ['id', 'chakra_id', 'science_name', 'description', 'user_id'],
     'chakra_organs': ['id', 'chakra_id', 'organ_name', 'description', 'user_id'],
+    'chakra_basic_needs': ['id', 'chakra_id', 'basic_need', 'description', 'user_id'],
     'users': ['id', 'name', 'email', 'role', 'is_admin', 'telegram_id', 'telegram_username', 'chakra_id']
 }
 
@@ -157,6 +158,10 @@ def handle_get(cur, event: Dict[str, Any], user_id: int, is_admin: bool) -> Dict
         responsibilities_rows = cur.fetchall()
         responsibilities = [{'id': r[0], 'chakra_id': r[1], 'responsibility': r[2], 'user_id': r[3]} for r in responsibilities_rows]
         
+        cur.execute(f'SELECT id, chakra_id, basic_need, description, user_id FROM {SCHEMA}.chakra_basic_needs')
+        basic_needs_rows = cur.fetchall()
+        basic_needs = [{'id': bn[0], 'chakra_id': bn[1], 'basic_need': bn[2], 'description': bn[3], 'user_id': bn[4]} for bn in basic_needs_rows]
+        
         return {
             'statusCode': 200,
             'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
@@ -166,7 +171,8 @@ def handle_get(cur, event: Dict[str, Any], user_id: int, is_admin: bool) -> Dict
                 'chakra_concepts': concepts,
                 'chakra_organs': organs,
                 'chakra_sciences': sciences,
-                'chakra_responsibilities': responsibilities
+                'chakra_responsibilities': responsibilities,
+                'chakra_basic_needs': basic_needs
             })
         }
     

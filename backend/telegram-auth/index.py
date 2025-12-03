@@ -71,7 +71,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         telegram_id_int = int(telegram_id)
         query = '''
             SELECT id, name, email, role, telegram_id, is_admin
-            FROM users
+            FROM t_p89870318_access_bars_service.users
             WHERE telegram_id = %s
         '''
         cur.execute(query, (telegram_id_int,))

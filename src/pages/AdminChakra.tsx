@@ -80,10 +80,12 @@ const AdminChakra = () => {
     organs: data.organs,
     sciences: data.sciences,
     responsibilities: data.responsibilities,
+    basicNeeds: data.basicNeeds,
     allConcepts: data.allConcepts,
     allOrgans: data.allOrgans,
     allSciences: data.allSciences,
     allResponsibilities: data.allResponsibilities,
+    allBasicNeeds: data.allBasicNeeds,
     authFetch: data.authFetch,
     loadAllData: data.loadAllData,
     loadUserData: data.loadUserData,
@@ -144,6 +146,7 @@ const AdminChakra = () => {
             organs={data.organs}
             sciences={data.sciences}
             responsibilities={data.responsibilities}
+            basicNeeds={data.basicNeeds}
             onCreateConcept={() => {
               console.log('🟣 AdminChakra: onCreateConcept вызван');
               actions.handleCreate('concept');
@@ -162,6 +165,9 @@ const AdminChakra = () => {
             onCreateResponsibility={() => actions.handleCreate('responsibility')}
             onEditResponsibility={(item) => actions.handleEdit('responsibility', item)}
             onDeleteResponsibility={(id) => actions.handleDelete('responsibility', id)}
+            onCreateBasicNeed={() => actions.handleCreate('basic_need')}
+            onEditBasicNeed={(item) => actions.handleEdit('basic_need', item)}
+            onDeleteBasicNeed={(id) => actions.handleDelete('basic_need', id)}
           />
         )}
       </div>

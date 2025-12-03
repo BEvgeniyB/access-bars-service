@@ -34,8 +34,16 @@ interface ChakraResponsibility {
   user_id: number;
 }
 
+interface ChakraBasicNeed {
+  id: number;
+  chakra_id: number;
+  basic_need: string;
+  description: string;
+  user_id: number;
+}
+
 interface ChakraDataEditFormProps {
-  editType: 'organ' | 'science' | 'responsibility';
+  editType: 'organ' | 'science' | 'responsibility' | 'basic_need';
   editMode: 'create' | 'edit';
   editItem: any;
   setEditItem: (item: any) => void;
@@ -336,6 +344,29 @@ const ChakraDataEditForm = ({
           onChange={(e) => setEditItem({ ...editItem, responsibility: e.target.value })}
         />
       </div>
+    );
+  }
+
+  if (editType === 'basic_need') {
+    return (
+      <>
+        <div className="space-y-2">
+          <Label>Базовая потребность</Label>
+          <Input
+            value={editItem.basic_need || ''}
+            onChange={(e) => setEditItem({ ...editItem, basic_need: e.target.value })}
+            placeholder="Например: Сон, Еда, Движение"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Описание</Label>
+          <Textarea
+            value={editItem.description || ''}
+            onChange={(e) => setEditItem({ ...editItem, description: e.target.value })}
+            placeholder="Подробное описание потребности"
+          />
+        </div>
+      </>
     );
   }
 

@@ -54,6 +54,14 @@ interface ChakraResponsibility {
   user_id: number;
 }
 
+interface ChakraBasicNeed {
+  id: number;
+  chakra_id: number;
+  basic_need: string;
+  description: string;
+  user_id: number;
+}
+
 export const useChakraData = (token: string | null, selectedUserId: number | null) => {
   const [users, setUsers] = useState<User[]>([]);
   const [chakras, setChakras] = useState<Chakra[]>([]);
@@ -62,11 +70,13 @@ export const useChakraData = (token: string | null, selectedUserId: number | nul
   const [organs, setOrgans] = useState<ChakraOrgan[]>([]);
   const [sciences, setSciences] = useState<ChakraScience[]>([]);
   const [responsibilities, setResponsibilities] = useState<ChakraResponsibility[]>([]);
+  const [basicNeeds, setBasicNeeds] = useState<ChakraBasicNeed[]>([]);
   
   const [allConcepts, setAllConcepts] = useState<ChakraConcept[]>([]);
   const [allOrgans, setAllOrgans] = useState<ChakraOrgan[]>([]);
   const [allSciences, setAllSciences] = useState<ChakraScience[]>([]);
   const [allResponsibilities, setAllResponsibilities] = useState<ChakraResponsibility[]>([]);
+  const [allBasicNeeds, setAllBasicNeeds] = useState<ChakraBasicNeed[]>([]);
 
   const selectedUser = useMemo(() => users.find((u) => u.id === selectedUserId), [users, selectedUserId]);
 
@@ -120,6 +130,10 @@ export const useChakraData = (token: string | null, selectedUserId: number | nul
       if (data.chakra_responsibilities) {
         setAllResponsibilities(data.chakra_responsibilities);
       }
+      
+      if (data.chakra_basic_needs) {
+        setAllBasicNeeds(data.chakra_basic_needs);
+      }
     } catch (err: any) {
       console.error('Ошибка загрузки данных:', err.message || err);
     }
@@ -135,13 +149,14 @@ export const useChakraData = (token: string | null, selectedUserId: number | nul
       setOrgans([]);
       setSciences([]);
       setResponsibilities([]);
+      setBasicNeeds([]);
       return;
     }
 
     try {
       const chakraId = selectedUser.chakra_id;
       
-      const [conceptsRes, organsRes, sciencesRes, responsibilitiesRes] = await Promise.all([
+      const [conceptsRes, organsRes, sciencesRes, responsibilitiesRes, basicNeedsRes] = await Promise.all([
         fetch(`${ADMIN_API_URL}?table=chakra_concepts&chakra_id=${chakraId}`, {
           headers: { 'X-Auth-Token': token },
         }),
@@ -154,24 +169,30 @@ export const useChakraData = (token: string | null, selectedUserId: number | nul
         fetch(`${ADMIN_API_URL}?table=chakra_responsibilities&chakra_id=${chakraId}`, {
           headers: { 'X-Auth-Token': token },
         }),
+        fetch(`${ADMIN_API_URL}?table=chakra_basic_needs&chakra_id=${chakraId}`, {
+          headers: { 'X-Auth-Token': token },
+        }),
       ]);
 
-      const [conceptsData, organsData, sciencesData, responsibilitiesData] = await Promise.all([
+      const [conceptsData, organsData, sciencesData, responsibilitiesData, basicNeedsData] = await Promise.all([
         conceptsRes.json(),
         organsRes.json(),
         sciencesRes.json(),
         responsibilitiesRes.json(),
+        basicNeedsRes.json(),
       ]);
 
       const userConcepts = (conceptsData.chakra_concepts || []).filter((c: ChakraConcept) => c.user_id === selectedUserId);
       const userOrgans = (organsData.chakra_organs || []).filter((o: ChakraOrgan) => o.user_id === selectedUserId);
       const userSciences = (sciencesData.chakra_sciences || []).filter((s: ChakraScience) => s.user_id === selectedUserId);
       const userResponsibilities = (responsibilitiesData.chakra_responsibilities || []).filter((r: ChakraResponsibility) => r.user_id === selectedUserId);
+      const userBasicNeeds = (basicNeedsData.chakra_basic_needs || []).filter((bn: ChakraBasicNeed) => bn.user_id === selectedUserId);
 
       setConcepts(userConcepts);
       setOrgans(userOrgans);
       setSciences(userSciences);
       setResponsibilities(userResponsibilities);
+      setBasicNeeds(userBasicNeeds);
     } catch (err) {
       console.error('Ошибка загрузки данных пользователя:', err);
     }
@@ -200,10 +221,13 @@ export const useChakraData = (token: string | null, selectedUserId: number | nul
     setSciences,
     responsibilities,
     setResponsibilities,
+    basicNeeds,
+    setBasicNeeds,
     allConcepts,
     allOrgans,
     allSciences,
     allResponsibilities,
+    allBasicNeeds,
     authFetch,
     loadAllData,
     loadUserData,

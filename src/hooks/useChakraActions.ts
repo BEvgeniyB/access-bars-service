@@ -33,6 +33,14 @@ interface ChakraResponsibility {
   user_id: number;
 }
 
+interface ChakraBasicNeed {
+  id: number;
+  chakra_id: number;
+  basic_need: string;
+  description: string;
+  user_id: number;
+}
+
 interface User {
   id: number;
   name: string;
@@ -46,7 +54,7 @@ interface User {
 
 interface DialogState {
   open: boolean;
-  type: 'concept' | 'organ' | 'science' | 'responsibility' | 'user';
+  type: 'concept' | 'organ' | 'science' | 'responsibility' | 'basic_need' | 'user';
   mode: 'create' | 'edit';
   item: any;
 }
@@ -59,10 +67,12 @@ interface UseChakraActionsProps {
   organs: ChakraOrgan[];
   sciences: ChakraScience[];
   responsibilities: ChakraResponsibility[];
+  basicNeeds: ChakraBasicNeed[];
   allConcepts: ChakraConcept[];
   allOrgans: ChakraOrgan[];
   allSciences: ChakraScience[];
   allResponsibilities: ChakraResponsibility[];
+  allBasicNeeds: ChakraBasicNeed[];
   authFetch: (url: string, options?: RequestInit) => Promise<Response>;
   loadAllData: () => Promise<void>;
   loadUserData: () => Promise<void>;
@@ -78,10 +88,12 @@ export const useChakraActions = ({
   organs,
   sciences,
   responsibilities,
+  basicNeeds,
   allConcepts,
   allOrgans,
   allSciences,
   allResponsibilities,
+  allBasicNeeds,
   authFetch,
   loadAllData,
   loadUserData,
@@ -168,7 +180,7 @@ export const useChakraActions = ({
     });
   }, []);
 
-  const handleCreate = (type: 'concept' | 'organ' | 'science' | 'responsibility') => {
+  const handleCreate = (type: 'concept' | 'organ' | 'science' | 'responsibility' | 'basic_need') => {
     console.log('🟢 handleCreate вызван:', { type, selectedUserId: selectedUserIdRef.current });
     const selectedUser = usersRef.current.find((u) => u.id === selectedUserIdRef.current);
     console.log('👤 Найден пользователь:', selectedUser);
@@ -203,6 +215,9 @@ export const useChakraActions = ({
       newItem.responsibility = '';
       setShowNewResponsibilityForm(false);
       setSelectedExistingResponsibilityId(null);
+    } else if (type === 'basic_need') {
+      newItem.basic_need = '';
+      newItem.description = '';
     }
 
     console.log('📋 Создан новый item:', newItem);
@@ -218,7 +233,7 @@ export const useChakraActions = ({
     console.log('✅ dialogState установлен, диалог открывается');
   };
 
-  const handleEdit = (type: 'concept' | 'organ' | 'science' | 'responsibility', item: any) => {
+  const handleEdit = (type: 'concept' | 'organ' | 'science' | 'responsibility' | 'basic_need', item: any) => {
     console.log('🟡 handleEdit вызван:', { type, item });
     setDialogState({
       open: true,
@@ -421,6 +436,7 @@ export const useChakraActions = ({
       organ: 'chakra_organs',
       science: 'chakra_sciences',
       responsibility: 'chakra_responsibilities',
+      basic_need: 'chakra_basic_needs',
       user: 'users',
     };
 
@@ -447,7 +463,7 @@ export const useChakraActions = ({
     }
   }, [dialogState, showNewConceptForm, showNewOrganForm, showNewScienceForm, showNewResponsibilityForm, selectedExistingConceptId, selectedExistingOrganId, selectedExistingScienceId, selectedExistingResponsibilityId]);
 
-  const handleDelete = useCallback(async (type: 'concept' | 'organ' | 'science' | 'responsibility', id: number) => {
+  const handleDelete = useCallback(async (type: 'concept' | 'organ' | 'science' | 'responsibility' | 'basic_need', id: number) => {
     if (!confirm('Вы уверены, что хотите удалить эту запись?')) {
       return;
     }
@@ -457,6 +473,7 @@ export const useChakraActions = ({
       organ: 'chakra_organs',
       science: 'chakra_sciences',
       responsibility: 'chakra_responsibilities',
+      basic_need: 'chakra_basic_needs',
     };
 
     const table = tableMap[type];

@@ -35,11 +35,20 @@ interface ChakraResponsibility {
   user_id: number;
 }
 
+interface ChakraBasicNeed {
+  id: number;
+  chakra_id: number;
+  basic_need: string;
+  description: string;
+  user_id: number;
+}
+
 interface ChakraDataTabsProps {
   concepts: ChakraConcept[];
   organs: ChakraOrgan[];
   sciences: ChakraScience[];
   responsibilities: ChakraResponsibility[];
+  basicNeeds: ChakraBasicNeed[];
   onCreateConcept: () => void;
   onEditConcept: (item: ChakraConcept) => void;
   onDeleteConcept: (id: number) => void;
@@ -52,6 +61,9 @@ interface ChakraDataTabsProps {
   onCreateResponsibility: () => void;
   onEditResponsibility: (item: ChakraResponsibility) => void;
   onDeleteResponsibility: (id: number) => void;
+  onCreateBasicNeed: () => void;
+  onEditBasicNeed: (item: ChakraBasicNeed) => void;
+  onDeleteBasicNeed: (id: number) => void;
 }
 
 const ChakraDataTabs = ({
@@ -59,6 +71,7 @@ const ChakraDataTabs = ({
   organs = [],
   sciences = [],
   responsibilities = [],
+  basicNeeds = [],
   onCreateConcept,
   onEditConcept,
   onDeleteConcept,
@@ -71,14 +84,18 @@ const ChakraDataTabs = ({
   onCreateResponsibility,
   onEditResponsibility,
   onDeleteResponsibility,
+  onCreateBasicNeed,
+  onEditBasicNeed,
+  onDeleteBasicNeed,
 }: ChakraDataTabsProps) => {
   return (
     <Tabs defaultValue="concepts" className="w-full">
-      <TabsList className="grid w-full grid-cols-4">
+      <TabsList className="grid w-full grid-cols-5">
         <TabsTrigger value="concepts" className="text-xs">Энергии</TabsTrigger>
         <TabsTrigger value="organs" className="text-xs">Органы</TabsTrigger>
         <TabsTrigger value="sciences" className="text-xs">Науки</TabsTrigger>
         <TabsTrigger value="responsibilities" className="text-xs">За что отвечает</TabsTrigger>
+        <TabsTrigger value="basicNeeds" className="text-xs">Потребности</TabsTrigger>
       </TabsList>
 
       <TabsContent value="concepts" className="mt-4">
@@ -255,6 +272,50 @@ const ChakraDataTabs = ({
                 </div>
               ))}
               {responsibilities.length === 0 && (
+                <p className="text-sm text-gray-500 text-center py-4">Нет данных</p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      <TabsContent value="basicNeeds" className="mt-4">
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex justify-between items-center">
+              <CardTitle className="text-base">Базовые потребности</CardTitle>
+              <Button size="sm" onClick={onCreateBasicNeed}>
+                <Icon name="Plus" size={16} />
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {basicNeeds.map((item) => (
+                <div key={item.id} className="flex justify-between items-start p-3 bg-white rounded border">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium">{item.basic_need}</p>
+                    <p className="text-xs text-gray-600 mt-1">{item.description}</p>
+                  </div>
+                  <div className="flex gap-2 ml-2">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => onEditBasicNeed(item)}
+                    >
+                      <Icon name="Edit" size={16} />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => onDeleteBasicNeed(item.id)}
+                    >
+                      <Icon name="Trash2" size={16} />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              {basicNeeds.length === 0 && (
                 <p className="text-sm text-gray-500 text-center py-4">Нет данных</p>
               )}
             </div>
