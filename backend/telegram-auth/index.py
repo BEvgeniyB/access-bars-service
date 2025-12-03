@@ -1,5 +1,5 @@
 '''
-Business: Авторизация пользователей через Telegram ID и Group ID
+Business: Авторизация пользователей через Telegram ID и Group ID (без схемы)
 Args: event - dict с httpMethod, body (telegram_id, telegram_group_id)
       context - object с request_id
 Returns: HTTP response с JWT-токеном и данными пользователя
@@ -71,7 +71,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         telegram_id_int = int(telegram_id)
         query = '''
             SELECT id, name, email, role, telegram_id, is_admin
-            FROM t_p89870318_access_bars_service.users
+            FROM users
             WHERE telegram_id = %s
         '''
         cur.execute(query, (telegram_id_int,))
