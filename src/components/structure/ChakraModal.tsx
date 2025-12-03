@@ -45,6 +45,9 @@ const ChakraModal = ({ chakra, onClose }: ChakraModalProps) => {
     chakra.questions?.forEach(q => {
       if (q.user_id && q.user_name) userMap.set(q.user_id, q.user_name);
     });
+    chakra.basic_needs?.forEach(bn => {
+      if (bn.user_id && bn.user_name) userMap.set(bn.user_id, bn.user_name);
+    });
     
     return Array.from(userMap.entries()).map(([id, name], idx) => ({ 
       id, 
@@ -71,6 +74,7 @@ const ChakraModal = ({ chakra, onClose }: ChakraModalProps) => {
       sciences: chakra.sciences?.filter(s => s.user_id === selectedUserId),
       responsibilities: chakra.responsibilities?.filter(r => r.user_id === selectedUserId),
       questions: chakra.questions?.filter(q => q.user_id === selectedUserId),
+      basic_needs: chakra.basic_needs?.filter(bn => bn.user_id === selectedUserId),
     };
   }, [chakra, selectedUserId]);
 
@@ -219,6 +223,48 @@ const ChakraModal = ({ chakra, onClose }: ChakraModalProps) => {
                         {!selectedUserId && organ.user_name && (
                           <span className={`text-xs px-2 py-0.5 rounded-full w-fit ${color ? color.badge : 'bg-red-200'}`}>
                             {organ.user_name}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Базовые потребности */}
+            {filteredData.basic_needs && filteredData.basic_needs.length > 0 && (
+              <div className="mb-3">
+                <p className="font-bold text-amber-900 mb-2 flex items-center gap-1">
+                  <Icon name="Sparkles" size={14} />
+                  Базовые потребности
+                  {selectedUserId && (
+                    <span className="text-xs font-normal text-gray-600 ml-2">
+                      ({filteredData.basic_needs.length})
+                    </span>
+                  )}
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+                  {filteredData.basic_needs.map((need) => {
+                    const color = getUserColor(need.user_id);
+                    return (
+                      <div 
+                        key={need.id} 
+                        className={`p-2 rounded border flex flex-col gap-1 ${
+                          color ? `${color.bg} ${color.border}` : 'bg-amber-50 border-amber-200'
+                        }`}
+                      >
+                        <p className={`font-medium ${color ? color.text : 'text-amber-900'}`}>
+                          {need.basic_need}
+                        </p>
+                        {need.description && (
+                          <p className={`text-xs ${color ? color.text : 'text-amber-700'} opacity-75`}>
+                            {need.description}
+                          </p>
+                        )}
+                        {!selectedUserId && need.user_name && (
+                          <span className={`text-xs px-2 py-0.5 rounded-full w-fit ${color ? color.badge : 'bg-amber-200'}`}>
+                            {need.user_name}
                           </span>
                         )}
                       </div>

@@ -14,6 +14,7 @@ export interface Chakra {
   sciences?: ChakraScience[];
   responsibilities?: ChakraResponsibility[];
   questions?: ChakraQuestion[];
+  basic_needs?: ChakraBasicNeed[];
   created_at?: string;
   updated_at?: string;
 }
@@ -49,6 +50,14 @@ export interface ChakraResponsibility {
 export interface ChakraQuestion {
   question: string;
   is_resolved: boolean;
+  user_id?: number;
+  user_name?: string;
+}
+
+export interface ChakraBasicNeed {
+  id: number;
+  basic_need: string;
+  description?: string;
   user_id?: number;
   user_name?: string;
 }
