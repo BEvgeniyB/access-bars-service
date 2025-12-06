@@ -24,6 +24,11 @@ const ChakraModal = ({ chakra, onClose, initialUserId }: ChakraModalProps) => {
     selectedUserId,
     initialUserId
   });
+  console.log('filteredData:', {
+    concepts: filteredData.concepts?.length,
+    organs: filteredData.organs?.length,
+    sciences: filteredData.sciences?.length
+  });
 
   // Цветовая палитра для ответственных
   const userColors = [
@@ -88,6 +93,15 @@ const ChakraModal = ({ chakra, onClose, initialUserId }: ChakraModalProps) => {
       basic_needs: chakra.basic_needs?.filter(bn => bn.user_id === selectedUserId),
     };
   }, [chakra, selectedUserId]);
+
+  // Временная отладка filteredData
+  console.log('filteredData check:', {
+    selectedUserId,
+    hasFilteredData: !!filteredData,
+    conceptsLength: filteredData.concepts?.length,
+    organsLength: filteredData.organs?.length,
+    firstConcept: filteredData.concepts?.[0]
+  });
 
   // Показываем остальные вкладки только если выбран конкретный ответственный
   const showDetailTabs = selectedUserId !== null;
