@@ -8,10 +8,11 @@ import Icon from '@/components/ui/icon';
 interface ChakraModalProps {
   chakra: Chakra;
   onClose: () => void;
+  initialUserId?: number | null;
 }
 
-const ChakraModal = ({ chakra, onClose }: ChakraModalProps) => {
-  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+const ChakraModal = ({ chakra, onClose, initialUserId }: ChakraModalProps) => {
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(initialUserId || null);
   const [activeTab, setActiveTab] = useState('overview');
 
   // Цветовая палитра для ответственных

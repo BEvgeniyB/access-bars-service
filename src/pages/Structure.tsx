@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import StructureNavigationMenu from '@/components/structure/StructureNavigationMenu';
 import Footer from '@/components/Index/Footer';
 import ChakraBody from '@/components/structure/ChakraBody';
@@ -8,8 +9,10 @@ import ChakraDataTable from '@/components/structure/ChakraDataTable';
 import { Chakra } from '@/types/chakra';
 
 const Structure = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [chakras, setChakras] = useState<Chakra[]>([]);
   const [selectedChakra, setSelectedChakra] = useState<Chakra | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -17,6 +20,21 @@ const Structure = () => {
   useEffect(() => {
     fetchAllChakrasWithDetails();
   }, []);
+
+  useEffect(() => {
+    const chakraId = searchParams.get('chakra');
+    const userId = searchParams.get('user');
+    
+    if (chakraId && chakras.length > 0) {
+      const chakra = chakras.find(c => c.id === parseInt(chakraId));
+      if (chakra) {
+        setSelectedChakra(chakra);
+        if (userId) {
+          setSelectedUserId(parseInt(userId));
+        }
+      }
+    }
+  }, [searchParams, chakras]);
 
   const fetchAllChakrasWithDetails = async () => {
     const CACHE_KEY = 'chakras_full_details_cache';
@@ -107,7 +125,12 @@ const Structure = () => {
         {selectedChakra && (
           <ChakraModal 
             chakra={selectedChakra}
-            onClose={() => setSelectedChakra(null)}
+            onClose={() => {
+              setSelectedChakra(null);
+              setSelectedUserId(null);
+              setSearchParams({});
+            }}
+            initialUserId={selectedUserId}
           />
         )}
       </div>
