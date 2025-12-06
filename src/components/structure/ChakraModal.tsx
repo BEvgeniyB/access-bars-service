@@ -15,6 +15,16 @@ const ChakraModal = ({ chakra, onClose, initialUserId }: ChakraModalProps) => {
   const [selectedUserId, setSelectedUserId] = useState<number | null>(initialUserId || null);
   const [activeTab, setActiveTab] = useState('overview');
 
+  // Временная отладка
+  console.log('ChakraModal opened:', {
+    chakraName: chakra.name,
+    concepts: chakra.concepts?.length || 0,
+    organs: chakra.organs?.length || 0,
+    sciences: chakra.sciences?.length || 0,
+    selectedUserId,
+    initialUserId
+  });
+
   // Цветовая палитра для ответственных
   const userColors = [
     { bg: 'bg-pink-100', border: 'border-pink-300', text: 'text-pink-800', badge: 'bg-pink-200' },
