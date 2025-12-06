@@ -86,8 +86,8 @@ const ChakraModal = ({ chakra, onClose, initialUserId }: ChakraModalProps) => {
 
   return (
     <Dialog open={!!chakra} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader className="pr-10">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto mt-16 sm:mt-0">
+        <DialogHeader className="pr-10 pt-2 sm:pt-0">
           <DialogTitle className="flex items-center gap-2 text-lg sm:text-2xl sm:gap-3">
             <div 
               className="w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base flex-shrink-0"
