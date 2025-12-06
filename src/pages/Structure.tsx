@@ -23,15 +23,13 @@ const Structure = () => {
 
   useEffect(() => {
     const chakraId = searchParams.get('chakra');
-    const userId = searchParams.get('user');
     
     if (chakraId && chakras.length > 0) {
       const chakra = chakras.find(c => c.id === parseInt(chakraId));
       if (chakra) {
         setSelectedChakra(chakra);
-        if (userId) {
-          setSelectedUserId(parseInt(userId));
-        }
+        // Не устанавливаем selectedUserId - пусть модалка показывает "Все" по умолчанию
+        setSelectedUserId(null);
       }
     }
   }, [searchParams, chakras]);
@@ -130,7 +128,7 @@ const Structure = () => {
               setSelectedUserId(null);
               setSearchParams({});
             }}
-            initialUserId={selectedUserId}
+            initialUserId={null}
           />
         )}
       </div>
