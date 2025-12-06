@@ -15,20 +15,7 @@ const ChakraModal = ({ chakra, onClose, initialUserId }: ChakraModalProps) => {
   const [selectedUserId, setSelectedUserId] = useState<number | null>(initialUserId || null);
   const [activeTab, setActiveTab] = useState('overview');
 
-  // Временная отладка
-  console.log('ChakraModal opened:', {
-    chakraName: chakra.name,
-    concepts: chakra.concepts?.length || 0,
-    organs: chakra.organs?.length || 0,
-    sciences: chakra.sciences?.length || 0,
-    selectedUserId,
-    initialUserId
-  });
-  console.log('filteredData:', {
-    concepts: filteredData.concepts?.length,
-    organs: filteredData.organs?.length,
-    sciences: filteredData.sciences?.length
-  });
+
 
   // Цветовая палитра для ответственных
   const userColors = [
@@ -94,17 +81,16 @@ const ChakraModal = ({ chakra, onClose, initialUserId }: ChakraModalProps) => {
     };
   }, [chakra, selectedUserId]);
 
-  // Временная отладка filteredData
+  // Показываем остальные вкладки только если выбран конкретный ответственный
+  const showDetailTabs = selectedUserId !== null;
+  
+  // Временная отладка ПОСЛЕ создания filteredData
   console.log('filteredData check:', {
     selectedUserId,
-    hasFilteredData: !!filteredData,
     conceptsLength: filteredData.concepts?.length,
     organsLength: filteredData.organs?.length,
     firstConcept: filteredData.concepts?.[0]
   });
-
-  // Показываем остальные вкладки только если выбран конкретный ответственный
-  const showDetailTabs = selectedUserId !== null;
 
   return (
     <Dialog open={!!chakra} onOpenChange={onClose}>
