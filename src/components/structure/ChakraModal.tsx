@@ -83,14 +83,6 @@ const ChakraModal = ({ chakra, onClose, initialUserId }: ChakraModalProps) => {
 
   // Показываем остальные вкладки только если выбран конкретный ответственный
   const showDetailTabs = selectedUserId !== null;
-  
-  // Временная отладка ПОСЛЕ создания filteredData
-  console.log('filteredData check:', {
-    selectedUserId,
-    conceptsLength: filteredData.concepts?.length,
-    organsLength: filteredData.organs?.length,
-    firstConcept: filteredData.concepts?.[0]
-  });
 
   return (
     <Dialog open={!!chakra} onOpenChange={onClose}>
@@ -171,14 +163,6 @@ const ChakraModal = ({ chakra, onClose, initialUserId }: ChakraModalProps) => {
             )}
 
             {/* Энергии с именами ответственных */}
-            {(() => {
-              console.log('Rendering concepts block:', {
-                hasConcepts: !!filteredData.concepts,
-                length: filteredData.concepts?.length,
-                condition: filteredData.concepts && filteredData.concepts.length > 0
-              });
-              return null;
-            })()}
             {filteredData.concepts && filteredData.concepts.length > 0 && (
               <div className="mb-3">
                 <p className="font-bold text-purple-900 mb-2 flex items-center gap-1">
