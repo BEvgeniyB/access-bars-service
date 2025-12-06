@@ -87,15 +87,15 @@ const ChakraModal = ({ chakra, onClose, initialUserId }: ChakraModalProps) => {
   return (
     <Dialog open={!!chakra} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-3 text-2xl">
+        <DialogHeader className="pr-10">
+          <DialogTitle className="flex items-center gap-2 text-lg sm:text-2xl sm:gap-3">
             <div 
-              className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold"
+              className="w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base flex-shrink-0"
               style={{ backgroundColor: chakra.color }}
             >
               {chakra.position}
             </div>
-            <span style={{ color: chakra.color }}>{chakra.name}</span>
+            <span className="truncate" style={{ color: chakra.color }}>{chakra.name}</span>
           </DialogTitle>
         </DialogHeader>
 
