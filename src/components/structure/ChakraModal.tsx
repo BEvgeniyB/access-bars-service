@@ -171,6 +171,14 @@ const ChakraModal = ({ chakra, onClose, initialUserId }: ChakraModalProps) => {
             )}
 
             {/* Энергии с именами ответственных */}
+            {(() => {
+              console.log('Rendering concepts block:', {
+                hasConcepts: !!filteredData.concepts,
+                length: filteredData.concepts?.length,
+                condition: filteredData.concepts && filteredData.concepts.length > 0
+              });
+              return null;
+            })()}
             {filteredData.concepts && filteredData.concepts.length > 0 && (
               <div className="mb-3">
                 <p className="font-bold text-purple-900 mb-2 flex items-center gap-1">
