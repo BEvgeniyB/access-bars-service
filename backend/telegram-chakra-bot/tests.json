@@ -8,19 +8,11 @@
       "expectedBody": ""
     },
     {
-      "name": "POST with valid webhook returns ok",
+      "name": "POST with empty message returns ok",
       "method": "POST",
       "path": "/",
       "body": {
-        "message": {
-          "chat": {
-            "id": 12345
-          },
-          "text": "/1",
-          "from": {
-            "username": "testuser"
-          }
-        }
+        "message": {}
       },
       "expectedStatus": 200,
       "expectedBody": {

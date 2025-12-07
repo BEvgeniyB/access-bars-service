@@ -84,6 +84,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             user = find_user_by_telegram(database_url, telegram_username, chakra_id)
             
             if not user:
+                send_telegram_message(
+                    bot_token,
+                    chat_id,
+                    '❌ Вы не зарегистрированы в системе. Обратитесь к администратору.'
+                )
                 return {
                     'statusCode': 200,
                     'headers': {'Content-Type': 'application/json'},
@@ -114,13 +119,13 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
 
 
 def find_user_by_telegram(database_url: str, telegram_username: str, chakra_id: int) -> Optional[Dict]:
-    '''Поиск пользователя по telegram_username и chakra_id'''
+    '''Поиск пользователя по telegram_username (без проверки chakra_id)'''
     conn = None
     try:
         conn = psycopg2.connect(database_url)
         cur = conn.cursor()
         
-        query = f"SELECT id, chakra_id, telegram_username FROM users WHERE telegram_username = '{telegram_username}' AND chakra_id = {chakra_id}"
+        query = f"SELECT id, chakra_id, telegram_username FROM users WHERE telegram_username = '{telegram_username}'"
         cur.execute(query)
         
         row = cur.fetchone()
@@ -130,6 +135,8 @@ def find_user_by_telegram(database_url: str, telegram_username: str, chakra_id: 
                 'chakra_id': row[1],
                 'telegram_username': row[2]
             }
+        
+        # Если пользователь не найден - отправляем сообщение
         return None
     finally:
         if conn:
