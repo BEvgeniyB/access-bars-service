@@ -96,7 +96,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 }
             
             user_id = user['id']
-            url = f"{website_url}/structure?chakra={chakra_id}&user={user_id}"
+            base_url = website_url.rstrip('/')
+            url = f"{base_url}/structure?chakra={chakra_id}&user={user_id}"
             
             keyboard = {
                 'inline_keyboard': [
