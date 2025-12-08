@@ -66,6 +66,47 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     if text.startswith('/'):
         command = text.strip()
         
+        if command.startswith('/э '):
+            search_query = command[3:].strip()
+            
+            if not search_query:
+                send_telegram_message(
+                    bot_token,
+                    chat_id,
+                    '❌ Укажите текст для поиска. Пример: /э любовь'
+                )
+                return {
+                    'statusCode': 200,
+                    'headers': {'Content-Type': 'application/json'},
+                    'body': json.dumps({'ok': True})
+                }
+            
+            results = search_concepts(database_url, search_query)
+            
+            if not results:
+                send_telegram_message(
+                    bot_token,
+                    chat_id,
+                    f'❌ Ничего не найдено по запросу "{search_query}"'
+                )
+            else:
+                message_lines = [f'Найдено: {len(results)}']
+                for result in results:
+                    line = f"💫 {result['concept']} {result['chakra_id']} {result['user_name']}"
+                    message_lines.append(line)
+                
+                send_telegram_message(
+                    bot_token,
+                    chat_id,
+                    '\n'.join(message_lines)
+                )
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json'},
+                'body': json.dumps({'ok': True})
+            }
+        
         if command in ['/1', '/2', '/3', '/4', '/5', '/6', '/7']:
             chakra_id = int(command[1])
             
@@ -117,6 +158,37 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         'headers': {'Content-Type': 'application/json'},
         'body': json.dumps({'ok': True})
     }
+
+
+def search_concepts(database_url: str, search_query: str) -> list:
+    '''Поиск энергий по части строки (регистронезависимый)'''
+    conn = None
+    try:
+        conn = psycopg2.connect(database_url)
+        cur = conn.cursor()
+        
+        escaped_query = search_query.replace("'", "''")
+        query = f"""
+            SELECT cc.concept, cc.chakra_id, u.name as user_name
+            FROM chakra_concepts cc
+            LEFT JOIN users u ON cc.user_id = u.id
+            WHERE LOWER(cc.concept) LIKE LOWER('%{escaped_query}%')
+            ORDER BY cc.chakra_id, cc.concept
+        """
+        cur.execute(query)
+        
+        results = []
+        for row in cur.fetchall():
+            results.append({
+                'concept': row[0],
+                'chakra_id': row[1],
+                'user_name': row[2] or 'Неизвестно'
+            })
+        
+        return results
+    finally:
+        if conn:
+            conn.close()
 
 
 def find_user_by_telegram(database_url: str, telegram_username: str, chakra_id: int) -> Optional[Dict]:

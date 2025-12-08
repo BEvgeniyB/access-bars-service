@@ -19,6 +19,23 @@
         "ok": true
       },
       "bodyMatcher": "partial"
+    },
+    {
+      "name": "POST with search command returns ok",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "message": {
+          "chat": {"id": 123456},
+          "text": "/э тест",
+          "from": {"username": "testuser"}
+        }
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "ok": true
+      },
+      "bodyMatcher": "partial"
     }
   ]
 }
