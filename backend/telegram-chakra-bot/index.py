@@ -90,7 +90,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     f'❌ Ничего не найдено по запросу "{search_query}"'
                 )
             else:
-                message_lines = [f'Найдено: {len(results)}']
+                message_lines = []
                 for result in results:
                     line = f"💫 {result['concept']} {result['chakra_id']} {result['user_name']}"
                     message_lines.append(line)
