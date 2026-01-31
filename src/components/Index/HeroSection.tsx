@@ -28,8 +28,8 @@ const HeroSection = ({ setIsBookingOpen }: HeroSectionProps) => {
           </div>
           <div className="animate-fade-in relative z-10">
             <h1 className="font-montserrat font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-gold-100 mb-8 leading-tight drop-shadow-2xl">
-              <span className="block">Найдите свой</span>
-              <span className="text-gold-400 block bg-gradient-to-r from-gold-300 to-gold-500 bg-clip-text text-transparent">внутренний покой</span>
+              <span className="block">Создай своё</span>
+              <span className="text-gold-400 block bg-gradient-to-r from-gold-300 to-gold-500 bg-clip-text text-transparent">состояние</span>
             </h1>
             <p className="text-xl text-emerald-100 mb-12 max-w-3xl mx-auto leading-relaxed">Глубокие энергетические практики и исцеление в атмосфере абсолютного спокойствия и гармонии</p>
             <div className="flex flex-wrap justify-center items-center gap-4">
