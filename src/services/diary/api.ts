@@ -128,6 +128,12 @@ export const api = {
       apiRequest("settings", "PUT", { ...data, owner_id: OWNER_ID }),
   },
 
+  workHours: {
+    get: () => apiRequest<{ work_hours: any[] }>("work_hours", "GET"),
+    update: (work_hours: any[]) =>
+      apiRequest("work_hours", "PUT", { work_hours }),
+  },
+
   admin: {
     getAllData: () =>
       apiRequest<{

@@ -841,6 +841,63 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'body': json.dumps({'message': 'Settings updated'})
                     }
         
+        elif resource == 'work_hours':
+            if method == 'GET':
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    cur.execute(f'SELECT day_of_week, start_time, end_time, is_day_off FROM {SCHEMA}.diary_work_hours ORDER BY day_of_week')
+                    rows = cur.fetchall()
+                    
+                    result = []
+                    for row in rows:
+                        result.append({
+                            'day_of_week': row['day_of_week'],
+                            'start_time': row['start_time'].strftime('%H:%M') if row['start_time'] and hasattr(row['start_time'], 'strftime') else (str(row['start_time'])[:5] if row['start_time'] else None),
+                            'end_time': row['end_time'].strftime('%H:%M') if row['end_time'] and hasattr(row['end_time'], 'strftime') else (str(row['end_time'])[:5] if row['end_time'] else None),
+                            'is_day_off': row['is_day_off']
+                        })
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'work_hours': result})
+                    }
+            
+            elif method == 'PUT':
+                body_data = json.loads(event.get('body', '{}'))
+                work_hours_list = body_data.get('work_hours', [])
+                
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    for item in work_hours_list:
+                        day = int(item['day_of_week'])
+                        is_day_off = bool(item.get('is_day_off', False))
+                        start_time = item.get('start_time')
+                        end_time = item.get('end_time')
+                        
+                        if is_day_off or not start_time or not end_time:
+                            cur.execute(f"""
+                                UPDATE {SCHEMA}.diary_work_hours 
+                                SET start_time = NULL, end_time = NULL, is_day_off = TRUE
+                                WHERE day_of_week = {day}
+                            """)
+                        else:
+                            start_escaped = start_time.replace("'", "''")
+                            end_escaped = end_time.replace("'", "''")
+                            cur.execute(f"""
+                                UPDATE {SCHEMA}.diary_work_hours 
+                                SET start_time = '{start_escaped}', end_time = '{end_escaped}', is_day_off = FALSE
+                                WHERE day_of_week = {day}
+                            """)
+                    
+                    conn.commit()
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'isBase64Encoded': False,
+                        'body': json.dumps({'message': 'Work hours updated'})
+                    }
+        
         elif resource == 'week_schedule':
             if method == 'GET':
                 owner_id = event.get('queryStringParameters', {}).get('owner_id')
@@ -1360,18 +1417,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         
                         print(f'[SLOTS] Все настройки из БД: {settings}')
                         
-                        work_start = settings.get('work_hours_start', '10:00')
-                        work_end = settings.get('work_hours_end', '20:00')
                         prep_time = int(settings.get('prep_time', '0'))
                         buffer_time = int(settings.get('buffer_time', '0'))
                         work_priority = settings.get('work_priority', 'False') == 'True'
-                        
-                        print(f'[SLOTS] Рабочие часы: {work_start} - {work_end}')
-                        print(f'[SLOTS] prep_time: {prep_time}, buffer_time: {buffer_time}, work_priority: {work_priority}')
-                        
-                        # Total time needed: prep + service + buffer
-                        total_time_needed = prep_time + duration + buffer_time
-                        print(f'[SLOTS] Общее время для слота: {total_time_needed} мин')
                         
                         # Определяем день недели для даты
                         date_obj = datetime.strptime(date, '%Y-%m-%d')
@@ -1380,6 +1428,31 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         target_weekday = date_obj.isoweekday()
                         
                         print(f'[SLOTS] Дата: {date}, день недели: {day_of_week} ({target_weekday})')
+                        
+                        # Получаем рабочие часы для конкретного дня недели из diary_work_hours
+                        # day_of_week: 0=пн, 1=вт, 2=ср, 3=чт, 4=пт, 5=сб, 6=вс
+                        date_weekday = date_obj.weekday()
+                        cur.execute(f'SELECT start_time, end_time, is_day_off FROM {SCHEMA}.diary_work_hours WHERE day_of_week = {date_weekday}')
+                        work_hours_row = cur.fetchone()
+                        
+                        if not work_hours_row or work_hours_row['is_day_off']:
+                            print(f'[SLOTS] День {date_weekday} — выходной, возвращаем пустые слоты')
+                            return {
+                                'statusCode': 200,
+                                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                                'isBase64Encoded': False,
+                                'body': json.dumps({'slots': [], 'message': 'Day off'})
+                            }
+                        
+                        work_start = work_hours_row['start_time'].strftime('%H:%M') if hasattr(work_hours_row['start_time'], 'strftime') else str(work_hours_row['start_time'])[:5]
+                        work_end = work_hours_row['end_time'].strftime('%H:%M') if hasattr(work_hours_row['end_time'], 'strftime') else str(work_hours_row['end_time'])[:5]
+                        
+                        print(f'[SLOTS] Рабочие часы для дня {date_weekday}: {work_start} - {work_end}')
+                        print(f'[SLOTS] prep_time: {prep_time}, buffer_time: {buffer_time}, work_priority: {work_priority}')
+                        
+                        # Total time needed: prep + service + buffer
+                        total_time_needed = prep_time + duration + buffer_time
+                        print(f'[SLOTS] Общее время для слота: {total_time_needed} мин')
                     
                         # Получаем расписание учёбы для этого дня с учётом цикла
                         cur.execute(f'''

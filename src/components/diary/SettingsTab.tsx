@@ -4,26 +4,44 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Switch } from '@/components/ui/switch';
 import Icon from '@/components/ui/icon';
 import { useAuth } from '@/contexts/diary/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { useData } from '@/contexts/diary/DataContext';
 import { api } from '@/services/diary/api';
 
+const DAY_NAMES = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
+
+interface WorkHourDay {
+  day_of_week: number;
+  start_time: string | null;
+  end_time: string | null;
+  is_day_off: boolean;
+}
+
 const SettingsTab = () => {
-  const { isAdmin, user } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
   const { settings: contextSettings, refreshSettings } = useData();
   const [loading, setLoading] = useState(false);
+  const [workHoursLoading, setWorkHoursLoading] = useState(false);
   
   const [systemSettings, setSystemSettings] = useState({
     prep_time: 0,
     buffer_time: 0,
-    work_hours_start: '09:00',
-    work_hours_end: '18:00',
     work_priority: true,
     reminder_hours: 0,
   });
+
+  const [workHours, setWorkHours] = useState<WorkHourDay[]>(
+    Array.from({ length: 7 }, (_, i) => ({
+      day_of_week: i,
+      start_time: '10:00',
+      end_time: '20:00',
+      is_day_off: i === 2,
+    }))
+  );
 
   const [profile, setProfile] = useState({
     name: user?.telegram_id || '',
@@ -32,18 +50,48 @@ const SettingsTab = () => {
   });
 
   useEffect(() => {
-    console.log('📥 [SETTINGS] Загрузка настроек из контекста:', contextSettings);
     const loadedSettings = {
       prep_time: Number(contextSettings.prep_time) || 0,
       buffer_time: Number(contextSettings.buffer_time) || 0,
-      work_hours_start: contextSettings.work_hours_start || '09:00',
-      work_hours_end: contextSettings.work_hours_end || '18:00',
       work_priority: contextSettings.work_priority === 'True' || contextSettings.work_priority === 'true',
       reminder_hours: Number(contextSettings.reminder_hours) || 0,
     };
-    console.log('✅ [SETTINGS] Установленные настройки:', loadedSettings);
     setSystemSettings(loadedSettings);
   }, [contextSettings]);
+
+  useEffect(() => {
+    const loadWorkHours = async () => {
+      try {
+        const data = await api.workHours.get();
+        if (data.work_hours && data.work_hours.length > 0) {
+          setWorkHours(data.work_hours);
+        }
+      } catch (e) {
+        // fallback to defaults
+      }
+    };
+    loadWorkHours();
+  }, []);
+
+  const handleWorkHourChange = (dayIndex: number, field: 'start_time' | 'end_time', value: string) => {
+    setWorkHours(prev => prev.map(d => d.day_of_week === dayIndex ? { ...d, [field]: value } : d));
+  };
+
+  const handleDayOffToggle = (dayIndex: number, isDayOff: boolean) => {
+    setWorkHours(prev => prev.map(d => d.day_of_week === dayIndex ? { ...d, is_day_off: isDayOff } : d));
+  };
+
+  const handleSaveWorkHours = async () => {
+    setWorkHoursLoading(true);
+    try {
+      await api.workHours.update(workHours);
+      toast({ title: 'Успешно', description: 'Расписание рабочих часов сохранено' });
+    } catch (error) {
+      toast({ title: 'Ошибка', description: 'Не удалось сохранить расписание', variant: 'destructive' });
+    } finally {
+      setWorkHoursLoading(false);
+    }
+  };
 
   const handleSaveSystemSettings = async () => {
     setLoading(true);
@@ -118,54 +166,63 @@ const SettingsTab = () => {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="lg:col-span-2">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Icon name="Clock" size={20} />
-                    Рабочее время
+                    <Icon name="CalendarDays" size={20} />
+                    Расписание рабочих часов
                   </CardTitle>
                   <CardDescription>
-                    Общие часы работы для всех владельцев
+                    Укажите часы работы для каждого дня недели
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Начало работы</Label>
-                      <Input
-                        type="time"
-                        value={systemSettings.work_hours_start}
-                        onChange={(e) => setSystemSettings({ ...systemSettings, work_hours_start: e.target.value })}
+                <CardContent className="space-y-3">
+                  {workHours.map((day) => (
+                    <div key={day.day_of_week} className="flex items-center gap-3">
+                      <div className="w-28 text-sm font-medium text-gray-700 shrink-0">
+                        {DAY_NAMES[day.day_of_week]}
+                      </div>
+                      <Switch
+                        checked={!day.is_day_off}
+                        onCheckedChange={(checked) => handleDayOffToggle(day.day_of_week, !checked)}
                       />
+                      {day.is_day_off ? (
+                        <span className="text-sm text-muted-foreground">Выходной</span>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="time"
+                            value={day.start_time || '10:00'}
+                            onChange={(e) => handleWorkHourChange(day.day_of_week, 'start_time', e.target.value)}
+                            className="w-32"
+                          />
+                          <span className="text-muted-foreground text-sm">—</span>
+                          <Input
+                            type="time"
+                            value={day.end_time || '20:00'}
+                            onChange={(e) => handleWorkHourChange(day.day_of_week, 'end_time', e.target.value)}
+                            className="w-32"
+                          />
+                        </div>
+                      )}
                     </div>
-                    <div className="space-y-2">
-                      <Label>Конец работы</Label>
-                      <Input
-                        type="time"
-                        value={systemSettings.work_hours_end}
-                        onChange={(e) => setSystemSettings({ ...systemSettings, work_hours_end: e.target.value })}
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
+                  ))}
+                  <div className="pt-2 flex items-center gap-4">
+                    <Button onClick={handleSaveWorkHours} disabled={workHoursLoading}>
+                      {workHoursLoading ? 'Сохранение...' : 'Сохранить расписание'}
+                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Switch
                         checked={systemSettings.work_priority}
-                        onChange={(e) => setSystemSettings({ ...systemSettings, work_priority: e.target.checked })}
-                        className="w-4 h-4 rounded border-gray-300"
+                        onCheckedChange={(checked) => setSystemSettings({ ...systemSettings, work_priority: checked })}
                       />
-                      <span>Приоритет рабочего времени</span>
-                    </Label>
-                    <p className="text-xs text-muted-foreground ml-6">
-                      {systemSettings.work_priority 
-                        ? '✓ Клиенты видят слоты только в рабочее время (учёба игнорируется)'
-                        : '✗ Клиенты видят слоты: рабочее время минус учёба'}
-                    </p>
+                      <span className="text-sm text-muted-foreground">
+                        {systemSettings.work_priority
+                          ? 'Учёба не влияет на слоты'
+                          : 'Вычитать учёбу из рабочих часов'}
+                      </span>
+                    </div>
                   </div>
-                  <Button onClick={handleSaveSystemSettings} disabled={loading}>
-                    {loading ? 'Сохранение...' : 'Сохранить'}
-                  </Button>
                 </CardContent>
               </Card>
 
