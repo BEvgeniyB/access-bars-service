@@ -1,9 +1,15 @@
 {
   "tests": [
     {
-      "name": "Basic GET request",
+      "name": "Get settings",
       "method": "GET",
-      "path": "/",
+      "path": "/?action=get_settings",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Get work hours",
+      "method": "GET",
+      "path": "/?action=get_work_hours",
       "expectedStatus": 200
     }
   ]

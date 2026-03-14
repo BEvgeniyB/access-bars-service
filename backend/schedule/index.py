@@ -74,6 +74,8 @@ def handler(event, context):
                 
                 if action == 'get_settings':
                     return get_schedule_settings(cursor)
+                elif action == 'get_work_hours':
+                    return get_work_hours(cursor)
                 else:
                     return get_schedule(cursor, event)
             finally:
@@ -90,6 +92,8 @@ def handler(event, context):
                 
                 if action == 'save_settings':
                     return save_schedule_settings(cursor, conn, body)
+                elif action == 'save_work_hours':
+                    return save_work_hours(cursor, conn, body)
                 elif action == 'update_booking_status':
                     return update_booking_status(cursor, conn, body)
                 elif action == 'update_booking_service':
@@ -862,6 +866,57 @@ def send_status_update_notification(booking_data):
             
     except Exception as e:
         print(f"Error sending status notification: {str(e)}")
+
+def get_work_hours(cursor):
+    """Получение недельного расписания рабочих часов"""
+    try:
+        cursor.execute("""
+            SELECT day_of_week, start_time, end_time, is_day_off
+            FROM t_p89870318_access_bars_service.schedule_work_hours
+            ORDER BY day_of_week
+        """)
+        rows = cursor.fetchall()
+        result = []
+        for row in rows:
+            d = dict(row)
+            d['start_time'] = str(d['start_time'])[:5] if d['start_time'] else None
+            d['end_time'] = str(d['end_time'])[:5] if d['end_time'] else None
+            result.append(d)
+        return success_response({'success': True, 'work_hours': result})
+    except Exception as e:
+        print(f"Error getting work hours: {str(e)}")
+        return error_response(f'Error getting work hours: {str(e)}', 500)
+
+
+def save_work_hours(cursor, conn, body):
+    """Сохранение недельного расписания рабочих часов"""
+    try:
+        work_hours = body.get('work_hours', [])
+        if not work_hours:
+            return error_response('work_hours is required', 400)
+        for item in work_hours:
+            day = int(item['day_of_week'])
+            is_day_off = bool(item.get('is_day_off', False))
+            start_time = item.get('start_time')
+            end_time = item.get('end_time')
+            if is_day_off or not start_time or not end_time:
+                cursor.execute("""
+                    UPDATE t_p89870318_access_bars_service.schedule_work_hours
+                    SET start_time = NULL, end_time = NULL, is_day_off = TRUE
+                    WHERE day_of_week = %s
+                """, (day,))
+            else:
+                cursor.execute("""
+                    UPDATE t_p89870318_access_bars_service.schedule_work_hours
+                    SET start_time = %s, end_time = %s, is_day_off = FALSE
+                    WHERE day_of_week = %s
+                """, (start_time, end_time, day))
+        conn.commit()
+        return success_response({'success': True, 'message': 'Work hours saved'})
+    except Exception as e:
+        print(f"Error saving work hours: {str(e)}")
+        return error_response(f'Error saving work hours: {str(e)}', 500)
+
 
 def get_schedule_settings(cursor):
     """Получение настроек расписания"""
