@@ -61,20 +61,23 @@ const ServiceContactPopover = ({
 
   const handleMaxClick = async () => {
     trackEvent(YMEvents.TELEGRAM_CLICK, { url: "max", service: activeService });
+    let copied = false;
     try {
       await navigator.clipboard.writeText(text);
-      toast.success("Сообщение скопировано!", {
-        description: "Вставьте его в чат MAX (Ctrl+V)",
-        action: {
-          label: "Перейти в MAX",
-          onClick: openMax,
-        },
-        duration: 8000,
-      });
+      copied = true;
     } catch {
-      // Буфер обмена недоступен — сразу открываем чат
-      openMax();
+      copied = false;
     }
+    toast(copied ? "Сообщение скопировано!" : "Не удалось скопировать сообщение", {
+      description: copied
+        ? "Вставьте его в чат MAX (Ctrl+V)"
+        : `Скопируйте вручную: «${text}»`,
+      action: {
+        label: "Перейти в MAX",
+        onClick: openMax,
+      },
+      duration: 8000,
+    });
   };
 
   return (
