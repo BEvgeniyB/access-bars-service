@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Header from "@/components/Header";
 import SEOHead from "@/components/SEOHead";
-import TrainingBookingForm from "@/components/TrainingBookingForm";
 import TrainingHero from "@/components/training/TrainingHero";
 import TrainingCourses from "@/components/training/TrainingCourses";
 import TrainingBenefits from "@/components/training/TrainingBenefits";
@@ -11,9 +10,6 @@ import TrainingNavigation from "@/components/training/TrainingNavigation";
 import ShareButton from "@/components/ShareButton";
 
 const Training = () => {
-  const [isBookingOpen, setIsBookingOpen] = useState(false);
-  const [preselectedService, setPreselectedService] = useState<string>('');
-
   useEffect(() => {
     const observerOptions = {
       threshold: 0.1,
@@ -65,13 +61,6 @@ const Training = () => {
         heroSection.style.transform = 'translateY(0)';
       }
     }, 500);
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    const service = urlParams.get('service');
-    if (service) {
-      setPreselectedService(service);
-      setIsBookingOpen(true);
-    }
 
     return () => {
       observer.disconnect();
@@ -79,11 +68,6 @@ const Training = () => {
       document.head.removeChild(style);
     };
   }, []);
-
-  const handleBookingClick = () => {
-    setPreselectedService('training-basic');
-    setIsBookingOpen(true);
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-950 via-emerald-900 to-emerald-950">
@@ -99,9 +83,9 @@ const Training = () => {
       {/* Share Button */}
       <ShareButton />
       
-      <TrainingHero onBookingClick={handleBookingClick} />
+      <TrainingHero />
       
-      <TrainingCourses onBookingClick={handleBookingClick} />
+      <TrainingCourses />
       
       <TrainingBenefits />
       
@@ -110,12 +94,6 @@ const Training = () => {
       <TrainingFooter />
       
       <TrainingNavigation />
-      
-      <TrainingBookingForm 
-        isOpen={isBookingOpen} 
-        onClose={() => setIsBookingOpen(false)}
-        preselectedService={preselectedService}
-      />
     </div>
   );
 };

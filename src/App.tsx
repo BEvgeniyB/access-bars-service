@@ -18,7 +18,6 @@ import SEO404Handler from "./components/SEO404Handler";
 import Reviews from "./pages/Reviews";
 
 import NotFound from "./pages/NotFound";
-import PublicBooking from "./pages/PublicBooking";
 
 const queryClient = new QueryClient();
 
@@ -40,8 +39,6 @@ const App = () => (
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
-          
-          <Route path="/booking" element={<PublicBooking />} />
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

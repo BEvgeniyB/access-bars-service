@@ -1,15 +1,11 @@
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 import PhoneLink from "@/components/ui/phone-link";
+import ServiceContactPopover from "@/components/ui/service-contact-popover";
 import { Link } from "react-router-dom";
-import { trackEvent, YMEvents } from "@/utils/yandexMetrika";
 import { BACKGROUND_IMAGES, getBackgroundStyle } from "@/constants/images";
 
-interface HeroSectionProps {
-  setIsBookingOpen: (value: boolean) => void;
-}
-
-const HeroSection = ({ setIsBookingOpen }: HeroSectionProps) => {
+const HeroSection = () => {
   return (
     <>
       <div id="hero" className="scroll-target"></div>
@@ -33,10 +29,11 @@ const HeroSection = ({ setIsBookingOpen }: HeroSectionProps) => {
             </h1>
             <p className="text-xl text-emerald-100 mb-12 max-w-3xl mx-auto leading-relaxed">Глубокие энергетические практики и исцеление в атмосфере абсолютного спокойствия и гармонии</p>
             <div className="flex flex-wrap justify-center items-center gap-4">
-              <Button size="lg" className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold px-8 py-4 text-lg shadow-2xl border-2 border-gold-400" onClick={() => {
-                trackEvent(YMEvents.SCHEDULE_FORM_OPEN, { source: 'hero_button', page: 'index' });
-                setIsBookingOpen(true);
-              }}>ЗАПИСАТЬСЯ</Button>
+              <ServiceContactPopover
+                label="ЗАПИСАТЬСЯ"
+                size="lg"
+                buttonClassName="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold px-8 py-4 text-lg shadow-2xl border-2 border-gold-400"
+              />
               <PhoneLink>
                 <Button size="lg" variant="outline" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold px-8 py-4 text-lg" style={getBackgroundStyle(BACKGROUND_IMAGES.PRIMARY)}>
                   <Icon name="Phone" className="mr-2" size={20} />

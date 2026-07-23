@@ -1,11 +1,8 @@
 import { Button } from "@/components/ui/button";
 import PhoneLink from "@/components/ui/phone-link";
+import ServiceContactPopover from "@/components/ui/service-contact-popover";
 
-interface TrainingHeroProps {
-  onBookingClick: () => void;
-}
-
-const TrainingHero = ({ onBookingClick }: TrainingHeroProps) => {
+const TrainingHero = () => {
   return (
     <>
       <div id="hero" className="scroll-target"></div>
@@ -25,11 +22,11 @@ const TrainingHero = ({ onBookingClick }: TrainingHeroProps) => {
             для себя и помощи другим
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Button 
-              size="lg" 
-              className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold"
-              onClick={onBookingClick}
-            >Записаться</Button>
+            <ServiceContactPopover
+              serviceName="Обучение Access Bars"
+              size="lg"
+              buttonClassName="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold"
+            />
             <PhoneLink>
               <Button variant="outline" size="lg" className="border-2 border-gold-400 text-gold-400 hover:bg-gold-400/10 font-bold backdrop-blur-sm">+7(918) 414-1221</Button>
             </PhoneLink>

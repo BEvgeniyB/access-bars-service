@@ -1,16 +1,11 @@
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import Icon from "@/components/ui/icon";
+import ServiceContactPopover from "@/components/ui/service-contact-popover";
 import { getDetailedServicesByCategory } from "@/data/services";
 
 // Используем данные из центрального источника
 const sessions = getDetailedServicesByCategory('Access Bars');
 
-interface AccessBarsSessionsProps {
-  onBookingClick: (serviceId: string) => void;
-}
-
-const AccessBarsSessions = ({ onBookingClick }: AccessBarsSessionsProps) => {
+const AccessBarsSessions = () => {
   return (
     <>
       <div id="sessions" className="scroll-target"></div>
@@ -44,19 +39,7 @@ const AccessBarsSessions = ({ onBookingClick }: AccessBarsSessionsProps) => {
                 <CardDescription className="text-emerald-200 leading-relaxed mb-6">
                   {session.description}
                 </CardDescription>
-                <Button 
-                  className="w-full bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold"
-                  onClick={() => {
-                    let serviceId = '';
-                    if (session.name.includes('Первая')) serviceId = 'access-bars-first';
-                    else if (session.name.includes('Стандартная')) serviceId = 'access-bars-standard';  
-                    else if (session.name.includes('Интенсивная')) serviceId = 'access-bars-intensive';
-                    onBookingClick(serviceId);
-                  }}
-                >
-                  <Icon name="Calendar" className="mr-2" size={16} />
-                  Записаться
-                </Button>
+                <ServiceContactPopover serviceName={session.name} />
               </CardContent>
             </Card>
           ))}

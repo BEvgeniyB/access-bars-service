@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { SCHEDULE_API_URL } from '@/components/booking/BookingFormTypes';
 import EmailSettingsPanel from './EmailSettingsPanel';
 import ServicesPanel from './ServicesPanel';
 import ScheduleSettingsPanel from './ScheduleSettingsPanel';
@@ -15,6 +14,7 @@ import { logout } from '@/utils/auth';
 import API_ENDPOINTS from '@/config/api';
 
 const REVIEWS_API_URL = API_ENDPOINTS.reviews;
+const SCHEDULE_API_URL = API_ENDPOINTS.schedule;
 
 interface Booking {
   id: number;

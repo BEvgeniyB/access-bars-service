@@ -5,7 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import Icon from '@/components/ui/icon';
-import { SCHEDULE_API_URL } from '@/components/booking/BookingFormTypes';
+import API_ENDPOINTS from '@/config/api';
+
+const SCHEDULE_API_URL = API_ENDPOINTS.schedule;
 
 const DAY_NAMES = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
 

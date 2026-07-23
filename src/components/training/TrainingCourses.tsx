@@ -1,10 +1,6 @@
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
-
-interface TrainingCoursesProps {
-  onBookingClick: () => void;
-}
+import ServiceContactPopover from "@/components/ui/service-contact-popover";
 
 const courses = [
   {
@@ -16,7 +12,7 @@ const courses = [
   }
 ];
 
-const TrainingCourses = ({ onBookingClick }: TrainingCoursesProps) => {
+const TrainingCourses = () => {
   return (
     <>
       <div id="courses" className="scroll-target"></div>
@@ -150,10 +146,10 @@ const TrainingCourses = ({ onBookingClick }: TrainingCoursesProps) => {
                   
 
                   
-                  <Button 
-                    className="w-full mt-6 bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold transition-colors"
-                    onClick={onBookingClick}
-                  >Записаться</Button>
+                  <ServiceContactPopover
+                    serviceName="Обучение Access Bars"
+                    label="Записаться на обучение"
+                  />
                 </div>
               </CardContent>
             </Card>

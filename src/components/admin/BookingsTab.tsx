@@ -7,7 +7,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/u
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { SERVICES, SCHEDULE_API_URL } from '@/components/booking/BookingFormTypes';
+import { SERVICES } from '@/data/services';
+import API_ENDPOINTS from '@/config/api';
+
+const SCHEDULE_API_URL = API_ENDPOINTS.schedule;
 
 interface Booking {
   id: number;

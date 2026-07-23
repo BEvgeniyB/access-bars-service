@@ -1,7 +1,6 @@
 import Header from "@/components/Header";
 import SEOHead from "@/components/SEOHead";
 import { useEffect, useState } from "react";
-import BookingForm from "@/components/BookingForm";
 import { businessStructuredData, servicesStructuredData, personStructuredData } from "@/data/structuredData";
 import ShareButton from "@/components/ShareButton";
 import NavigationMenu from "@/components/Index/NavigationMenu";
@@ -14,8 +13,6 @@ import Footer from "@/components/Index/Footer";
 import { BACKGROUND_IMAGES, getBackgroundStyle } from "@/constants/images";
 
 const MassageWebsite = () => {
-  const [isBookingOpen, setIsBookingOpen] = useState(false);
-  const [preselectedService, setPreselectedService] = useState<string>('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const closeMenu = () => setIsMenuOpen(false);
@@ -28,13 +25,6 @@ const MassageWebsite = () => {
           element.scrollIntoView({ behavior: 'smooth' });
         }, 100);
       }
-    }
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    const service = urlParams.get('service');
-    if (service) {
-      setPreselectedService(service);
-      setIsBookingOpen(true);
     }
   }, []);
 
@@ -72,7 +62,7 @@ const MassageWebsite = () => {
         />
 
         <main>
-          <HeroSection setIsBookingOpen={setIsBookingOpen} />
+          <HeroSection />
           <ServicesSection />
           <AboutSection />
           <ReviewsSection />
@@ -80,12 +70,6 @@ const MassageWebsite = () => {
         </main>
 
         <Footer />
-        
-        <BookingForm 
-          isOpen={isBookingOpen} 
-          onClose={() => setIsBookingOpen(false)}
-          preselectedService={preselectedService}
-        />
       </div>
     </>
   );

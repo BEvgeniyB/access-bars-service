@@ -2,17 +2,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 import PhoneLink from "@/components/ui/phone-link";
+import ServiceContactPopover from "@/components/ui/service-contact-popover";
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import SEOHead from "@/components/SEOHead";
-import BookingForm from "@/components/BookingForm";
 import { breadcrumbStructuredData } from "@/data/structuredData";
 import { getDetailedServicesByCategory } from "@/data/services";
 import ShareButton from "@/components/ShareButton";
 
 const Healing = () => {
-  const [isBookingOpen, setIsBookingOpen] = useState(false);
-  const [preselectedService, setPreselectedService] = useState<string>('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const closeMenu = () => setIsMenuOpen(false);
@@ -37,14 +35,6 @@ const Healing = () => {
           });
         }
       }, 500); // Увеличенная задержка для более заметного эффекта
-    }
-    
-    // Handle preselected service from URL params
-    const urlParams = new URLSearchParams(window.location.search);
-    const service = urlParams.get('service');
-    if (service) {
-      setPreselectedService(service);
-      setIsBookingOpen(true);
     }
   }, []);
   // Используем данные из центрального источника
@@ -296,18 +286,10 @@ const Healing = () => {
                       </ul>
                     </div>
                     
-                    <Button 
-                      className="w-full mt-6 bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold transition-colors"
-                      onClick={() => {
-                        let serviceId = '';
-                        if (service.title.includes('Энергетическое')) serviceId = 'energy-healing';
-                        else if (service.title.includes('Дистанционное')) serviceId = 'remote-healing';
-                        setPreselectedService(serviceId);
-                        setIsBookingOpen(true);
-                      }}
-                    >
-                      Записаться
-                    </Button>
+                    <ServiceContactPopover
+                      serviceName={service.title}
+                      className="mt-6"
+                    />
                   </div>
                 </CardContent>
               </Card>
@@ -455,12 +437,6 @@ const Healing = () => {
         </div>
       </footer>
       
-      {/* Booking Form Modal */}
-      <BookingForm 
-        isOpen={isBookingOpen} 
-        onClose={() => setIsBookingOpen(false)}
-        preselectedService={preselectedService}
-      />
       </div>
     </>
   );
