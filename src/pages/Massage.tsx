@@ -187,6 +187,7 @@ const Massage = () => {
               </p>
               <div className="flex flex-col gap-4 justify-center items-center w-full px-2">
                 <ServiceContactPopover
+                  serviceName="Массаж"
                   label="Записаться на массаж"
                   size="lg"
                   buttonClassName="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold px-2 py-4 text-xs shadow-xl"

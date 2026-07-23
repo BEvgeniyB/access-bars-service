@@ -32,6 +32,7 @@ const HeroSection = () => {
               <ServiceContactPopover
                 label="ЗАПИСАТЬСЯ"
                 size="lg"
+                categories={["Массаж", "Access Bars", "Целительство", "Обучение"]}
                 buttonClassName="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-emerald-900 font-bold px-8 py-4 text-lg shadow-2xl border-2 border-gold-400"
               />
               <PhoneLink>
