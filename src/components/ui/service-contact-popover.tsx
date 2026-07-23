@@ -55,17 +55,26 @@ const ServiceContactPopover = ({
     }
   };
 
+  const openMax = () => {
+    window.open(MAX_LINK, "_blank", "noopener,noreferrer");
+  };
+
   const handleMaxClick = async () => {
     trackEvent(YMEvents.TELEGRAM_CLICK, { url: "max", service: activeService });
     try {
       await navigator.clipboard.writeText(text);
       toast.success("Сообщение скопировано!", {
         description: "Вставьте его в чат MAX (Ctrl+V)",
+        action: {
+          label: "Перейти в MAX",
+          onClick: openMax,
+        },
+        duration: 8000,
       });
     } catch {
-      // Буфер обмена недоступен — просто откроется чат
+      // Буфер обмена недоступен — сразу открываем чат
+      openMax();
     }
-    window.open(MAX_LINK, "_blank", "noopener,noreferrer");
   };
 
   return (
