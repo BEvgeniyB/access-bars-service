@@ -39,7 +39,11 @@ const AccessBarsSessions = () => {
                 <CardDescription className="text-emerald-200 leading-relaxed mb-6">
                   {session.description}
                 </CardDescription>
-                <ServiceContactPopover serviceName={session.name} />
+                <ServiceContactPopover
+                  serviceName={session.name}
+                  price={session.price}
+                  duration={session.duration}
+                />
               </CardContent>
             </Card>
           ))}

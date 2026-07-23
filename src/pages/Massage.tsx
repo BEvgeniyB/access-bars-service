@@ -256,6 +256,8 @@ const Massage = () => {
                   
                   <ServiceContactPopover
                     serviceName={service.title}
+                    price={service.price}
+                    duration={service.duration}
                     className="mt-6"
                   />
                 </CardContent>

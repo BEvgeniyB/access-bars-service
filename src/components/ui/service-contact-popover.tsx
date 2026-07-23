@@ -12,6 +12,8 @@ const MAX_LINK =
 
 interface ServiceContactPopoverProps {
   serviceName?: string;
+  price?: string;
+  duration?: string;
   categories?: string[];
   label?: string;
   className?: string;
@@ -23,6 +25,8 @@ interface ServiceContactPopoverProps {
 
 const ServiceContactPopover = ({
   serviceName,
+  price,
+  duration,
   categories,
   label = "Записаться",
   className = "",
@@ -36,8 +40,12 @@ const ServiceContactPopover = ({
   const activeService = serviceName || selectedCategory || undefined;
   const showCategoryStep = !!categories && categories.length > 0 && !serviceName && !selectedCategory;
 
+  // Цену и длительность показываем только когда услуга выбрана явно (не категория из общего списка)
+  const showDetails = !!serviceName && (price || duration);
+  const details = [price, duration].filter(Boolean).join(", ");
+
   const text = activeService
-    ? `Здравствуйте! Хочу записаться на «${activeService}»`
+    ? `Здравствуйте! Хочу записаться на «${activeService}»${showDetails ? ` (${details})` : ""}`
     : "Здравствуйте! Хочу записаться на приём";
   const encodedText = encodeURIComponent(text);
 
@@ -126,6 +134,9 @@ const ServiceContactPopover = ({
                 {activeService ? `«${activeService}» — выберите мессенджер:` : "Выберите удобный мессенджер для связи:"}
               </p>
             </div>
+            {showDetails && (
+              <p className="text-xs text-gold-600 font-medium px-2 pb-2">{details}</p>
+            )}
             <div className="flex flex-col gap-1">
               <a
                 href={`https://t.me/${TELEGRAM_USERNAME}?text=${encodedText}`}

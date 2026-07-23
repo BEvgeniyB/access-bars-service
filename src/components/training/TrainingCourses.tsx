@@ -148,6 +148,7 @@ const TrainingCourses = () => {
                   
                   <ServiceContactPopover
                     serviceName="Обучение Access Bars"
+                    duration={course.duration}
                     label="Записаться на обучение"
                   />
                 </div>
