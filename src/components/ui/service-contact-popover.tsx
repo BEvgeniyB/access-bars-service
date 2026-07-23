@@ -44,8 +44,12 @@ const ServiceContactPopover = ({
     <Popover>
       <PopoverTrigger asChild>
         <Button size={size} variant={variant} style={style} className={`${buttonClassName} ${className}`}>
-          <Icon name="Calendar" className="mr-2" size={16} />
           {label}
+          <span className="flex items-center gap-1.5 ml-2">
+            <Icon name="Send" size={16} className="text-sky-600" />
+            <Icon name="MessageCircle" size={16} className="text-green-600" />
+            <Icon name="CircleDot" size={16} className="text-blue-600" />
+          </span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-64 p-2">
